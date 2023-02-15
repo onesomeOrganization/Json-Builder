@@ -628,7 +628,7 @@ def create_question(question, id_base, count, write_beginning, contents, answer_
           ],
           "nextLogic": {
             "id": "%s",
-            "type": "VALUE",
+            "type": "%s",
             "count": null,
             "nextQuestionId": null,
             "prevQuestionId": null,
@@ -636,36 +636,11 @@ def create_question(question, id_base, count, write_beginning, contents, answer_
             "questionRefLogicId": null,
             "sessionId": null,
             "options": [
-              {
-                "id": "%s-opt1",
-                "order": 1,
-                "type": "VALUE_GTE",
-                "number": 1,
-                "count": null,
-                "secondNumber": null,
-                "secondCount": null,
-                "questionAnswerOptionId": null,
-                "secondQuestionAnswerOptionId": null,
-                "questionId": "XY",
-                "refQuestionId": null
-              },
-              {
-                "id": "%s-opt2",
-                "order": 2,
-                "type": "VALUE_LT",
-                "number": 1,
-                "count": null,
-                "secondNumber": null,
-                "secondCount": null,
-                "questionAnswerOptionId": null,
-                "secondQuestionAnswerOptionId": null,
-                "questionId": "XY",
-                "refQuestionId": null
-              }
+              %s
             ],
             "refAdaptions": []
           }
-        },''' % (id_base, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base, id_base, create_content_block(id_base, 2, contents) ,id_base, get_content_length(contents), get_content_length(contents), id_base, get_content_length(contents), id_base, get_content_length(contents), id_base, get_content_length(contents), id_base, id_base, id_base),
+        },''' % (id_base, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base, id_base, create_content_block(id_base, 2, contents) ,id_base, get_content_length(contents), get_content_length(contents), id_base, get_content_length(contents), id_base, get_content_length(contents), id_base, get_content_length(contents), id_base, next_logic_type, create_nextLogic_options(id_base, get_content_length(contents), next_logics)),
         "ITEM_LIST_EXPANDABLE": '''
         {
           "id": "%s",
