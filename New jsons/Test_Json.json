@@ -1,0 +1,273 @@
+
+{
+  "id": "flora-v5",
+  "key": "Test_Short_Trip_Flora",
+  "order": 10,
+  "mainImageName": "red_main.png",
+  "mainImageLongName": "red_main.png",
+  "topicIconImageName": "core.svg",
+  "mainImageLockedLongName": "red_main.png",
+  "backgroundImageName": "red_background.jpeg",
+  "sessionImageName": "red_session.png",
+  "published": true,
+  "publishedEN": false,
+  "feedbackLink": null,
+  "version": 5,
+  "type": "SHORT_TRIP",
+  "compulsoryOrder": false,
+  "topicId": null,
+  "backgroundImageLockedName": "dark_main.png",
+  "translations": [
+    {
+      "id": "flora-v5-DE",
+      "language": "DE",
+      "title": "XY",
+      "subTitle": "",
+      "description": null
+    },
+    {
+      "id": "flora-v5-EN",
+      "language": "EN",
+      "title": "Englisch",
+      "subTitle": "",
+      "description": null
+    }
+  ],
+  "content": [
+    {
+      "id": "flora-v5-2",
+      "order": 2,
+      "type": "PARAGRAPH",
+      "imageName": null,
+      "translations": [
+        {
+          "id": "flora-v5-2-DE",
+          "language": "DE",
+          "title": null,
+          "text": "<strong>Warum?</strong> Vielleicht ist dir das auch schonmal passiert: Du hast dir vorgenommen, etwas zu verändern, aber es nie durchgezogen. Deine Veränderungsenergie war vielleicht nicht groß genug. Wenn du mit geschärftem Blick auf die einzelnen Faktoren einer Veränderung schaust, wirst du dein Vorhaben diesmal durchziehen. <br><br> <strong>Dein Ziel:</strong> Prüfe für ein bestimmtes Veränderungsvorhaben wie groß deine Veränderungsenergie ist. Hast du Lust es tatsächlich anzugehen? Oder wie kannst du die Lust vergrößern?<br><br> "
+        },
+        {
+          "id": "flora-v5-2-EN",
+          "language": "EN",
+          "title": null,
+          "text": "Englisch"
+        }
+      ]
+    },
+    {
+      "id": "flora-v5-3",
+      "order": 4,
+      "type": "SESSION_TITLE",
+      "imageName": null,
+      "translations": [
+        {
+          "id": "flora-v5-3-DE",
+          "language": "DE",
+          "title": null,
+          "text": "Beginne deine Expedition"
+        },
+        {
+          "id": "flora-v5-3-EN",
+          "language": "EN",
+          "title": null,
+          "text": "Englisch"
+        }
+      ]
+    }
+  ],
+  "sessions": [
+    {
+      "id": "flora-v5-1",
+      "order": 1,
+      "durationMin": 10,
+      "durationMax": 15,
+      "translations": [
+        {
+          "id": "flora-v5-1-DE",
+          "language": "DE",
+          "title": "Wie groß ist deine Veränderungsenergie?"
+        },
+        {
+          "id": "flora-v5-1-EN",
+          "language": "EN",
+          "title": "Englisch"
+        }
+      ],
+      "questions": [
+        
+        {
+          "id": "flora-v5-1-16",
+          "type": "ITEM_LIST_EXPANDABLE",
+          "number": null,
+          "minNumber": null,
+          "maxNumber": null,
+          "screenDuration": null,
+          "reviewAble": true,
+          "noAnswerPreselection": null,
+          "showHint": null,
+          "progress": 5,
+          "worldObjectEntryKeyType": null,
+          "nonOptionalKeyInsightHint": false,
+          "optional": true,
+          "firstJourneyQuestion": true,
+          "firstSessionQuestion": true,
+          "questionLoopId": null,
+          "translations": [
+            {
+              "id": "flora-v5-1-16-DE",
+              "language": "DE",
+              "title": "",
+              "text": "",
+              "notAnsweredText": null
+            },
+            {
+              "id": "flora-v5-1-16-EN",
+              "language": "EN",
+              "title": "",
+              "text": "",
+              "notAnsweredText": null
+            }
+          ],
+          "content": [
+            {
+              "id": "flora-v5-1-16-1",
+              "type": "SUB_TITLE",
+              "required": null,
+              "showHidden": null,
+              "order": 1,
+              "imageName": null,
+              "audioName": null,
+              "style": null,
+              "refAdaptionType": null,
+              "refAdaptionNumber": null,
+              "refOrderType": null,
+              "refOrderColumn": null,
+              "refOffset": null,
+              "refLimit": null,
+              "downloadName": null,
+              "checkForSpecialTextReplacement": null,
+              "questionAnswerOptionId": null,
+              "language": null,
+              "contentShowType": null,
+              "worldObjectEntryKey": null,
+              "refQuestionId": null,
+              "refQuestionAnswerOptionId": null,
+              "translations": [
+                {
+                  "id": "flora-v5-1-16-1-DE",
+                  "language": "DE",
+                  "title": null,
+                  "text": "XY"
+                },
+                {
+                  "id": "flora-v5-1-16-1-EN",
+                  "language": "EN",
+                  "title": "",
+                  "text": "Englisch"
+                }
+              ],
+              "answerOptions": []
+            }
+            ,{
+              "id": "flora-v5-1-16-2",
+              "type": "MORE_INFORMATION_EXPANDED",
+              "required": null,
+              "showHidden": null,
+              "order": 2,
+              "imageName": null,
+              "audioName": null,
+              "style": null,
+              "refAdaptionType": null,
+              "refAdaptionNumber": null,
+              "refOrderType": null,
+              "refOrderColumn": null,
+              "refOffset": null,
+              "refLimit": null,
+              "downloadName": null,
+              "checkForSpecialTextReplacement": null,
+              "questionAnswerOptionId": null,
+              "language": null,
+              "contentShowType": null,
+              "worldObjectEntryKey": null,
+              "refQuestionId": null,
+              "refQuestionAnswerOptionId": null,
+              "translations": [
+                {
+                  "id": "flora-v5-1-16-2-DE",
+                  "language": "DE",
+                  "title": "Text zur Audioreise anzeigen",
+                  "text": "XY"
+                },
+                {
+                  "id": "flora-v5-1-16-2-EN",
+                  "language": "EN",
+                  "title": "Show audio journey text",
+                  "text": "Englisch"
+                }
+              ],
+              "answerOptions": []
+            }
+            ,{
+              "id": "flora-v5-1-16-3",
+              "type": "ANSWER_OPTION",
+              "required": true,
+              "showHidden": null,
+              "order": 3,
+              "imageName": null,
+              "audioName": null,
+              "style": null,
+              "refAdaptionType": null,
+              "refAdaptionNumber": null,
+              "refOrderType": null,
+              "refOrderColumn": null,
+              "refOffset": null,
+              "refLimit": null,
+              "downloadName": null,
+              "checkForSpecialTextReplacement": null,
+              "questionAnswerOptionId": null,
+              "language": null,
+              "contentShowType": null,
+              "worldObjectEntryKey": null,
+              "refQuestionId": null,
+              "refQuestionAnswerOptionId": null,
+              "translations": [],
+              "answerOptions": [
+                {
+                  "id": "flora-v5-1-16-3-1",
+                  "order": 1,
+                  "number": null,
+                  "type": "TEXT_FIELD_EXPANDABLE",
+                  "imageName": null,
+                  "hidden": null,
+                  "escapeOption": null,
+                  "sliderType": null,
+                  "negative": null,
+                  "unselectOthers": null,
+                  "booleanHelper": null,
+                  "refQuestionAnswerOptionId": null,
+                  "secondRefQuestionAnswerOptionId": null,
+                  "questionLoopCycleId": null,
+                  "translations": []
+                }
+              ]
+            }
+          ],
+          "nextLogic": {
+            "id": "flora-v5-1-16",
+            "type": "NEXT",
+            "count": null,
+            "nextQuestionId": "XY",
+            "prevQuestionId": null,
+            "refQuestionId": null,
+            "questionRefLogicId": null,
+            "sessionId": null,
+            "options": [],
+            "refAdaptions": []
+          }
+        }
+      ],
+      "questionLoops": []
+    }
+  ]
+}
+        
