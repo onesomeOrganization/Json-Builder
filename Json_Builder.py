@@ -12,11 +12,11 @@ id = "flora-v"
 version = str(5)
 write_beginning = False
 write_ending = False
-# CONTENT, OPTION_QUESTION, OPEN_QUESTION, SCALA_SLIDER, ITEM_LIST_EXPANDABLE (T or C as answeroption), ITEM_LIST_SINGLE_CHOICE (type needed)
-# + CONTEN_BLOCK: P = Paragraph, R = Referenz, I = Image, A = Audio, M = More Information Expandable -> Titel ist immer dabei
-# + ANSWER_OPTION_BLOCK: R = Radio Button, C = Checkbox, T = Text_Field_Expandable
-# + NEXT_LOGIC_TYPE: NEXT, NEXT_OPTION
-# + NEXT_LOGICS: N = option with next
+# type: CONTENT, OPTION_QUESTION, OPEN_QUESTION, SCALA_SLIDER, ITEM_LIST_EXPANDABLE (T or C as answeroption), ITEM_LIST_SINGLE_CHOICE (type needed)
+# content: P = Paragraph, R = Referenz, I = Image, A = Audio, M = More Information Expandable -> Titel ist immer dabei
+# answer_option: R = Radio Button, C = Checkbox, T = Text_Field_Expandable
+# next_logic_type: NEXT, NEXT_OPTION
+# next_logic_options: N = option with next
 # TODO: Scala Slider with next statt value
 question_array = [Question('ITEM_LIST_SINGLE_CHOICE')]
 etappe = "-1-"
@@ -32,7 +32,7 @@ for question in question_array:
     # TODO: Gibt es ein ITEM_LIST_SINGLE_CHOICE ohne answer_options? 
 
     # check if next_option that there are options     
-    if question.next_logic_type == 'NEXT_OPTION' and question.next_logic_options == None:
+    if question.next_logic_type == 'NEXT_OPTION' and question.next_logic_option == None:
         raise Exception("Sorry, a NEXT_OPTION logic needs next_options e.g. 'N'")   
 
     # check for missspellings
@@ -54,9 +54,9 @@ with open(os.path.join(sys.path[0], name_of_json_file+".json"), 'w+') as file:
 
         # WRITE & remove comma for the last entry
         if count == (len(question_array)-1):
-            file.write(create_question(question.type, id_base, count, write_beginning, question.content, question.answer_option, question.next_logic_options, question.next_logic_type)[:-1])
+            file.write(create_question(question.type, id_base, count, write_beginning, question.content, question.answer_option, question.next_logic_option, question.next_logic_type)[:-1])
         else:
-            file.write(create_question(question.type, id_base, count, write_beginning, question.content, question.answer_option, question.next_logic_options, question.next_logic_type))
+            file.write(create_question(question.type, id_base, count, write_beginning, question.content, question.answer_option, question.next_logic_option, question.next_logic_type))
 
     # ENDING
     if write_ending:   
