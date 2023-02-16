@@ -2,6 +2,7 @@ import os
 import sys
 from content_block_functions import *
 from question_block_functions import *
+from question_object import *
 # 
 #  ------ VARIABLES ------------------------------------
 # Auszufüllen
@@ -11,39 +12,32 @@ id = "flora-v"
 version = str(5)
 write_beginning = False
 write_ending = False
-# CONTENT, OPTION_QUESTION, OPEN_QUESTION, SCALA_SLIDER, ITEM_LIST_EXPANDABLE (T or C as answeroption), AUDIO, ITEM_LIST_SINGLE_CHOICE (type needed)
+# CONTENT, OPTION_QUESTION, OPEN_QUESTION, SCALA_SLIDER, ITEM_LIST_EXPANDABLE (T or C as answeroption), ITEM_LIST_SINGLE_CHOICE (type needed)
 # + CONTEN_BLOCK: P = Paragraph, R = Referenz, I = Image, A = Audio, M = More Information Expandable -> Titel ist immer dabei
 # + ANSWER_OPTION_BLOCK: R = Radio Button, C = Checkbox, T = Text_Field_Expandable
 # + NEXT_LOGIC_TYPE: NEXT, NEXT_OPTION
 # + NEXT_LOGICS: N = option with next
-questions_array  = ["CONTENT+P","OPTION_QUESTION+P", "SCALA_SLIDER+PRP","OPEN_QUESTION+PRP", "OPEN_QUESTION+P", "CONTENT+PRPR", "CONTENT+PM", "OPEN_QUESTION+P", "SCALA_SLIDER+PRP", "CONTENT+P", "CONTENT+AM", "CONTENT+P", "OPEN_QUESTION+PM", "CONTENT+P", "CONTENT+PRPRP", "CONTENT+AM", "CONTENT+P"] 
-etappe = "-2-"
+# TODO: Scala Slider with next statt value
+question_array = [Question('ITEM_LIST_SINGLE_CHOICE')]
+etappe = "-1-"
 startnumber = 0 # 0 if it should start from beginning
 
 # -------- TESTS --------
 
-yes = {'yes','y', 'ye', ''}
-no = {'no','n'}
-
-for entry in questions_array:
-    question_split = entry.split("+")
-
+for question in question_array:
     # check for questions which need certain configurations
-    if question_split[0] == 'ITEM_LIST_EXPANDABLE' and len(question_split) < 3:
-        raise Exception("Sorry, ITEM_LIST_EXPANDABLE needs a Checkbox (C) or Textfield_expandable (T)")
+    if question.type == 'ITEM_LIST_EXPANDABLE' and question.answer_option == None:
+        raise Exception("Sorry, ITEM_LIST_EXPANDABLE needs a Checkbox (C) or Textfield_expandable (T)")   
 
-    # check for paragraphs
-    if 'P' not in question_split[1] or len(question_split) < 2:
-        sys.stdout.write("Are you sure you don't want a Paragraph in " + entry + " :")
-        choice = input().lower()
-        if choice in yes:
-            continue
-        elif choice in no:
-            raise Exception("You are missing a Paragraph in "+ entry)
-        else:
-            sys.stdout.write("Please respond with 'yes' or 'no'")
+    # TODO: Gibt es ein ITEM_LIST_SINGLE_CHOICE ohne answer_options? 
 
-    # TODO: check for missspellings
+    # check if next_option that there are options     
+    if question.next_logic_type == 'NEXT_OPTION' and question.next_logic_options == None:
+        raise Exception("Sorry, a NEXT_OPTION logic needs next_options e.g. 'N'")   
+
+    # check for missspellings
+    if question.type not in ["CONTENT", "OPTION_QUESTION", "OPEN_QUESTION", "SCALA_SLIDER", "ITEM_LIST_EXPANDABLE", "ITEM_LIST_SINGLE_CHOICE"]:
+        raise Exception("Sorry, there is a missspelling in " + question.type)
 
 
 
@@ -55,35 +49,14 @@ with open(os.path.join(sys.path[0], name_of_json_file+".json"), 'w+') as file:
     if write_beginning:    
         file.write(create_beginning(id, version, journey_key))
 
-    # CREATE QUESTION_TYPES WITH CONTENT BLOCK
-    for count, entry in enumerate(questions_array):
-        id_base = id+version+etappe+str(startnumber+count)
-
-        # split into question and ref
-        if "+" not in entry:
-            entry = entry + "+"
-
-        question_split = entry.split("+")
-        question = question_split[0]
-        contents = question_split[1]
-        if len(question_split) > 2:
-            answer_options = question_split[2]
-        else: 
-            answer_options = None
-        if len(question_split) > 3:
-            next_logic_type = question_split[3]
-        else:
-            next_logic_type = "NEXT"
-        if len(question_split) > 4:
-            next_logics = question_split[4]
-        else: 
-            next_logics = None
+    for count, question in enumerate(question_array): 
+        id_base = id+version+etappe+str(startnumber+count)       
 
         # WRITE & remove comma for the last entry
-        if count == (len(questions_array)-1):
-            file.write(create_question(question, id_base, count, write_beginning, contents, answer_options, next_logics, next_logic_type)[:-1])
+        if count == (len(question_array)-1):
+            file.write(create_question(question.type, id_base, count, write_beginning, question.content, question.answer_option, question.next_logic_options, question.next_logic_type)[:-1])
         else:
-            file.write(create_question(question, id_base, count, write_beginning, contents, answer_options, next_logics, next_logic_type))
+            file.write(create_question(question.type, id_base, count, write_beginning, question.content, question.answer_option, question.next_logic_options, question.next_logic_type))
 
     # ENDING
     if write_ending:   

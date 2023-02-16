@@ -19,7 +19,7 @@ def create_next_logic_option(id_base, count, answer_option_base):
 def create_nextLogic_options(id_base, answer_option_base, next_logics):
     if next_logics == None:
         return ""
-    count = 0
+    count = 1
     next_logics_block = '' 
     for number, letter in enumerate(next_logics):
         if letter == 'N':

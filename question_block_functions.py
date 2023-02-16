@@ -771,17 +771,19 @@ def create_question(question, id_base, count, write_beginning, contents, answer_
           ],
           "nextLogic": {
             "id": "%s",
-            "type": "NEXT",
+            "type": "%s",
             "count": null,
             "nextQuestionId": "XY",
             "prevQuestionId": null,
             "refQuestionId": null,
             "questionRefLogicId": null,
             "sessionId": null,
-            "options": [],
+            "options": [
+              %s
+            ],
             "refAdaptions": []
           }
-        },''' % (id_base, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base, id_base,id_base, id_base,create_content_block(id_base, 2, contents), id_base, get_content_length(contents), get_content_length(contents), create_answer_options(id_base, get_content_length(contents),answer_options, question), id_base),
+        },''' % (id_base, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base, id_base,id_base, id_base,create_content_block(id_base, 2, contents), id_base, get_content_length(contents), get_content_length(contents), create_answer_options(id_base, get_content_length(contents),answer_options, question), id_base, next_logic_type, create_nextLogic_options(id_base, get_content_length(contents), next_logics)),
         "ITEM_LIST_SINGLE_CHOICE": '''
         {
           "id": "%s",
