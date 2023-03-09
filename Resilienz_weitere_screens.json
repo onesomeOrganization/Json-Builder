@@ -1,0 +1,154 @@
+ 
+        {
+          "id": "flora-v6-2-17",
+          "type": "CONTENT",
+          "number": null,
+          "minNumber": null,
+          "maxNumber": null,
+          "screenDuration": null,
+          "reviewAble": null,
+          "noAnswerPreselection": null,
+          "showHint": null,
+          "progress": 0,
+          "worldObjectEntryKeyType": null,
+          "nonOptionalKeyInsightHint": false,
+          "optional": true,
+          "firstJourneyQuestion": null,
+          "firstSessionQuestion": null,
+          "questionLoopId": null,
+          "translations": [],
+          "content": [
+            {
+              "id": "flora-v6-2-17-1",
+              "type": "SUB_TITLE",
+              "required": null,
+              "showHidden": null,
+              "order": 1,
+              "imageName": null,
+              "audioName": null,
+              "style": null,
+              "refAdaptionType": null,
+              "refAdaptionNumber": null,
+              "refOrderType": null,
+              "refOrderColumn": null,
+              "refOffset": null,
+              "refLimit": null,
+              "downloadName": null,
+              "checkForSpecialTextReplacement": null,
+              "questionAnswerOptionId": null,
+              "language": null,
+              "contentShowType": null,
+              "worldObjectEntryKey": null,
+              "refQuestionId": null,
+              "refQuestionAnswerOptionId": null,
+              "translations": [
+                {
+                  "id": "flora-v6-2-17-1-DE",
+                  "language": "DE",
+                  "title": null,
+                  "text": "XY"
+                },
+                {
+                  "id": "flora-v6-2-17-1-EN",
+                  "language": "EN",
+                  "title": null,
+                  "text": "Englisch"
+                }
+              ],
+              "answerOptions": []
+            }
+            ,{
+              "id": "flora-v6-2-17-2",
+              "type": "PARAGRAPH",
+              "required": null,
+              "showHidden": null,
+              "order": 2,
+              "imageName": null,
+              "audioName": null,
+              "style": null,
+              "refAdaptionType": null,
+              "refAdaptionNumber": null,
+              "refOrderType": null,
+              "refOrderColumn": null,
+              "refOffset": null,
+              "refLimit": null,
+              "downloadName": null,
+              "checkForSpecialTextReplacement": null,
+              "questionAnswerOptionId": null,
+              "language": null,
+              "contentShowType": null,
+              "worldObjectEntryKey": null,
+              "refQuestionId": null,
+              "refQuestionAnswerOptionId": null,
+              "translations": [
+                {
+                  "id": "flora-v6-2-17-2-DE",
+                  "language": "DE",
+                  "title": null,
+                  "text": "XY"
+                },
+                {
+                  "id": "flora-v6-2-17-2-EN",
+                  "language": "EN",
+                  "title": null,
+                  "text": "Englisch"
+                }
+              ],
+              "answerOptions": []
+            }
+          ],
+          "nextLogic": {
+            "id": "flora-v6-2-17",
+            "type": "REF_KEY_INSIGHT",
+            "count": null,
+            "nextQuestionId": "XY",
+            "prevQuestionId": null,
+            "refQuestionId": null,
+            "questionRefLogicId": null,
+            "sessionId": null,
+            "options": [
+            
+                {
+                "id": "flora-v6-2-17-opt1",
+                "order": 1,
+                "type": "NEXT",
+                "number": null,
+                "count": null,
+                "secondNumber": null,
+                "secondCount": null,
+                "questionAnswerOptionId": null,
+                "secondQuestionAnswerOptionId": null,
+                "questionId": "XY-ifkeyexists",
+                "refQuestionId": null
+              },
+              {
+                "id": "flora-v6-2-17-opt2",
+                "order": 2,
+                "type": "NEXT",
+                "number": null,
+                "count": null,
+                "secondNumber": null,
+                "secondCount": null,
+                "questionAnswerOptionId": null,
+                "secondQuestionAnswerOptionId": null,
+                "questionId": "XY-ifkeynotexists",
+                "refQuestionId": null
+              },
+              {
+                "id": "flora-v6-2-17-opt3",
+                "order": 3,
+                "type": "REF_KEY_INSIGHT_GENERATE",
+                "number": null,
+                "count": null,
+                "secondNumber": null,
+                "secondCount": null,
+                "questionAnswerOptionId": null,
+                "secondQuestionAnswerOptionId": null,
+                "questionId": "XY-ifkeyexists",
+                "worldObjectEntryKey": "XY-KEY",
+                "refQuestionId": null
+              }
+            ],
+            "refAdaptions": []
+          }
+        }

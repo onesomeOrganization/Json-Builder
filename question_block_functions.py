@@ -173,17 +173,19 @@ def create_question(question, id_base, count, write_beginning, contents, answer_
           ],
           "nextLogic": {
             "id": "%s",
-            "type": "NEXT",
+            "type": "%s",
             "count": null,
             "nextQuestionId": "XY",
             "prevQuestionId": null,
             "refQuestionId": null,
             "questionRefLogicId": null,
             "sessionId": null,
-            "options": [],
+            "options": [
+            %s
+            ],
             "refAdaptions": []
           }
-        },''' % (id_base, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base, id_base, create_content_block(id_base, 2, contents), id_base),
+        },''' % (id_base, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base, id_base, create_content_block(id_base, 2, contents), id_base, next_logic_type, create_nextLogic_options(id_base, get_content_length(contents), next_logics, next_logic_type)),
         "OPTION_QUESTION": '''
         {
           "id": "%s",
@@ -383,7 +385,7 @@ def create_question(question, id_base, count, write_beginning, contents, answer_
           "minNumber": null,
           "maxNumber": null,
           "screenDuration": null,
-          "reviewAble": true,
+          "reviewAble": null,
           "noAnswerPreselection": null,
           "showHint": null,
           "progress": 5,
@@ -496,17 +498,19 @@ def create_question(question, id_base, count, write_beginning, contents, answer_
           ],
           "nextLogic": {
             "id": "%s",
-            "type": "NEXT",
+            "type": "%s",
             "count": null,
             "nextQuestionId": "XY",
             "prevQuestionId": null,
             "refQuestionId": null,
             "questionRefLogicId": null,
             "sessionId": null,
-            "options": [],
+            "options": [
+            %s
+            ],
             "refAdaptions": []
           }
-        },''' % (id_base, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base, id_base,id_base, id_base,create_content_block(id_base, 2, contents), id_base, get_content_length(contents), get_content_length(contents), id_base, get_content_length(contents), id_base),
+        },''' % (id_base, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base, id_base,id_base, id_base,create_content_block(id_base, 2, contents), id_base, get_content_length(contents), get_content_length(contents), id_base, get_content_length(contents), id_base, next_logic_type, create_nextLogic_options(id_base, get_content_length(contents), next_logics, next_logic_type)),
         "SCALA_SLIDER":'''
         {
           "id": "%s",
@@ -639,7 +643,7 @@ def create_question(question, id_base, count, write_beginning, contents, answer_
               {
                 "id": "%s-opt1",
                 "order": 1,
-                "type": "VALUE_GTE",
+                "type": "VALUE_LT",
                 "number": 1,
                 "count": null,
                 "secondNumber": null,
@@ -652,7 +656,7 @@ def create_question(question, id_base, count, write_beginning, contents, answer_
               {
                 "id": "%s-opt2",
                 "order": 2,
-                "type": "VALUE_LT",
+                "type": "VALUE_GTE",
                 "number": 1,
                 "count": null,
                 "secondNumber": null,
@@ -674,7 +678,7 @@ def create_question(question, id_base, count, write_beginning, contents, answer_
           "minNumber": 1,
           "maxNumber": null,
           "screenDuration": null,
-          "reviewAble": true,
+          "reviewAble": null,
           "noAnswerPreselection": null,
           "showHint": null,
           "progress": 5,
@@ -783,7 +787,7 @@ def create_question(question, id_base, count, write_beginning, contents, answer_
             ],
             "refAdaptions": []
           }
-        },''' % (id_base, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base, id_base,id_base, id_base,create_content_block(id_base, 2, contents), id_base, get_content_length(contents), get_content_length(contents), create_answer_options(id_base, get_content_length(contents),answer_options, question), id_base, next_logic_type, create_nextLogic_options(id_base, get_content_length(contents), next_logics)),
+        },''' % (id_base, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base, id_base,id_base, id_base,create_content_block(id_base, 2, contents), id_base, get_content_length(contents), get_content_length(contents), create_answer_options(id_base, get_content_length(contents),answer_options, question), id_base, next_logic_type, create_nextLogic_options(id_base, get_content_length(contents), next_logics, next_logic_type)),
         "ITEM_LIST_SINGLE_CHOICE": '''
         {
           "id": "%s",
@@ -895,6 +899,6 @@ def create_question(question, id_base, count, write_beginning, contents, answer_
             ],
             "refAdaptions": []
           }
-        },'''%(id_base, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base, id_base, id_base, id_base, create_content_block(id_base,2,contents), id_base, get_content_length(contents), get_content_length(contents), create_answer_options(id_base, get_content_length(contents),answer_options, question), id_base, next_logic_type, create_nextLogic_options(id_base, get_content_length(contents), next_logics))
+        },'''%(id_base, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base, id_base, id_base, id_base, create_content_block(id_base,2,contents), id_base, get_content_length(contents), get_content_length(contents), create_answer_options(id_base, get_content_length(contents),answer_options, question), id_base, next_logic_type, create_nextLogic_options(id_base, get_content_length(contents), next_logics, next_logic_type))
         } 
     return questions_dict[question]
