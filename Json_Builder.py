@@ -12,7 +12,7 @@ id = "flora-v"
 version = str(6)
 write_beginning = False
 write_ending = False
-# type: CONTENT, OPTION_QUESTION, OPEN_QUESTION, SCALA_SLIDER, ITEM_LIST_EXPANDABLE (T or C as answeroption), ITEM_LIST_SINGLE_CHOICE (R)
+# type: CONTENT, OPTION_QUESTION, OPEN_QUESTION, SCALA_SLIDER, ITEM_LIST_EXPANDABLE (T OR C as answeroption), ITEM_LIST_SINGLE_CHOICE (R)
 # content: P = Paragraph, R = Referenz, I = Image, A = Audio, M = More Information Expandable -> Titel ist immer dabei
 # answer_option: R = Radio Button, C = Checkbox, T = Text_Field_Expandable
 # next_logic_type: NEXT, NEXT_OPTION, REF_KEY_INSIGHT
@@ -28,7 +28,10 @@ startnumber = 17 # 0 if it should start from beginning
 for question in question_array:
     # check for questions which need certain configurations
     if question.type == 'ITEM_LIST_EXPANDABLE' and question.answer_option == None:
-        raise Exception("Sorry, ITEM_LIST_EXPANDABLE needs a Checkbox (C) or Textfield_expandable (T)")   
+        raise Exception("Sorry, ITEM_LIST_EXPANDABLE needs a Checkbox (C) or Textfield_expandable (T)")  
+
+    if question.type == 'ITEM_LIST_EXPANDABLE' and 'T' in question.answer_option and 'C' in question.answer_option:
+        raise Exception("Sorry, ITEM_LIST_EXPANDABLE does not work with Checkbox (C) AND Textfield_expandable (T), only one possible")  
 
     # TODO: Gibt es ein ITEM_LIST_SINGLE_CHOICE ohne answer_options? 
 
@@ -39,6 +42,7 @@ for question in question_array:
     # check for missspellings
     if question.type not in ["CONTENT", "OPTION_QUESTION", "OPEN_QUESTION", "SCALA_SLIDER", "ITEM_LIST_EXPANDABLE", "ITEM_LIST_SINGLE_CHOICE"]:
         raise Exception("Sorry, there is a missspelling in " + question.type)
+    
 
 
 
