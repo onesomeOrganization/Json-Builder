@@ -6,22 +6,23 @@ from question_object import *
 # 
 #  ------ VARIABLES ------------------------------------
 # Auszufüllen
-name_of_json_file = "Resilienz_weitere_screens"
+name_of_json_file = "Test"
 journey_key = "Test_Short_Trip_Flora"
 id = "flora-v"
-version = str(6)
-write_beginning = False
-write_ending = False
+version = str(12)
+write_beginning = True
+write_ending = True
 # type: CONTENT, OPTION_QUESTION, OPEN_QUESTION, SCALA_SLIDER, ITEM_LIST_EXPANDABLE (T OR C as answeroption), ITEM_LIST_SINGLE_CHOICE (R)
 # content: P = Paragraph, R = Referenz, I = Image, A = Audio, M = More Information Expandable -> Titel ist immer dabei
 # answer_option: R = Radio Button, C = Checkbox, T = Text_Field_Expandable
 # next_logic_type: NEXT, NEXT_OPTION, REF_KEY_INSIGHT
 # next_logic_options: N = option with next
 # TODO: Scala Slider with next statt value und between als zusätzliche option
+# TODO: Optional angebbar
 # question_array = [Question('CONTENT','AM'),Question('SCALA_SLIDER','PRPM'), Question('OPTION_QUESTION','PRP'), Question('CONTENT'), Question('CONTENT'), Question('OPEN_QUESTION','PRP'), Question('SCALA_SLIDER'), Question('CONTENT','PR'), Question('OPEN_QUESTION','PRP'), Question('OPTION_QUESTION'), Question('CONTENT'), Question('CONTENT'), Question('CONTENT')]
-question_array = [Question('CONTENT', next_logic_type='REF_KEY_INSIGHT')]
-etappe = "-2-"
-startnumber = 17 # 0 if it should start from beginning
+question_array = [Question('ITEM_LISTE_EXPANDABLE'),Question('CONTENT'),Question('CONTENT'),Question('ITEM_LIST_EXPANDABLE', answer_option='T'),Question('ITEM_LIST_EXPANDABLE', answer_option='T'),Question('OPEN_QUESTION','PRPRP'),Question('OPEN_QUESTION'),Question('OPEN_QUESTION'), Question('CONTENT','PRPRPRPRPR'),Question('CONTENT')]
+etappe = "-1-"
+startnumber = 0 # 0 if it should start from beginning
 
 # -------- TESTS --------
 
