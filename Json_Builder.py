@@ -3,6 +3,7 @@ import sys
 from content_block_functions import *
 from question_block_functions import *
 from question_object import *
+import pandas as pd
 # 
 #  ------ VARIABLES ------------------------------------
 # Auszufüllen
@@ -19,10 +20,12 @@ write_ending = True
 # next_logic_options: N = option with next
 # TODO: Scala Slider with next statt value und between als zusätzliche option
 # TODO: Optional angebbar
+# TODO: Einzelne Questions sind einzelne Objects die von Question erben
 # question_array = [Question('CONTENT','AM'),Question('SCALA_SLIDER','PRPM'), Question('OPTION_QUESTION','PRP'), Question('CONTENT'), Question('CONTENT'), Question('OPEN_QUESTION','PRP'), Question('SCALA_SLIDER'), Question('CONTENT','PR'), Question('OPEN_QUESTION','PRP'), Question('OPTION_QUESTION'), Question('CONTENT'), Question('CONTENT'), Question('CONTENT')]
 question_array = [Question('ITEM_LISTE_EXPANDABLE'),Question('CONTENT'),Question('CONTENT'),Question('ITEM_LIST_EXPANDABLE', answer_option='T'),Question('ITEM_LIST_EXPANDABLE', answer_option='T'),Question('OPEN_QUESTION','PRPRP'),Question('OPEN_QUESTION'),Question('OPEN_QUESTION'), Question('CONTENT','PRPRPRPRPR'),Question('CONTENT')]
 etappe = "-1-"
 startnumber = 0 # 0 if it should start from beginning
+
 
 # -------- TESTS --------
 
@@ -44,6 +47,12 @@ for question in question_array:
     if question.type not in ["CONTENT", "OPTION_QUESTION", "OPEN_QUESTION", "SCALA_SLIDER", "ITEM_LIST_EXPANDABLE", "ITEM_LIST_SINGLE_CHOICE"]:
         raise Exception("Sorry, there is a missspelling in " + question.type)
     
+
+
+# --------- EXCEL ---------
+
+excel_path_or_name = "Jsons/Tests/Json_Excel.xlsx"
+df = pd.read_excel(excel_path_or_name)
 
 
 
