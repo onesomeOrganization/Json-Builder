@@ -1,7 +1,7 @@
 
 # ------- HELPER FUNCTIONS ------------------------------
 
-def create_ref(id_base, count):
+def create_ref(id_base, count, texts, text_count):
   referenzierung = '''  
             ,{
               "id": "%s-%s",
@@ -24,14 +24,14 @@ def create_ref(id_base, count):
               "language": null,
               "contentShowType": null,
               "worldObjectEntryKey": null,
-              "refQuestionId": "XY",
+              "refQuestionId": "%s",
               "refQuestionAnswerOptionId": null,
               "translations": [],
               "answerOptions": []
-            }'''%(id_base, count, count)
+            }'''%(id_base, count, count, texts[text_count])
   return referenzierung
 
-def create_par(id_base, count):
+def create_par(id_base, count, texts, text_count):
   paragraph = '''
             ,{
               "id": "%s-%s",
@@ -61,7 +61,7 @@ def create_par(id_base, count):
                   "id": "%s-%s-DE",
                   "language": "DE",
                   "title": null,
-                  "text": "XY"
+                  "text": "%s"
                 },
                 {
                   "id": "%s-%s-EN",
@@ -71,10 +71,10 @@ def create_par(id_base, count):
                 }
               ],
               "answerOptions": []
-            }'''%(id_base, count, count, id_base, count, id_base, count)
+            }'''%(id_base, count, count, id_base, count,texts[text_count], id_base, count)
   return paragraph
 
-def create_audio(id_base, count):
+def create_audio(id_base, count, texts, text_count):
   audio = '''
             ,{
               "id": "%s-%s",
@@ -83,7 +83,7 @@ def create_audio(id_base, count):
               "showHidden": null,
               "order": %s,
               "imageName": null,
-              "audioName": "XY",
+              "audioName": "%s",
               "style": null,
               "refAdaptionType": null,
               "refAdaptionNumber": null,
@@ -109,7 +109,7 @@ def create_audio(id_base, count):
               "showHidden": null,
               "order": %s,
               "imageName": null,
-              "audioName": "XY",
+              "audioName": "%s",
               "style": null,
               "refAdaptionType": null,
               "refAdaptionNumber": null,
@@ -127,10 +127,10 @@ def create_audio(id_base, count):
               "refQuestionAnswerOptionId": null,
               "translations": [],
               "answerOptions": []
-            }'''%(id_base, count, count, id_base, count+1, count+1)
+            }'''%(id_base, count, count,texts[text_count], id_base, count+1, count+1, texts[text_count])
   return audio
 
-def create_image(id_base, count):
+def create_image(id_base, count, texts, text_count):
   image = '''
             ,{
               "id": "%s-%s",
@@ -138,7 +138,7 @@ def create_image(id_base, count):
               "required": null,
               "showHidden": null,
               "order": %s,
-              "imageName": "XY",
+              "imageName": "%s",
               "audioName": null,
               "style": null,
               "refAdaptionType": null,
@@ -164,7 +164,7 @@ def create_image(id_base, count):
               "required": null,
               "showHidden": null,
               "order": %s,
-              "imageName": "XY",
+              "imageName": "%s",
               "audioName": null,
               "style": null,
               "refAdaptionType": null,
@@ -183,10 +183,10 @@ def create_image(id_base, count):
               "refQuestionAnswerOptionId": null,
               "translations": [],
               "answerOptions": []
-            }'''%(id_base, count, count, id_base, count+1, count+1)
+            }'''%(id_base, count, count, texts[text_count], id_base, count+1, count+1, texts[text_count])
   return image
 
-def create_more_information(id_base, count):
+def create_more_information(id_base, count, texts, text_count):
   more_information = '''
             ,{
               "id": "%s-%s",
@@ -216,7 +216,7 @@ def create_more_information(id_base, count):
                   "id": "%s-%s-DE",
                   "language": "DE",
                   "title": "Text zur Audioreise anzeigen",
-                  "text": "XY"
+                  "text": "%s"
                 },
                 {
                   "id": "%s-%s-EN",
@@ -226,27 +226,27 @@ def create_more_information(id_base, count):
                 }
               ],
               "answerOptions": []
-            }'''%(id_base, count, count, id_base, count, id_base, count)
+            }'''%(id_base, count, count, id_base, count,texts[text_count], id_base, count)
   return more_information
 
-def create_content_block(id_base, count, refs):
+def create_content_block(id_base, count, refs, texts):
   ref_block = '' 
-  for letter in refs:
+  for text_count, letter in enumerate(refs):
     if letter == 'R':
-      ref_block += create_ref(id_base, count)
+      ref_block += create_ref(id_base, count, texts, text_count+1)
       count+=1
     elif letter == 'P':
-      ref_block += create_par(id_base, count)
+      ref_block += create_par(id_base, count, texts, text_count+1)
       count+=1
     elif letter == 'A':
-      ref_block += create_audio(id_base, count)
+      ref_block += create_audio(id_base, count, texts, text_count+1)
       count+=2
     elif letter == 'I':
-      ref_block += create_image(id_base, count)
+      ref_block += create_image(id_base, count, texts, text_count+1)
       count+=2
     elif letter == 'M':
-      ref_block += create_more_information(id_base, count)
+      ref_block += create_more_information(id_base, count, texts, text_count+1)
       count+=1
 
-  return ref_block
+  return ref_block 
 

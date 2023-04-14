@@ -1,4 +1,4 @@
-def create_radiobutton(id_base, answer_option_base, count):
+def create_radiobutton(id_base, answer_option_base, count, texts, text_count):
     radiobutton = '''
                 {
                   "id": "%s-%s-%s",
@@ -18,7 +18,7 @@ def create_radiobutton(id_base, answer_option_base, count):
                       "id": "%s-%s-%s-DE",
                       "language": "DE",
                       "title": null,
-                      "text": "XY",
+                      "text": "%s",
                       "description": ""
                     },
                     {
@@ -29,10 +29,10 @@ def create_radiobutton(id_base, answer_option_base, count):
                       "description": ""
                     }
                   ]
-                }'''%(id_base, answer_option_base ,count, count, id_base, answer_option_base, count, id_base, answer_option_base, count)
+                }'''%(id_base, answer_option_base ,count, count, id_base, answer_option_base, count, texts[text_count],id_base, answer_option_base, count)
     return radiobutton
 
-def create_checkbox(id_base, answer_option_base, count):
+def create_checkbox(id_base, answer_option_base, count, texts, text_count):
   checkbox = '''
                 {
                   "id": "%s-%s-%s",
@@ -54,7 +54,7 @@ def create_checkbox(id_base, answer_option_base, count):
                       "id": "%s-%s-%s-DE",
                       "language": "DE",
                       "title": null,
-                      "text": "XY",
+                      "text": "%s",
                       "description": ""
                     },
                     {
@@ -65,7 +65,7 @@ def create_checkbox(id_base, answer_option_base, count):
                       "description": ""
                     }
                   ]
-                }'''%(id_base, answer_option_base ,count, count, id_base, answer_option_base, count, id_base, answer_option_base, count)
+                }'''%(id_base, answer_option_base ,count, count, id_base, answer_option_base, count,texts[text_count], id_base, answer_option_base, count)
   return checkbox
 
 def create_text_field_expandable(id_base, answer_option_base, count):
@@ -89,7 +89,7 @@ def create_text_field_expandable(id_base, answer_option_base, count):
                 }'''%(id_base, answer_option_base ,count, count)
   return text_field_expandable
 
-def create_answer_options(id_base, answer_option_base, answer_options, question):
+def create_answer_options(id_base, answer_option_base, answer_options, texts):
     if answer_options == None:
         return ""
     count = 1
@@ -98,12 +98,12 @@ def create_answer_options(id_base, answer_option_base, answer_options, question)
         if letter == 'R':
             if number != 0:
                 answer_options_block += ","
-            answer_options_block += create_radiobutton(id_base, answer_option_base, count)
+            answer_options_block += create_radiobutton(id_base, answer_option_base, count, texts, answer_option_base-1+number)
             count+=1
         if letter == 'C':
             if number != 0:
                 answer_options_block += ","
-            answer_options_block += create_checkbox(id_base, answer_option_base, count)
+            answer_options_block += create_checkbox(id_base, answer_option_base, count, texts, answer_option_base-1+number)
             count+=1
         if letter == 'T':
             if number != 0:

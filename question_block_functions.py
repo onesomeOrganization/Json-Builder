@@ -108,7 +108,7 @@ def get_content_length(contents):
     length = len(contents)+count_A+count_I+2
     return length
 
-def create_question(question, id_base, count, write_beginning, contents, answer_options, next_logics, next_logic_type):
+def create_question(question, id_base, count, write_beginning, contents, answer_options, next_logics, next_logic_type, texts, id_base_next_question):
     # DICTIONARY
     questions_dict = {
         "CONTENT": ''' 
@@ -159,7 +159,7 @@ def create_question(question, id_base, count, write_beginning, contents, answer_
                   "id": "%s-1-DE",
                   "language": "DE",
                   "title": null,
-                  "text": "XY"
+                  "text": "%s"
                 },
                 {
                   "id": "%s-1-EN",
@@ -175,7 +175,7 @@ def create_question(question, id_base, count, write_beginning, contents, answer_
             "id": "%s",
             "type": "%s",
             "count": null,
-            "nextQuestionId": "XY",
+            "nextQuestionId": "%s",
             "prevQuestionId": null,
             "refQuestionId": null,
             "questionRefLogicId": null,
@@ -185,7 +185,7 @@ def create_question(question, id_base, count, write_beginning, contents, answer_
             ],
             "refAdaptions": []
           }
-        },''' % (id_base, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base, id_base, create_content_block(id_base, 2, contents), id_base, next_logic_type, create_nextLogic_options(id_base, get_content_length(contents), next_logics, next_logic_type)),
+        },''' % (id_base, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base, texts[0], id_base, create_content_block(id_base, 2, contents, texts), id_base, next_logic_type, id_base_next_question, create_nextLogic_options(id_base, get_content_length(contents), next_logics, next_logic_type)),
         "OPTION_QUESTION": '''
         {
           "id": "%s",
@@ -234,7 +234,7 @@ def create_question(question, id_base, count, write_beginning, contents, answer_
                   "id": "%s-1-DE",
                   "language": "DE",
                   "title": null,
-                  "text": "XY"
+                  "text": "%s"
                 },
                 {
                   "id": "%s-1-EN",
@@ -376,7 +376,7 @@ def create_question(question, id_base, count, write_beginning, contents, answer_
             ],
             "refAdaptions": []
           }
-        },'''% (id_base, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base, id_base, create_content_block(id_base,2, contents),id_base, get_content_length(contents), get_content_length(contents), id_base, get_content_length(contents), id_base, get_content_length(contents), id_base, get_content_length(contents), id_base, get_content_length(contents), id_base, get_content_length(contents), id_base, get_content_length(contents), id_base, id_base, id_base, get_content_length(contents),  id_base, id_base, get_content_length(contents)),
+        },'''% (id_base, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base, texts[0], id_base, create_content_block(id_base,2, contents, texts),id_base, get_content_length(contents), get_content_length(contents), id_base, get_content_length(contents), id_base, get_content_length(contents), id_base, get_content_length(contents), id_base, get_content_length(contents), id_base, get_content_length(contents), id_base, get_content_length(contents), id_base, id_base, id_base, get_content_length(contents),  id_base, id_base, get_content_length(contents)),
         "OPEN_QUESTION": '''
         {
           "id": "%s",
@@ -440,7 +440,7 @@ def create_question(question, id_base, count, write_beginning, contents, answer_
                   "id": "%s-1-DE",
                   "language": "DE",
                   "title": null,
-                  "text": "XY"
+                  "text": "%s"
                 },
                 {
                   "id": "%s-1-EN",
@@ -500,7 +500,7 @@ def create_question(question, id_base, count, write_beginning, contents, answer_
             "id": "%s",
             "type": "%s",
             "count": null,
-            "nextQuestionId": "XY",
+            "nextQuestionId": "%s",
             "prevQuestionId": null,
             "refQuestionId": null,
             "questionRefLogicId": null,
@@ -510,7 +510,7 @@ def create_question(question, id_base, count, write_beginning, contents, answer_
             ],
             "refAdaptions": []
           }
-        },''' % (id_base, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base, id_base,id_base, id_base,create_content_block(id_base, 2, contents), id_base, get_content_length(contents), get_content_length(contents), id_base, get_content_length(contents), id_base, next_logic_type, create_nextLogic_options(id_base, get_content_length(contents), next_logics, next_logic_type)),
+        },''' % (id_base, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base, id_base,id_base,texts[0], id_base,create_content_block(id_base, 2, contents, texts), id_base, get_content_length(contents), get_content_length(contents), id_base, get_content_length(contents), id_base, next_logic_type,id_base_next_question,create_nextLogic_options(id_base, get_content_length(contents), next_logics, next_logic_type)),
         "SCALA_SLIDER":'''
         {
           "id": "%s",
@@ -559,7 +559,7 @@ def create_question(question, id_base, count, write_beginning, contents, answer_
                   "id": "%s-1-DE",
                   "language": "DE",
                   "title": null,
-                  "text": "XY"
+                  "text": "%s"
                 },
                 {
                   "id": "%s-1-EN",
@@ -669,7 +669,7 @@ def create_question(question, id_base, count, write_beginning, contents, answer_
             ],
             "refAdaptions": []
           }
-        },''' % (id_base, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base, id_base, create_content_block(id_base, 2, contents) ,id_base, get_content_length(contents), get_content_length(contents), id_base, get_content_length(contents), id_base, get_content_length(contents), id_base, get_content_length(contents), id_base, id_base, id_base),
+        },''' % (id_base, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base,texts[0], id_base, create_content_block(id_base, 2, contents, texts) ,id_base, get_content_length(contents), get_content_length(contents), id_base, get_content_length(contents), id_base, get_content_length(contents), id_base, get_content_length(contents), id_base, id_base, id_base),
         "ITEM_LIST_EXPANDABLE": '''
         {
           "id": "%s",
@@ -733,7 +733,7 @@ def create_question(question, id_base, count, write_beginning, contents, answer_
                   "id": "%s-1-DE",
                   "language": "DE",
                   "title": null,
-                  "text": "XY"
+                  "text": "%s"
                 },
                 {
                   "id": "%s-1-EN",
@@ -777,7 +777,7 @@ def create_question(question, id_base, count, write_beginning, contents, answer_
             "id": "%s",
             "type": "%s",
             "count": null,
-            "nextQuestionId": "XY",
+            "nextQuestionId": "%s",
             "prevQuestionId": null,
             "refQuestionId": null,
             "questionRefLogicId": null,
@@ -787,7 +787,7 @@ def create_question(question, id_base, count, write_beginning, contents, answer_
             ],
             "refAdaptions": []
           }
-        },''' % (id_base, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base, id_base,id_base, id_base,create_content_block(id_base, 2, contents), id_base, get_content_length(contents), get_content_length(contents), create_answer_options(id_base, get_content_length(contents),answer_options, question), id_base, next_logic_type, create_nextLogic_options(id_base, get_content_length(contents), next_logics, next_logic_type)),
+        },''' % (id_base, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base, id_base,id_base, texts[0], id_base,create_content_block(id_base, 2, contents, texts), id_base, get_content_length(contents), get_content_length(contents), create_answer_options(id_base, get_content_length(contents),answer_options, texts), id_base, next_logic_type, id_base_next_question, create_nextLogic_options(id_base, get_content_length(contents), next_logics, next_logic_type)),
         "ITEM_LIST_SINGLE_CHOICE": '''
         {
           "id": "%s",
@@ -849,7 +849,7 @@ def create_question(question, id_base, count, write_beginning, contents, answer_
                   "id": "%s-1-DE",
                   "language": "DE",
                   "title": null,
-                  "text": "XY"
+                  "text": "%s"
                 },
                 {
                   "id": "%s-1-EN",
@@ -889,7 +889,7 @@ def create_question(question, id_base, count, write_beginning, contents, answer_
             "id": "%s",
             "type": "%s",
             "count": null,
-            "nextQuestionId": "XY",
+            "nextQuestionId": "%s",
             "prevQuestionId": null,
             "refQuestionId": null,
             "questionRefLogicId": null,
@@ -899,6 +899,6 @@ def create_question(question, id_base, count, write_beginning, contents, answer_
             ],
             "refAdaptions": []
           }
-        },'''%(id_base, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base, id_base, id_base, id_base, create_content_block(id_base,2,contents), id_base, get_content_length(contents), get_content_length(contents), create_answer_options(id_base, get_content_length(contents),answer_options, question), id_base, next_logic_type, create_nextLogic_options(id_base, get_content_length(contents), next_logics, next_logic_type))
+        },'''%(id_base, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base, id_base, id_base,texts[0], id_base, create_content_block(id_base,2,contents, texts), id_base, get_content_length(contents), get_content_length(contents), create_answer_options(id_base, get_content_length(contents),answer_options, texts), id_base, next_logic_type,id_base_next_question, create_nextLogic_options(id_base, get_content_length(contents), next_logics, next_logic_type))
         } 
     return questions_dict[question]
