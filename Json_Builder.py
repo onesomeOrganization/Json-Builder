@@ -15,7 +15,7 @@ write_beginning = True
 write_ending = True
 etappe = "-1-"
 startnumber = 1 # 1 if it should start from beginning
-excel_path_or_name = "Jsons/Tests/Json_Excel_Template.xlsx"
+excel_path_or_name = "Jsons/Tests/23_04_17_Json_Excel_Template_2.xlsx"
 
 # -------- EXPLANATIONS ----------
 # type: CONTENT, OPTION_QUESTION, OPEN_QUESTION, SCALA_SLIDER, ITEM_LIST_EXPANDABLE (T OR C as answeroption), ITEM_LIST_SINGLE_CHOICE (R)
@@ -29,48 +29,60 @@ excel_path_or_name = "Jsons/Tests/Json_Excel_Template.xlsx"
 # TODO: Optional angebbar
 # TODO: Einzelne Questions sind einzelne Objects die von Question erben
 # TODO: Next_logic_type: Next_option -> bei nicht linearer json
-        # TODO: Gibt es single choice plus expandable textfield?
         # TODO: Englisch text
-        # TODO: Start titel & Infos als extra fragetyp bzw am anfang zum eintragen
         # TODO: More information title
+        # TODO: Scala beschriftung
+        # TODO: Json Excel glatt ziehen
 # question_array = [Question('CONTENT','AM'),Question('SCALA_SLIDER','PRPM'), Question('OPTION_QUESTION','PRP'), Question('CONTENT'), Question('CONTENT'), Question('OPEN_QUESTION','PRP'), Question('SCALA_SLIDER'), Question('CONTENT','PR'), Question('OPEN_QUESTION','PRP'), Question('OPTION_QUESTION'), Question('CONTENT'), Question('CONTENT'), Question('CONTENT')]
 
-
-# -------- TESTS --------
-# TODO: Test if Item Multi together with "Antwortmöglichkiet" -> geht nur mit Mehreren Antw.
-# TODO: no <strong> or <br> -> nachfragen ob formatiert wurde
-# TODO: immer mit subtitle starten
-# TODO: kein item single und item multiple in einer frage
-
-'''
-for question in question_array:
-    # check for questions which need certain configurations
-    if question.type == 'ITEM_LIST_EXPANDABLE' and question.answer_option == None:
-        raise Exception("Sorry, ITEM_LIST_EXPANDABLE needs a Checkbox (C) or Textfield_expandable (T)")  
-
-    if question.type == 'ITEM_LIST_EXPANDABLE' and 'T' in question.answer_option and 'C' in question.answer_option:
-        raise Exception("Sorry, ITEM_LIST_EXPANDABLE does not work with Checkbox (C) AND Textfield_expandable (T), only one possible")  
-
-    # TODO: Gibt es ein ITEM_LIST_SINGLE_CHOICE ohne answer_options? 
-
-    # check if next_option that there are options     
-    if question.next_logic_type == 'NEXT_OPTION' and question.next_logic_option == None:
-        raise Exception("Sorry, a NEXT_OPTION logic needs next_options e.g. 'N'")   
-
-    # check for missspellings
-    if question.type not in ["CONTENT", "OPTION_QUESTION", "OPEN_QUESTION", "SCALA_SLIDER", "ITEM_LIST_EXPANDABLE", "ITEM_LIST_SINGLE_CHOICE"]:
-        raise Exception("Sorry, there is a missspelling in " + question.type)
-    
-'''
 
 # --------- EXCEL ---------
 
 df = pd.read_excel(excel_path_or_name)
 
+# set defaults and clean
+if pd.isna(df.iloc[3,1]):
+    df.iloc[3,1] = 'Beginne deinen Kurztrip'
+# get first informations and delete them from the dataframe
+information = df.iloc[:, 1]
+# drop the first two columns
+df = df.drop(df.columns[[0, 1]], axis=1)
+
 # save always two arrays into the Question object with structure and texts respectively
 questions_array = []
 for i in range(0, len(df.columns), 2):
     questions_array.append(Question(df.iloc[:, i], df.iloc[:, i+1]))
+
+# -------- TESTS --------
+
+# Check if all information fields are there
+for info in information: 
+    if pd.isna(info):
+        raise Exception('There is some starting information missing')
+    
+formatting_flag = 0
+
+for q_count, question in enumerate(questions_array):
+    # Test if Item Multi together with "Antwortmöglichkiet" -> geht nur mit Mehreren Antw.
+    if 'ITEM(Multiple)' in question.structure and 'Antwortmöglichkeit' in question.structure:
+        raise Exception ('ITEM(Multiple) works only with "Mehrere Antwortmöglichkeiten". Check Frage:',q_count)
+    if 'ITEM(Single)' in question.structure and 'Antwortmöglichkeit' in question.structure:
+        raise Exception ('ITEM(Single) works only with "Mehrere Antwortmöglichkeiten". Check Frage:',q_count)
+    # immer mit subtitle starten
+    if not question.structure[0] == 'SUB_TITEL':
+        raise Exception ('SUB_TITEL is missing for question ',q_count)
+    # kein item single und item multiple in einer frage 
+    if 'ITEM(Multiple)' in question.structure and 'ITEM(Single)' in question.structure:
+        raise Exception ('ITEM(Single) und ITEM(Multiple) gemisch in Frage: ', q_count)
+    
+    # TODO: no <strong> or <br> -> nachfragen ob formatiert wurde
+    for text in question.texts:
+        if isinstance(text, str):
+            if '<br>' in text or '<strong>' in text:
+                formatting_flag = 1
+    
+if formatting_flag == 0:
+    raise Exception ('Not formatted')
 
 
 # ---------- TEXT FORMATIERUNG ---------
@@ -89,7 +101,7 @@ with open(os.path.join(sys.path[0], name_of_json_file+".json"), 'w+') as file:
 
     # BEGINNING
     if write_beginning:    
-        file.write(create_beginning(id, version, journey_key))
+        file.write(create_beginning(id, version, journey_key, information))
 
     for count, question in enumerate(questions_array): 
         id_base = id+version+etappe+str(startnumber+count)
@@ -97,9 +109,9 @@ with open(os.path.join(sys.path[0], name_of_json_file+".json"), 'w+') as file:
 
         # WRITE & remove comma for the last entry
         if count == (len(questions_array)-1):
-            file.write(create_question(question.type, id_base, count, write_beginning, question.content, question.answer_option, question.next_logic_option, question.next_logic_type, question.texts, id_base_next_question)[:-1])
+            file.write(create_question(question, question.type, id_base, count, write_beginning, question.content, question.answer_option, question.next_logic_option, question.next_logic_type, question.texts, id_base_next_question)[:-1])
         else:
-            file.write(create_question(question.type, id_base, count, write_beginning, question.content, question.answer_option, question.next_logic_option, question.next_logic_type, question.texts, id_base_next_question))
+            file.write(create_question(question, question.type, id_base, count, write_beginning, question.content, question.answer_option, question.next_logic_option, question.next_logic_type, question.texts, id_base_next_question))
 
     # ENDING
     if write_ending:   

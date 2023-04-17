@@ -2,7 +2,7 @@ from content_block_functions import create_content_block
 from answer_option_functions import *
 from nextLogic_functions import *
 
-def create_beginning(id, version, journey_key):
+def create_beginning(id, version, journey_key, information):
     beginning = '''
 {
   "id": "%s",
@@ -26,7 +26,7 @@ def create_beginning(id, version, journey_key):
     {
       "id": "%s-DE",
       "language": "DE",
-      "title": "XY",
+      "title": "%s",
       "subTitle": "",
       "description": null
     },
@@ -49,7 +49,7 @@ def create_beginning(id, version, journey_key):
           "id": "%s-cont-DE",
           "language": "DE",
           "title": null,
-          "text": "<strong>Warum?</strong> XY <br><br> <strong>Dein Ziel:</strong> XY<br><br> "
+          "text": "%s"
         },
         {
           "id": "%s-cont-EN",
@@ -69,7 +69,7 @@ def create_beginning(id, version, journey_key):
           "id": "%s-s1-DE",
           "language": "DE",
           "title": null,
-          "text": "Beginne deine Expedition"
+          "text": "%s"
         },
         {
           "id": "%s-s1-EN",
@@ -84,13 +84,13 @@ def create_beginning(id, version, journey_key):
     {
       "id": "%s-1",
       "order": 1,
-      "durationMin": 10,
-      "durationMax": 15,
+      "durationMin": %s,
+      "durationMax": %s,
       "translations": [
         {
           "id": "%s-1-DE",
           "language": "DE",
-          "title": "Wie groß ist deine Veränderungsenergie?"
+          "title": "%s"
         },
         {
           "id": "%s-1-EN",
@@ -99,7 +99,7 @@ def create_beginning(id, version, journey_key):
         }
       ],
       "questions": [
-        ''' % (id+version, journey_key, version, id+version, id+version, id+version, id+version, id+version, id+version, id+version, id+version, id+version, id+version, id+version)
+        ''' % (id+version, journey_key, version, id+version, information[0], id+version, id+version, id+version, information[1], id+version, id+version, id+version, information[3], id+version, id+version, information[5], information[6], id+version, information[2], id+version)
     return beginning
 
 def get_content_length(contents):
@@ -108,7 +108,7 @@ def get_content_length(contents):
     length = len(contents)+count_A+count_I+2
     return length
 
-def create_question(question, id_base, count, write_beginning, contents, answer_options, next_logics, next_logic_type, texts, id_base_next_question):
+def create_question(question, type, id_base, count, write_beginning, contents, answer_options, next_logics, next_logic_type, texts, id_base_next_question):
     # DICTIONARY
     questions_dict = {
         "CONTENT": ''' 
@@ -676,7 +676,7 @@ def create_question(question, id_base, count, write_beginning, contents, answer_
           "type": "ITEM_LIST_EXPANDABLE",
           "number": null,
           "minNumber": 1,
-          "maxNumber": null,
+          "maxNumber": %s,
           "screenDuration": null,
           "reviewAble": null,
           "noAnswerPreselection": null,
@@ -787,7 +787,7 @@ def create_question(question, id_base, count, write_beginning, contents, answer_
             ],
             "refAdaptions": []
           }
-        },''' % (id_base, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base, id_base,id_base, texts[0], id_base,create_content_block(id_base, 2, contents, texts), id_base, get_content_length(contents), get_content_length(contents), create_answer_options(id_base, get_content_length(contents),answer_options, texts), id_base, next_logic_type, id_base_next_question, create_nextLogic_options(id_base, get_content_length(contents), next_logics, next_logic_type)),
+        },''' % (id_base, question.maxNumber, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base, id_base,id_base, texts[0], id_base,create_content_block(id_base, 2, contents, texts), id_base, get_content_length(contents), get_content_length(contents), create_answer_options(id_base, get_content_length(contents),answer_options, texts), id_base, next_logic_type, id_base_next_question, create_nextLogic_options(id_base, get_content_length(contents), next_logics, next_logic_type)),
         "ITEM_LIST_SINGLE_CHOICE": '''
         {
           "id": "%s",
@@ -901,4 +901,4 @@ def create_question(question, id_base, count, write_beginning, contents, answer_
           }
         },'''%(id_base, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base, id_base, id_base,texts[0], id_base, create_content_block(id_base,2,contents, texts), id_base, get_content_length(contents), get_content_length(contents), create_answer_options(id_base, get_content_length(contents),answer_options, texts), id_base, next_logic_type,id_base_next_question, create_nextLogic_options(id_base, get_content_length(contents), next_logics, next_logic_type))
         } 
-    return questions_dict[question]
+    return questions_dict[type]

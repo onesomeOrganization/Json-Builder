@@ -20,7 +20,7 @@
     {
       "id": "flora-v12-DE",
       "language": "DE",
-      "title": "XY",
+      "title": "Unleash your potential",
       "subTitle": "",
       "description": null
     },
@@ -43,7 +43,7 @@
           "id": "flora-v12-cont-DE",
           "language": "DE",
           "title": null,
-          "text": "<strong>Warum?</strong> XY <br><br> <strong>Dein Ziel:</strong> XY<br><br> "
+          "text": "xy"
         },
         {
           "id": "flora-v12-cont-EN",
@@ -63,7 +63,7 @@
           "id": "flora-v12-s1-DE",
           "language": "DE",
           "title": null,
-          "text": "Beginne deine Expedition"
+          "text": "Beginne deinen Kurztrip"
         },
         {
           "id": "flora-v12-s1-EN",
@@ -84,7 +84,7 @@
         {
           "id": "flora-v12-1-DE",
           "language": "DE",
-          "title": "Wie groß ist deine Veränderungsenergie?"
+          "title": "Wie groß ist dein Unmut?"
         },
         {
           "id": "flora-v12-1-EN",
@@ -94,8 +94,8 @@
       ],
       "questions": [
         {
-          "id": "flora-v12-1-0",
-          "type": "CONTENT",
+          "id": "flora-v12-1-1",
+          "type": "ITEM_LIST_SINGLE_CHOICE",
           "number": null,
           "minNumber": null,
           "maxNumber": null,
@@ -110,289 +110,18 @@
           "firstJourneyQuestion": true,
           "firstSessionQuestion": true,
           "questionLoopId": null,
-          "translations": [],
-          "content": [
-            {
-              "id": "flora-v12-1-0-1",
-              "type": "SUB_TITLE",
-              "required": null,
-              "showHidden": null,
-              "order": 1,
-              "imageName": null,
-              "audioName": null,
-              "style": null,
-              "refAdaptionType": null,
-              "refAdaptionNumber": null,
-              "refOrderType": null,
-              "refOrderColumn": null,
-              "refOffset": null,
-              "refLimit": null,
-              "downloadName": null,
-              "checkForSpecialTextReplacement": null,
-              "questionAnswerOptionId": null,
-              "language": null,
-              "contentShowType": null,
-              "worldObjectEntryKey": null,
-              "refQuestionId": null,
-              "refQuestionAnswerOptionId": null,
-              "translations": [
-                {
-                  "id": "flora-v12-1-0-1-DE",
-                  "language": "DE",
-                  "title": null,
-                  "text": "Herzlich Willkommen zur heutigen Session"
-                },
-                {
-                  "id": "flora-v12-1-0-1-EN",
-                  "language": "EN",
-                  "title": null,
-                  "text": "Englisch"
-                }
-              ],
-              "answerOptions": []
-            },
-            {
-              "id": "flora-v12-1-0-2",
-              "type": "PARAGRAPH",
-              "required": null,
-              "showHidden": null,
-              "order": 2,
-              "imageName": null,
-              "audioName": null,
-              "style": null,
-              "refAdaptionType": null,
-              "refAdaptionNumber": null,
-              "refOrderType": null,
-              "refOrderColumn": null,
-              "refOffset": null,
-              "refLimit": null,
-              "downloadName": null,
-              "checkForSpecialTextReplacement": null,
-              "questionAnswerOptionId": null,
-              "language": null,
-              "contentShowType": null,
-              "worldObjectEntryKey": null,
-              "refQuestionId": null,
-              "refQuestionAnswerOptionId": null,
-              "translations": [
-                {
-                  "id": "flora-v12-1-0-2-DE",
-                  "language": "DE",
-                  "title": null,
-                  "text": "<strong>Manage deine:n innere:n Superheld:in: Zeit- und Selbstmanagement für vielbeschäftigte Berufstätige in einer hybriden Arbeitswelt</strong>"
-                },
-                {
-                  "id": "flora-v12-1-0-2-EN",
-                  "language": "EN",
-                  "title": null,
-                  "text": "Englisch"
-                }
-              ],
-              "answerOptions": []
-            },
-            {
-              "id": "flora-v12-1-0-3",
-              "type": "ANSWER_OPTION_REF",
-              "required": null,
-              "showHidden": null,
-              "order": 3,
-              "imageName": null,
-              "audioName": null,
-              "style": "TEXT",
-              "refAdaptionType": null,
-              "refAdaptionNumber": null,
-              "refOrderType": null,
-              "refOrderColumn": null,
-              "refOffset": null,
-              "refLimit": null,
-              "downloadName": null,
-              "checkForSpecialTextReplacement": null,
-              "questionAnswerOptionId": null,
-              "language": null,
-              "contentShowType": null,
-              "worldObjectEntryKey": null,
-              "refQuestionId": "TOP_VALUES",
-              "refQuestionAnswerOptionId": null,
-              "translations": [],
-              "answerOptions": []
-            },
-            {
-              "id": "flora-v12-1-0-4",
-              "type": "AUDIO",
-              "required": null,
-              "showHidden": null,
-              "order": 4,
-              "imageName": null,
-              "audioName": "audio 1",
-              "style": null,
-              "refAdaptionType": null,
-              "refAdaptionNumber": null,
-              "refOrderType": null,
-              "refOrderColumn": null,
-              "refOffset": null,
-              "refLimit": null,
-              "downloadName": null,
-              "checkForSpecialTextReplacement": null,
-              "questionAnswerOptionId": null,
-              "language": "DE",
-              "contentShowType": null,
-              "worldObjectEntryKey": null,
-              "refQuestionId": null,
-              "refQuestionAnswerOptionId": null,
-              "translations": [],
-              "answerOptions": []
-            },
-            {
-              "id": "flora-v12-1-0-5",
-              "type": "AUDIO",
-              "required": null,
-              "showHidden": null,
-              "order": 5,
-              "imageName": null,
-              "audioName": "audio 1",
-              "style": null,
-              "refAdaptionType": null,
-              "refAdaptionNumber": null,
-              "refOrderType": null,
-              "refOrderColumn": null,
-              "refOffset": null,
-              "refLimit": null,
-              "downloadName": null,
-              "checkForSpecialTextReplacement": null,
-              "questionAnswerOptionId": null,
-              "language": "EN",
-              "contentShowType": null,
-              "worldObjectEntryKey": null,
-              "refQuestionId": null,
-              "refQuestionAnswerOptionId": null,
-              "translations": [],
-              "answerOptions": []
-            },
-            {
-              "id": "flora-v12-1-0-6",
-              "type": "MORE_INFORMATION_EXPANDED",
-              "required": null,
-              "showHidden": null,
-              "order": 6,
-              "imageName": null,
-              "audioName": null,
-              "style": null,
-              "refAdaptionType": null,
-              "refAdaptionNumber": null,
-              "refOrderType": null,
-              "refOrderColumn": null,
-              "refOffset": null,
-              "refLimit": null,
-              "downloadName": null,
-              "checkForSpecialTextReplacement": null,
-              "questionAnswerOptionId": null,
-              "language": null,
-              "contentShowType": null,
-              "worldObjectEntryKey": null,
-              "refQuestionId": null,
-              "refQuestionAnswerOptionId": null,
-              "translations": [
-                {
-                  "id": "flora-v12-1-0-6-DE",
-                  "language": "DE",
-                  "title": "Text zur Audioreise anzeigen",
-                  "text": "hasgdfudshokösdf_x000B_"
-                },
-                {
-                  "id": "flora-v12-1-0-6-EN",
-                  "language": "EN",
-                  "title": "Englisch",
-                  "text": "Englisch"
-                }
-              ],
-              "answerOptions": []
-            }
-          ],
-          "nextLogic": {
-            "id": "flora-v12-1-0",
-            "type": "REF_KEY_INSIGHT",
-            "count": null,
-            "nextQuestionId": "flora-v12-1-1",
-            "prevQuestionId": null,
-            "refQuestionId": null,
-            "questionRefLogicId": null,
-            "sessionId": null,
-            "options": [
-              {
-                "id": "flora-v12-1-0-opt1",
-                "order": 1,
-                "type": "NEXT",
-                "number": null,
-                "count": null,
-                "secondNumber": null,
-                "secondCount": null,
-                "questionAnswerOptionId": null,
-                "secondQuestionAnswerOptionId": null,
-                "questionId": "XY-ifkeyexists",
-                "refQuestionId": null
-              },
-              {
-                "id": "flora-v12-1-0-opt2",
-                "order": 2,
-                "type": "NEXT",
-                "number": null,
-                "count": null,
-                "secondNumber": null,
-                "secondCount": null,
-                "questionAnswerOptionId": null,
-                "secondQuestionAnswerOptionId": null,
-                "questionId": "XY-ifkeynotexists",
-                "refQuestionId": null
-              },
-              {
-                "id": "flora-v12-1-0-opt3",
-                "order": 3,
-                "type": "REF_KEY_INSIGHT_GENERATE",
-                "number": null,
-                "count": null,
-                "secondNumber": null,
-                "secondCount": null,
-                "questionAnswerOptionId": null,
-                "secondQuestionAnswerOptionId": null,
-                "questionId": "XY-ifkeyexists",
-                "worldObjectEntryKey": "XY-KEY",
-                "refQuestionId": null
-              }
-            ],
-            "refAdaptions": []
-          }
-        },
-        {
-          "id": "flora-v12-1-1",
-          "type": "ITEM_LIST_EXPANDABLE",
-          "number": null,
-          "minNumber": 1,
-          "maxNumber": null,
-          "screenDuration": null,
-          "reviewAble": null,
-          "noAnswerPreselection": null,
-          "showHint": null,
-          "progress": 5,
-          "worldObjectEntryKeyType": null,
-          "nonOptionalKeyInsightHint": false,
-          "optional": true,
-          "firstJourneyQuestion": null,
-          "firstSessionQuestion": null,
-          "questionLoopId": null,
           "translations": [
             {
               "id": "flora-v12-1-1-DE",
               "language": "DE",
-              "title": "",
-              "text": "",
-              "notAnsweredText": null
+              "title": null,
+              "text": "XY"
             },
             {
               "id": "flora-v12-1-1-EN",
               "language": "EN",
-              "title": "",
-              "text": "",
-              "notAnsweredText": null
+              "title": null,
+              "text": "Englisch"
             }
           ],
           "content": [
@@ -424,12 +153,12 @@
                   "id": "flora-v12-1-1-1-DE",
                   "language": "DE",
                   "title": null,
-                  "text": "Speed Dating: Runde 1"
+                  "text": "Herzlich Willkommen zur heutigen Session"
                 },
                 {
                   "id": "flora-v12-1-1-1-EN",
                   "language": "EN",
-                  "title": "",
+                  "title": null,
                   "text": "Englisch"
                 }
               ],
@@ -463,7 +192,7 @@
                   "id": "flora-v12-1-1-2-DE",
                   "language": "DE",
                   "title": null,
-                  "text": "Intro: Was würdest du machen, wenn du heute frei hättest?<br><br>Runde 1: Was heißt für dich gutes Zeitmanagement?<br>Wenn du einen Zauberstab hättest, was würdest du dir bezüglich deines Zeitmanagements wünschen?<br><br>Notiere <strong>deinen Wunsch</strong> hier, um ihn festzuhalten. "
+                  "text": "hallo_x000B_<br>"
                 },
                 {
                   "id": "flora-v12-1-1-2-EN",
@@ -476,322 +205,6 @@
             },
             {
               "id": "flora-v12-1-1-3",
-              "type": "IMAGE",
-              "required": null,
-              "showHidden": null,
-              "order": 3,
-              "imageName": "image 1",
-              "audioName": null,
-              "style": null,
-              "refAdaptionType": null,
-              "refAdaptionNumber": null,
-              "refOrderType": null,
-              "refOrderColumn": null,
-              "refOffset": null,
-              "refLimit": null,
-              "downloadName": null,
-              "checkForSpecialTextReplacement": null,
-              "questionAnswerOptionId": null,
-              "language": "DE",
-              "contentShowType": null,
-              "worldObjectEntryKey": null,
-              "refQuestionId": null,
-              "refQuestionAnswerOptionId": null,
-              "translations": [],
-              "answerOptions": []
-            },
-            {
-              "id": "flora-v12-1-1-4",
-              "type": "IMAGE",
-              "required": null,
-              "showHidden": null,
-              "order": 4,
-              "imageName": "image 1",
-              "audioName": null,
-              "style": null,
-              "refAdaptionType": null,
-              "refAdaptionNumber": null,
-              "refOrderType": null,
-              "refOrderColumn": null,
-              "refOffset": null,
-              "refLimit": null,
-              "downloadName": null,
-              "checkForSpecialTextReplacement": null,
-              "questionAnswerOptionId": null,
-              "language": "EN",
-              "contentShowType": null,
-              "worldObjectEntryKey": null,
-              "refQuestionId": null,
-              "refQuestionAnswerOptionId": null,
-              "translations": [],
-              "answerOptions": []
-            },
-            {
-              "id": "flora-v12-1-1-5",
-              "type": "ANSWER_OPTION",
-              "required": true,
-              "showHidden": null,
-              "order": 5,
-              "imageName": null,
-              "audioName": null,
-              "style": null,
-              "refAdaptionType": null,
-              "refAdaptionNumber": null,
-              "refOrderType": null,
-              "refOrderColumn": null,
-              "refOffset": null,
-              "refLimit": null,
-              "downloadName": null,
-              "checkForSpecialTextReplacement": null,
-              "questionAnswerOptionId": null,
-              "language": null,
-              "contentShowType": null,
-              "worldObjectEntryKey": null,
-              "refQuestionId": null,
-              "refQuestionAnswerOptionId": null,
-              "translations": [],
-              "answerOptions": [
-                {
-                  "id": "flora-v12-1-1-5-1",
-                  "order": 1,
-                  "number": null,
-                  "type": "CHECKBOX",
-                  "imageName": null,
-                  "hidden": null,
-                  "escapeOption": null,
-                  "sliderType": null,
-                  "negative": null,
-                  "unselectOthers": null,
-                  "booleanHelper": null,
-                  "refQuestionAnswerOptionId": null,
-                  "secondRefQuestionAnswerOptionId": null,
-                  "questionLoopCycleId": null,
-                  "translations": [
-                    {
-                      "id": "flora-v12-1-1-5-1-DE",
-                      "language": "DE",
-                      "title": null,
-                      "text": "item 2",
-                      "description": ""
-                    },
-                    {
-                      "id": "flora-v12-1-1-5-1-EN",
-                      "language": "EN",
-                      "title": "",
-                      "text": "Englisch",
-                      "description": ""
-                    }
-                  ]
-                },
-                {
-                  "id": "flora-v12-1-1-5-2",
-                  "order": 2,
-                  "number": null,
-                  "type": "CHECKBOX",
-                  "imageName": null,
-                  "hidden": null,
-                  "escapeOption": null,
-                  "sliderType": null,
-                  "negative": null,
-                  "unselectOthers": null,
-                  "booleanHelper": null,
-                  "refQuestionAnswerOptionId": null,
-                  "secondRefQuestionAnswerOptionId": null,
-                  "questionLoopCycleId": null,
-                  "translations": [
-                    {
-                      "id": "flora-v12-1-1-5-2-DE",
-                      "language": "DE",
-                      "title": null,
-                      "text": "izem 3",
-                      "description": ""
-                    },
-                    {
-                      "id": "flora-v12-1-1-5-2-EN",
-                      "language": "EN",
-                      "title": "",
-                      "text": "Englisch",
-                      "description": ""
-                    }
-                  ]
-                },
-                {
-                  "id": "flora-v12-1-1-5-3",
-                  "order": 3,
-                  "number": null,
-                  "type": "CHECKBOX",
-                  "imageName": null,
-                  "hidden": null,
-                  "escapeOption": null,
-                  "sliderType": null,
-                  "negative": null,
-                  "unselectOthers": null,
-                  "booleanHelper": null,
-                  "refQuestionAnswerOptionId": null,
-                  "secondRefQuestionAnswerOptionId": null,
-                  "questionLoopCycleId": null,
-                  "translations": [
-                    {
-                      "id": "flora-v12-1-1-5-3-DE",
-                      "language": "DE",
-                      "title": null,
-                      "text": "was passiert hier?",
-                      "description": ""
-                    },
-                    {
-                      "id": "flora-v12-1-1-5-3-EN",
-                      "language": "EN",
-                      "title": "",
-                      "text": "Englisch",
-                      "description": ""
-                    }
-                  ]
-                },
-                {
-                  "id": "flora-v12-1-1-5-4",
-                  "order": 4,
-                  "number": null,
-                  "type": "TEXT_FIELD_EXPANDABLE",
-                  "imageName": null,
-                  "hidden": null,
-                  "escapeOption": null,
-                  "sliderType": null,
-                  "negative": null,
-                  "unselectOthers": null,
-                  "booleanHelper": null,
-                  "refQuestionAnswerOptionId": null,
-                  "secondRefQuestionAnswerOptionId": null,
-                  "questionLoopCycleId": null,
-                  "translations": []
-                }
-              ]
-            }
-          ],
-          "nextLogic": {
-            "id": "flora-v12-1-1",
-            "type": "NEXT",
-            "count": null,
-            "nextQuestionId": "flora-v12-1-2",
-            "prevQuestionId": null,
-            "refQuestionId": null,
-            "questionRefLogicId": null,
-            "sessionId": null,
-            "options": [],
-            "refAdaptions": []
-          }
-        },
-        {
-          "id": "flora-v12-1-2",
-          "type": "ITEM_LIST_SINGLE_CHOICE",
-          "number": null,
-          "minNumber": null,
-          "maxNumber": null,
-          "screenDuration": null,
-          "reviewAble": null,
-          "noAnswerPreselection": null,
-          "showHint": null,
-          "progress": 0,
-          "worldObjectEntryKeyType": null,
-          "nonOptionalKeyInsightHint": false,
-          "optional": true,
-          "firstJourneyQuestion": null,
-          "firstSessionQuestion": null,
-          "questionLoopId": null,
-          "translations": [
-            {
-              "id": "flora-v12-1-2-DE",
-              "language": "DE",
-              "title": null,
-              "text": "XY"
-            },
-            {
-              "id": "flora-v12-1-2-EN",
-              "language": "EN",
-              "title": null,
-              "text": "Englisch"
-            }
-          ],
-          "content": [
-            {
-              "id": "flora-v12-1-2-1",
-              "type": "SUB_TITLE",
-              "required": null,
-              "showHidden": null,
-              "order": 1,
-              "imageName": null,
-              "audioName": null,
-              "style": null,
-              "refAdaptionType": null,
-              "refAdaptionNumber": null,
-              "refOrderType": null,
-              "refOrderColumn": null,
-              "refOffset": null,
-              "refLimit": null,
-              "downloadName": null,
-              "checkForSpecialTextReplacement": null,
-              "questionAnswerOptionId": null,
-              "language": null,
-              "contentShowType": null,
-              "worldObjectEntryKey": null,
-              "refQuestionId": null,
-              "refQuestionAnswerOptionId": null,
-              "translations": [
-                {
-                  "id": "flora-v12-1-2-1-DE",
-                  "language": "DE",
-                  "title": null,
-                  "text": "Speed Dating: Runde 2"
-                },
-                {
-                  "id": "flora-v12-1-2-1-EN",
-                  "language": "EN",
-                  "title": null,
-                  "text": "Englisch"
-                }
-              ],
-              "answerOptions": []
-            },
-            {
-              "id": "flora-v12-1-2-2",
-              "type": "PARAGRAPH",
-              "required": null,
-              "showHidden": null,
-              "order": 2,
-              "imageName": null,
-              "audioName": null,
-              "style": null,
-              "refAdaptionType": null,
-              "refAdaptionNumber": null,
-              "refOrderType": null,
-              "refOrderColumn": null,
-              "refOffset": null,
-              "refLimit": null,
-              "downloadName": null,
-              "checkForSpecialTextReplacement": null,
-              "questionAnswerOptionId": null,
-              "language": null,
-              "contentShowType": null,
-              "worldObjectEntryKey": null,
-              "refQuestionId": null,
-              "refQuestionAnswerOptionId": null,
-              "translations": [
-                {
-                  "id": "flora-v12-1-2-2-DE",
-                  "language": "DE",
-                  "title": null,
-                  "text": "Intro: Welches Hobby würdest du gerne mal ausprobieren?<br><br>Runde 2: Wie zufrieden bist du mit deinem aktuellen Lebensrad?<br><br>"
-                },
-                {
-                  "id": "flora-v12-1-2-2-EN",
-                  "language": "EN",
-                  "title": null,
-                  "text": "Englisch"
-                }
-              ],
-              "answerOptions": []
-            },
-            {
-              "id": "flora-v12-1-2-3",
               "type": "ANSWER_OPTION",
               "required": true,
               "showHidden": null,
@@ -812,7 +225,7 @@
               "translations": [],
               "answerOptions": [
                 {
-                  "id": "flora-v12-1-2-3-1",
+                  "id": "flora-v12-1-1-3-1",
                   "order": 1,
                   "number": null,
                   "type": "RADIO_BUTTON",
@@ -826,14 +239,14 @@
                   "questionLoopCycleId": null,
                   "translations": [
                     {
-                      "id": "flora-v12-1-2-3-1-DE",
+                      "id": "flora-v12-1-1-3-1-DE",
                       "language": "DE",
                       "title": null,
-                      "text": "Ich bin zufrieden",
+                      "text": "uno",
                       "description": ""
                     },
                     {
-                      "id": "flora-v12-1-2-3-1-EN",
+                      "id": "flora-v12-1-1-3-1-EN",
                       "language": "EN",
                       "title": null,
                       "text": "Englisch",
@@ -842,7 +255,7 @@
                   ]
                 },
                 {
-                  "id": "flora-v12-1-2-3-2",
+                  "id": "flora-v12-1-1-3-2",
                   "order": 2,
                   "number": null,
                   "type": "RADIO_BUTTON",
@@ -856,14 +269,14 @@
                   "questionLoopCycleId": null,
                   "translations": [
                     {
-                      "id": "flora-v12-1-2-3-2-DE",
+                      "id": "flora-v12-1-1-3-2-DE",
                       "language": "DE",
                       "title": null,
-                      "text": "Ich möchte meine Zeit anders auf die Lebensbereiche verteilen",
+                      "text": "due",
                       "description": ""
                     },
                     {
-                      "id": "flora-v12-1-2-3-2-EN",
+                      "id": "flora-v12-1-1-3-2-EN",
                       "language": "EN",
                       "title": null,
                       "text": "Englisch",
@@ -872,7 +285,7 @@
                   ]
                 },
                 {
-                  "id": "flora-v12-1-2-3-3",
+                  "id": "flora-v12-1-1-3-3",
                   "order": 3,
                   "number": null,
                   "type": "RADIO_BUTTON",
@@ -886,14 +299,14 @@
                   "questionLoopCycleId": null,
                   "translations": [
                     {
-                      "id": "flora-v12-1-2-3-3-DE",
+                      "id": "flora-v12-1-1-3-3-DE",
                       "language": "DE",
                       "title": null,
-                      "text": "Ich möchte die Zeit in den Lebensbereichen anders nutzen",
+                      "text": "tre_x000B_",
                       "description": ""
                     },
                     {
-                      "id": "flora-v12-1-2-3-3-EN",
+                      "id": "flora-v12-1-1-3-3-EN",
                       "language": "EN",
                       "title": null,
                       "text": "Englisch",
@@ -905,495 +318,10 @@
             }
           ],
           "nextLogic": {
-            "id": "flora-v12-1-2",
+            "id": "flora-v12-1-1",
             "type": "NEXT",
             "count": null,
-            "nextQuestionId": "flora-v12-1-3",
-            "prevQuestionId": null,
-            "refQuestionId": null,
-            "questionRefLogicId": null,
-            "sessionId": null,
-            "options": [],
-            "refAdaptions": []
-          }
-        },
-        {
-          "id": "flora-v12-1-3",
-          "type": "CONTENT",
-          "number": null,
-          "minNumber": null,
-          "maxNumber": null,
-          "screenDuration": null,
-          "reviewAble": null,
-          "noAnswerPreselection": null,
-          "showHint": null,
-          "progress": 0,
-          "worldObjectEntryKeyType": null,
-          "nonOptionalKeyInsightHint": false,
-          "optional": true,
-          "firstJourneyQuestion": null,
-          "firstSessionQuestion": null,
-          "questionLoopId": null,
-          "translations": [],
-          "content": [
-            {
-              "id": "flora-v12-1-3-1",
-              "type": "SUB_TITLE",
-              "required": null,
-              "showHidden": null,
-              "order": 1,
-              "imageName": null,
-              "audioName": null,
-              "style": null,
-              "refAdaptionType": null,
-              "refAdaptionNumber": null,
-              "refOrderType": null,
-              "refOrderColumn": null,
-              "refOffset": null,
-              "refLimit": null,
-              "downloadName": null,
-              "checkForSpecialTextReplacement": null,
-              "questionAnswerOptionId": null,
-              "language": null,
-              "contentShowType": null,
-              "worldObjectEntryKey": null,
-              "refQuestionId": null,
-              "refQuestionAnswerOptionId": null,
-              "translations": [
-                {
-                  "id": "flora-v12-1-3-1-DE",
-                  "language": "DE",
-                  "title": null,
-                  "text": "Weiter geht´s "
-                },
-                {
-                  "id": "flora-v12-1-3-1-EN",
-                  "language": "EN",
-                  "title": null,
-                  "text": "Englisch"
-                }
-              ],
-              "answerOptions": []
-            },
-            {
-              "id": "flora-v12-1-3-2",
-              "type": "PARAGRAPH",
-              "required": null,
-              "showHidden": null,
-              "order": 2,
-              "imageName": null,
-              "audioName": null,
-              "style": null,
-              "refAdaptionType": null,
-              "refAdaptionNumber": null,
-              "refOrderType": null,
-              "refOrderColumn": null,
-              "refOffset": null,
-              "refLimit": null,
-              "downloadName": null,
-              "checkForSpecialTextReplacement": null,
-              "questionAnswerOptionId": null,
-              "language": null,
-              "contentShowType": null,
-              "worldObjectEntryKey": null,
-              "refQuestionId": null,
-              "refQuestionAnswerOptionId": null,
-              "translations": [
-                {
-                  "id": "flora-v12-1-3-2-DE",
-                  "language": "DE",
-                  "title": null,
-                  "text": "Kehre mit deiner Aufmerksamkeit zurück zu Community Session. Es folgt ein kurzer Input. "
-                },
-                {
-                  "id": "flora-v12-1-3-2-EN",
-                  "language": "EN",
-                  "title": null,
-                  "text": "Englisch"
-                }
-              ],
-              "answerOptions": []
-            }
-          ],
-          "nextLogic": {
-            "id": "flora-v12-1-3",
-            "type": "NEXT",
-            "count": null,
-            "nextQuestionId": "flora-v12-1-4",
-            "prevQuestionId": null,
-            "refQuestionId": null,
-            "questionRefLogicId": null,
-            "sessionId": null,
-            "options": [],
-            "refAdaptions": []
-          }
-        },
-        {
-          "id": "flora-v12-1-4",
-          "type": "CONTENT",
-          "number": null,
-          "minNumber": null,
-          "maxNumber": null,
-          "screenDuration": null,
-          "reviewAble": null,
-          "noAnswerPreselection": null,
-          "showHint": null,
-          "progress": 0,
-          "worldObjectEntryKeyType": null,
-          "nonOptionalKeyInsightHint": false,
-          "optional": true,
-          "firstJourneyQuestion": null,
-          "firstSessionQuestion": null,
-          "questionLoopId": null,
-          "translations": [],
-          "content": [
-            {
-              "id": "flora-v12-1-4-1",
-              "type": "SUB_TITLE",
-              "required": null,
-              "showHidden": null,
-              "order": 1,
-              "imageName": null,
-              "audioName": null,
-              "style": null,
-              "refAdaptionType": null,
-              "refAdaptionNumber": null,
-              "refOrderType": null,
-              "refOrderColumn": null,
-              "refOffset": null,
-              "refLimit": null,
-              "downloadName": null,
-              "checkForSpecialTextReplacement": null,
-              "questionAnswerOptionId": null,
-              "language": null,
-              "contentShowType": null,
-              "worldObjectEntryKey": null,
-              "refQuestionId": null,
-              "refQuestionAnswerOptionId": null,
-              "translations": [
-                {
-                  "id": "flora-v12-1-4-1-DE",
-                  "language": "DE",
-                  "title": null,
-                  "text": "Deep Dating: Runde 1"
-                },
-                {
-                  "id": "flora-v12-1-4-1-EN",
-                  "language": "EN",
-                  "title": null,
-                  "text": "Englisch"
-                }
-              ],
-              "answerOptions": []
-            },
-            {
-              "id": "flora-v12-1-4-2",
-              "type": "PARAGRAPH",
-              "required": null,
-              "showHidden": null,
-              "order": 2,
-              "imageName": null,
-              "audioName": null,
-              "style": null,
-              "refAdaptionType": null,
-              "refAdaptionNumber": null,
-              "refOrderType": null,
-              "refOrderColumn": null,
-              "refOffset": null,
-              "refLimit": null,
-              "downloadName": null,
-              "checkForSpecialTextReplacement": null,
-              "questionAnswerOptionId": null,
-              "language": null,
-              "contentShowType": null,
-              "worldObjectEntryKey": null,
-              "refQuestionId": null,
-              "refQuestionAnswerOptionId": null,
-              "translations": [
-                {
-                  "id": "flora-v12-1-4-2-DE",
-                  "language": "DE",
-                  "title": null,
-                  "text": "Tauscht euch über den Bereich <strong>\"Nicht dringend & Nicht wichtig\"</strong> aus. Zeitfresser sind Ablenkungen, die dir später ein schlechtes Gewissen machen, wie zum Beispiel soziale Medien, Fernsehen, oder die Suche nach einer perfekten Formulierung in einer Email.<br><br> _x000B__x000B_Was sind deine Zeitfresser? _x000B_Womit möchtest du gerne aufhören? "
-                },
-                {
-                  "id": "flora-v12-1-4-2-EN",
-                  "language": "EN",
-                  "title": null,
-                  "text": "Englisch"
-                }
-              ],
-              "answerOptions": []
-            }
-          ],
-          "nextLogic": {
-            "id": "flora-v12-1-4",
-            "type": "NEXT",
-            "count": null,
-            "nextQuestionId": "flora-v12-1-5",
-            "prevQuestionId": null,
-            "refQuestionId": null,
-            "questionRefLogicId": null,
-            "sessionId": null,
-            "options": [],
-            "refAdaptions": []
-          }
-        },
-        {
-          "id": "flora-v12-1-5",
-          "type": "ITEM_LIST_SINGLE_CHOICE",
-          "number": null,
-          "minNumber": null,
-          "maxNumber": null,
-          "screenDuration": null,
-          "reviewAble": null,
-          "noAnswerPreselection": null,
-          "showHint": null,
-          "progress": 0,
-          "worldObjectEntryKeyType": null,
-          "nonOptionalKeyInsightHint": false,
-          "optional": true,
-          "firstJourneyQuestion": null,
-          "firstSessionQuestion": null,
-          "questionLoopId": null,
-          "translations": [
-            {
-              "id": "flora-v12-1-5-DE",
-              "language": "DE",
-              "title": null,
-              "text": "XY"
-            },
-            {
-              "id": "flora-v12-1-5-EN",
-              "language": "EN",
-              "title": null,
-              "text": "Englisch"
-            }
-          ],
-          "content": [
-            {
-              "id": "flora-v12-1-5-1",
-              "type": "SUB_TITLE",
-              "required": null,
-              "showHidden": null,
-              "order": 1,
-              "imageName": null,
-              "audioName": null,
-              "style": null,
-              "refAdaptionType": null,
-              "refAdaptionNumber": null,
-              "refOrderType": null,
-              "refOrderColumn": null,
-              "refOffset": null,
-              "refLimit": null,
-              "downloadName": null,
-              "checkForSpecialTextReplacement": null,
-              "questionAnswerOptionId": null,
-              "language": null,
-              "contentShowType": null,
-              "worldObjectEntryKey": null,
-              "refQuestionId": null,
-              "refQuestionAnswerOptionId": null,
-              "translations": [
-                {
-                  "id": "flora-v12-1-5-1-DE",
-                  "language": "DE",
-                  "title": null,
-                  "text": "testtitle"
-                },
-                {
-                  "id": "flora-v12-1-5-1-EN",
-                  "language": "EN",
-                  "title": null,
-                  "text": "Englisch"
-                }
-              ],
-              "answerOptions": []
-            },
-            {
-              "id": "flora-v12-1-5-2",
-              "type": "PARAGRAPH",
-              "required": null,
-              "showHidden": null,
-              "order": 2,
-              "imageName": null,
-              "audioName": null,
-              "style": null,
-              "refAdaptionType": null,
-              "refAdaptionNumber": null,
-              "refOrderType": null,
-              "refOrderColumn": null,
-              "refOffset": null,
-              "refLimit": null,
-              "downloadName": null,
-              "checkForSpecialTextReplacement": null,
-              "questionAnswerOptionId": null,
-              "language": null,
-              "contentShowType": null,
-              "worldObjectEntryKey": null,
-              "refQuestionId": null,
-              "refQuestionAnswerOptionId": null,
-              "translations": [
-                {
-                  "id": "flora-v12-1-5-2-DE",
-                  "language": "DE",
-                  "title": null,
-                  "text": "testparagraph"
-                },
-                {
-                  "id": "flora-v12-1-5-2-EN",
-                  "language": "EN",
-                  "title": null,
-                  "text": "Englisch"
-                }
-              ],
-              "answerOptions": []
-            },
-            {
-              "id": "flora-v12-1-5-3",
-              "type": "ANSWER_OPTION_REF",
-              "required": null,
-              "showHidden": null,
-              "order": 3,
-              "imageName": null,
-              "audioName": null,
-              "style": "TEXT",
-              "refAdaptionType": null,
-              "refAdaptionNumber": null,
-              "refOrderType": null,
-              "refOrderColumn": null,
-              "refOffset": null,
-              "refLimit": null,
-              "downloadName": null,
-              "checkForSpecialTextReplacement": null,
-              "questionAnswerOptionId": null,
-              "language": null,
-              "contentShowType": null,
-              "worldObjectEntryKey": null,
-              "refQuestionId": "test ref",
-              "refQuestionAnswerOptionId": null,
-              "translations": [],
-              "answerOptions": []
-            },
-            {
-              "id": "flora-v12-1-5-4",
-              "type": "ANSWER_OPTION",
-              "required": true,
-              "showHidden": null,
-              "order": 4,
-              "imageName": null,
-              "audioName": null,
-              "style": null,
-              "refAdaptionType": null,
-              "refAdaptionNumber": null,
-              "refOrderType": null,
-              "refOrderColumn": null,
-              "refOffset": null,
-              "refLimit": null,
-              "checkForSpecialTextReplacement": null,
-              "questionAnswerOptionId": null,
-              "language": null,
-              "refQuestionId": null,
-              "translations": [],
-              "answerOptions": [
-                {
-                  "id": "flora-v12-1-5-4-1",
-                  "order": 1,
-                  "number": null,
-                  "type": "RADIO_BUTTON",
-                  "imageName": null,
-                  "hidden": null,
-                  "escapeOption": null,
-                  "sliderType": null,
-                  "negative": null,
-                  "unselectOthers": null,
-                  "refQuestionAnswerOptionId": null,
-                  "questionLoopCycleId": null,
-                  "translations": [
-                    {
-                      "id": "flora-v12-1-5-4-1-DE",
-                      "language": "DE",
-                      "title": null,
-                      "text": "ietm 1",
-                      "description": ""
-                    },
-                    {
-                      "id": "flora-v12-1-5-4-1-EN",
-                      "language": "EN",
-                      "title": null,
-                      "text": "Englisch",
-                      "description": ""
-                    }
-                  ]
-                },
-                {
-                  "id": "flora-v12-1-5-4-2",
-                  "order": 2,
-                  "number": null,
-                  "type": "RADIO_BUTTON",
-                  "imageName": null,
-                  "hidden": null,
-                  "escapeOption": null,
-                  "sliderType": null,
-                  "negative": null,
-                  "unselectOthers": null,
-                  "refQuestionAnswerOptionId": null,
-                  "questionLoopCycleId": null,
-                  "translations": [
-                    {
-                      "id": "flora-v12-1-5-4-2-DE",
-                      "language": "DE",
-                      "title": null,
-                      "text": "item2",
-                      "description": ""
-                    },
-                    {
-                      "id": "flora-v12-1-5-4-2-EN",
-                      "language": "EN",
-                      "title": null,
-                      "text": "Englisch",
-                      "description": ""
-                    }
-                  ]
-                },
-                {
-                  "id": "flora-v12-1-5-4-3",
-                  "order": 3,
-                  "number": null,
-                  "type": "RADIO_BUTTON",
-                  "imageName": null,
-                  "hidden": null,
-                  "escapeOption": null,
-                  "sliderType": null,
-                  "negative": null,
-                  "unselectOthers": null,
-                  "refQuestionAnswerOptionId": null,
-                  "questionLoopCycleId": null,
-                  "translations": [
-                    {
-                      "id": "flora-v12-1-5-4-3-DE",
-                      "language": "DE",
-                      "title": null,
-                      "text": "item 3",
-                      "description": ""
-                    },
-                    {
-                      "id": "flora-v12-1-5-4-3-EN",
-                      "language": "EN",
-                      "title": null,
-                      "text": "Englisch",
-                      "description": ""
-                    }
-                  ]
-                }
-              ]
-            }
-          ],
-          "nextLogic": {
-            "id": "flora-v12-1-5",
-            "type": "NEXT",
-            "count": null,
-            "nextQuestionId": "flora-v12-1-6",
+            "nextQuestionId": "flora-v12-1-2",
             "prevQuestionId": null,
             "refQuestionId": null,
             "questionRefLogicId": null,
