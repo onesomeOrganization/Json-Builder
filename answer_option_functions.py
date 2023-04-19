@@ -1,3 +1,5 @@
+import numpy as np
+
 def create_radiobutton(id_base, answer_option_base, count, texts, text_count):
     radiobutton = '''
                 {
@@ -89,7 +91,7 @@ def create_text_field_expandable(id_base, answer_option_base, count):
                 }'''%(id_base, answer_option_base ,count, count)
   return text_field_expandable
 
-def create_answer_options(id_base, answer_option_base, answer_options, texts):
+def create_answer_options(question, id_base, answer_option_base, answer_options, texts):
     if answer_options == None:
         return ""
     count = 1
@@ -98,12 +100,12 @@ def create_answer_options(id_base, answer_option_base, answer_options, texts):
         if letter == 'R':
             if number != 0:
                 answer_options_block += ","
-            answer_options_block += create_radiobutton(id_base, answer_option_base, count, texts, answer_option_base-1+number)
+            answer_options_block += create_radiobutton(id_base, answer_option_base, count, texts, np.where((question.structure == 'ITEM(Single)') | (question.structure == 'ITEM(Multiple)'))[0][0]+count-1)
             count+=1
         if letter == 'C':
             if number != 0:
                 answer_options_block += ","
-            answer_options_block += create_checkbox(id_base, answer_option_base, count, texts, answer_option_base-1+number)
+            answer_options_block += create_checkbox(id_base, answer_option_base, count, texts, np.where((question.structure == 'ITEM(Single)') | (question.structure == 'ITEM(Multiple)'))[0][0]+count-1)
             count+=1
         if letter == 'T':
             if number != 0:

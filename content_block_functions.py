@@ -186,8 +186,11 @@ def create_image(id_base, count, texts, text_count):
             }'''%(id_base, count, count, texts[text_count], id_base, count+1, count+1, texts[text_count])
   return image
 
-def create_more_information(id_base, count, texts, text_count):
-  more_information = '''
+def create_more_information_expanded(id_base, count, texts, text_count):
+  splitted_text = texts[text_count].split('_')
+  title = splitted_text[1]
+  text = splitted_text[2]
+  more_information_expanded = '''
             ,{
               "id": "%s-%s",
               "type": "MORE_INFORMATION_EXPANDED",
@@ -215,7 +218,7 @@ def create_more_information(id_base, count, texts, text_count):
                 {
                   "id": "%s-%s-DE",
                   "language": "DE",
-                  "title": "Text zur Audioreise anzeigen",
+                  "title": "%s",
                   "text": "%s"
                 },
                 {
@@ -226,7 +229,53 @@ def create_more_information(id_base, count, texts, text_count):
                 }
               ],
               "answerOptions": []
-            }'''%(id_base, count, count, id_base, count,texts[text_count], id_base, count)
+            }'''%(id_base, count, count, id_base, count, title, text, id_base, count)
+  return more_information_expanded
+
+def create_more_information(id_base, count, texts, text_count):
+  splitted_text = texts[text_count].split('_')
+  title = splitted_text[1]
+  text = splitted_text[2]
+  more_information = '''
+            ,{
+              "id": "%s-%s",
+              "type": "MORE_INFORMATION",
+              "required": null,
+              "showHidden": null,
+              "order": %s,
+              "imageName": null,
+              "audioName": null,
+              "style": null,
+              "refAdaptionType": null,
+              "refAdaptionNumber": null,
+              "refOrderType": null,
+              "refOrderColumn": null,
+              "refOffset": null,
+              "refLimit": null,
+              "downloadName": null,
+              "checkForSpecialTextReplacement": null,
+              "questionAnswerOptionId": null,
+              "language": null,
+              "contentShowType": null,
+              "worldObjectEntryKey": null,
+              "refQuestionId": null,
+              "refQuestionAnswerOptionId": null,
+              "translations": [
+                {
+                  "id": "%s-%s-DE",
+                  "language": "DE",
+                  "title": "%s",
+                  "text": "%s"
+                },
+                {
+                  "id": "%s-%s-EN",
+                  "language": "EN",
+                  "title": "Englisch",
+                  "text": "Englisch"
+                }
+              ],
+              "answerOptions": []
+            }'''%(id_base, count, count, id_base, count, title, text, id_base, count)
   return more_information
 
 def create_content_block(id_base, count, refs, texts):
@@ -244,6 +293,9 @@ def create_content_block(id_base, count, refs, texts):
     elif letter == 'I':
       ref_block += create_image(id_base, count, texts, text_count+1)
       count+=2
+    elif letter == 'E':
+      ref_block += create_more_information_expanded(id_base, count, texts, text_count+1)
+      count+=1
     elif letter == 'M':
       ref_block += create_more_information(id_base, count, texts, text_count+1)
       count+=1

@@ -1,6 +1,6 @@
 import numpy as np
 
-def check_dependencies(structure, texts):
+def check_dependencies(self, structure, texts):
     # clean of nan
     clean_structure = np.empty((0,))
     for entry in structure:
@@ -9,14 +9,24 @@ def check_dependencies(structure, texts):
     structure = clean_structure
 
     # check dependencies
+    # solve antwort problem
+    if 'ITEM(Multiple)' in structure and 'Antwortmöglichkeit' in structure:
+        structure[np.where(structure == 'Antwortmöglichkeit')] = 'Mehrere Antwortmöglichkeiten'
+    if 'ITEM(Single)' in structure and 'Antwortmöglichkeit' in structure:
+        structure[np.where(structure == 'Antwortmöglichkeit')] = 'Mehrere Antwortmöglichkeiten'
+
+    # solve single choice with antwort problem
     if "ITEM(Single)" in structure and 'Mehrere Antwortmöglichkeiten' in structure:
-        structure = np.append(structure, 'maxNumber')
-        texts[len(structure)-1] = '1'
+        self.maxNumber = '1'
+    else:
+        self.maxNumber = 'null'
+
+    
     return structure, texts
 
 def map_structure_to_type(structure):
     # ITEM_LIST_SINGLE_CHOICE (R): Item
-    if "ITEM(Single)" in structure:
+    if "ITEM(Single)" in structure and not 'Mehrere Antwortmöglichkeiten' in structure:
         question_type = 'ITEM_LIST_SINGLE_CHOICE'
     # ITEM_LIST_EXPANDABLE (T OR C as answeroption): Item 
     elif 'ITEM(Multiple)' in structure or 'Mehrere Antwortmöglichkeiten' in structure:
@@ -49,6 +59,8 @@ def map_structure_to_content(structure):
             content += 'A'
         if value == 'PARAGRAPH':
             content += 'P'
+        if value == 'MORE_INFORMATION_EXPANDED':
+            content += 'E'
         if value == 'MORE_INFORMATION':
             content += 'M'
     return content
@@ -69,26 +81,18 @@ def map_structure_to_answer_option(structure, type):
         answer_option = None
     return answer_option
 
-def map_structure_to_next_logic_type(structure):
-    #next_logic_type: NEXT, NEXT_OPTION, REF_KEY_INSIGHT
-    if "REFERENCE(Schlüsselerk.)" in structure:
-        next_logic_type = 'REF_KEY_INSIGHT'
-    else: 
-        next_logic_type = 'NEXT'
-    return next_logic_type
-
 class Question:
     def __init__(self, structure, texts):
         self.structure = structure.values #array
         self.texts = texts.values #array
         # check dependencies and set structure and text right
-        self.structure, self.texts = check_dependencies(self.structure, self.texts)
+        self.structure, self.texts = check_dependencies(self, self.structure, self.texts)
         self.type = map_structure_to_type(self.structure) 
         self.content = map_structure_to_content(self.structure)
         self.answer_option = map_structure_to_answer_option(self.structure, self.type)
-        self.next_logic_type= map_structure_to_next_logic_type(self.structure)
+        self.next_logic_type= 'NEXT'
         self.next_logic_option = None
-        if 'maxNumber' in self.structure:
-            self.maxNumber = self.texts[np.where(self.structure == 'maxNumber')][0]
-        else:
-            self.maxNumber = 'null'
+        #if 'maxNumber' in self.structure:
+        #    self.maxNumber = self.texts[np.where(self.structure == 'maxNumber')][0]
+        #else:
+        #    self.maxNumber = 'null'

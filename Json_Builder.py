@@ -15,7 +15,7 @@ write_beginning = True
 write_ending = True
 etappe = "-1-"
 startnumber = 1 # 1 if it should start from beginning
-excel_path_or_name = "Jsons/Tests/23_04_17_Json_Excel_Template_2.xlsx"
+excel_path_or_name = "Jsons/Tests/23_04_19_Json_Excel_Template.xlsx"
 
 # -------- EXPLANATIONS ----------
 # type: CONTENT, OPTION_QUESTION, OPEN_QUESTION, SCALA_SLIDER, ITEM_LIST_EXPANDABLE (T OR C as answeroption), ITEM_LIST_SINGLE_CHOICE (R)
@@ -26,13 +26,12 @@ excel_path_or_name = "Jsons/Tests/23_04_17_Json_Excel_Template_2.xlsx"
 
 # --------- TO DO --------------
 # TODO: Scala Slider with next statt value und between als zusätzliche option
-# TODO: Optional angebbar
 # TODO: Einzelne Questions sind einzelne Objects die von Question erben
 # TODO: Next_logic_type: Next_option -> bei nicht linearer json
+# TODO: Schlüsselerk. referenz -> ref key insight muss ref_logik in der frage zuvor sein -> es muss ein next_question object mitgegeben werden
+# TODO: Scala beschriftung
         # TODO: Englisch text
-        # TODO: More information title
-        # TODO: Scala beschriftung
-        # TODO: Json Excel glatt ziehen
+        # TODO: Optional angebbar
 # question_array = [Question('CONTENT','AM'),Question('SCALA_SLIDER','PRPM'), Question('OPTION_QUESTION','PRP'), Question('CONTENT'), Question('CONTENT'), Question('OPEN_QUESTION','PRP'), Question('SCALA_SLIDER'), Question('CONTENT','PR'), Question('OPEN_QUESTION','PRP'), Question('OPTION_QUESTION'), Question('CONTENT'), Question('CONTENT'), Question('CONTENT')]
 
 
@@ -55,27 +54,31 @@ for i in range(0, len(df.columns), 2):
 
 # -------- TESTS --------
 
+
 # Check if all information fields are there
-for info in information: 
+for i,info in enumerate(information):
+    if i > 6:
+        break
     if pd.isna(info):
         raise Exception('There is some starting information missing')
     
 formatting_flag = 0
+    # Test: delete empty questions
+for question in questions_array:
+    if question.structure.size == 0:
+        questions_array.remove(question)
 
 for q_count, question in enumerate(questions_array):
-    # Test if Item Multi together with "Antwortmöglichkiet" -> geht nur mit Mehreren Antw.
-    if 'ITEM(Multiple)' in question.structure and 'Antwortmöglichkeit' in question.structure:
-        raise Exception ('ITEM(Multiple) works only with "Mehrere Antwortmöglichkeiten". Check Frage:',q_count)
-    if 'ITEM(Single)' in question.structure and 'Antwortmöglichkeit' in question.structure:
-        raise Exception ('ITEM(Single) works only with "Mehrere Antwortmöglichkeiten". Check Frage:',q_count)
-    # immer mit subtitle starten
+    # Test 1: immer mit subtitle starten
     if not question.structure[0] == 'SUB_TITEL':
         raise Exception ('SUB_TITEL is missing for question ',q_count)
-    # kein item single und item multiple in einer frage 
+    # Test 2: kein item single und item multiple in einer frage 
     if 'ITEM(Multiple)' in question.structure and 'ITEM(Single)' in question.structure:
-        raise Exception ('ITEM(Single) und ITEM(Multiple) gemisch in Frage: ', q_count)
-    
-    # TODO: no <strong> or <br> -> nachfragen ob formatiert wurde
+        raise Exception ('ITEM(Single) und ITEM(Multiple) gemischt in Frage: ', q_count)
+    # Test more Information:
+    if 'MORE_INFORMATION' in question.structure and not '_' in question.texts[np.where(question.structure == 'MORE_INFORMATION')][0]:
+        raise Exception ('More information field is missing a title in Question:', q_count)
+    # Test:
     for text in question.texts:
         if isinstance(text, str):
             if '<br>' in text or '<strong>' in text:
