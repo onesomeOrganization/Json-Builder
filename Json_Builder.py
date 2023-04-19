@@ -30,7 +30,7 @@ excel_path_or_name = "Jsons/Tests/23_04_19_Json_Excel_Template.xlsx"
 # TODO: Next_logic_type: Next_option -> bei nicht linearer json
 # TODO: Schlüsselerk. referenz -> ref key insight muss ref_logik in der frage zuvor sein -> es muss ein next_question object mitgegeben werden
 # TODO: Scala beschriftung
-        # TODO: Englisch text
+# TODO: Englisch text
         # TODO: Optional angebbar
 # question_array = [Question('CONTENT','AM'),Question('SCALA_SLIDER','PRPM'), Question('OPTION_QUESTION','PRP'), Question('CONTENT'), Question('CONTENT'), Question('OPEN_QUESTION','PRP'), Question('SCALA_SLIDER'), Question('CONTENT','PR'), Question('OPEN_QUESTION','PRP'), Question('OPTION_QUESTION'), Question('CONTENT'), Question('CONTENT'), Question('CONTENT')]
 
