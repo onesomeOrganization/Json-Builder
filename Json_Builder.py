@@ -31,7 +31,7 @@ excel_path_or_name = "Jsons/Tests/23_04_19_Json_Excel_Template.xlsx"
 # TODO: Schlüsselerk. referenz -> ref key insight muss ref_logik in der frage zuvor sein -> es muss ein next_question object mitgegeben werden
 # TODO: Scala beschriftung
 # TODO: Englisch text
-        # TODO: Optional angebbar
+        # TODO: progress
 # question_array = [Question('CONTENT','AM'),Question('SCALA_SLIDER','PRPM'), Question('OPTION_QUESTION','PRP'), Question('CONTENT'), Question('CONTENT'), Question('OPEN_QUESTION','PRP'), Question('SCALA_SLIDER'), Question('CONTENT','PR'), Question('OPEN_QUESTION','PRP'), Question('OPTION_QUESTION'), Question('CONTENT'), Question('CONTENT'), Question('CONTENT')]
 
 
@@ -53,7 +53,6 @@ for i in range(0, len(df.columns), 2):
     questions_array.append(Question(df.iloc[:, i], df.iloc[:, i+1]))
 
 # -------- TESTS --------
-
 
 # Check if all information fields are there
 for i,info in enumerate(information):
@@ -95,7 +94,14 @@ for question in questions_array:
             # find " and replace with \"
             # find breaks and delete them
             question.texts[i] = text.replace('"', '\\"').replace('\n', '')
-        
+
+# ---------- PROGRESS -------
+number_questions = len(questions_array)
+progress_steps = round(90/number_questions)
+progress = progress_steps
+for question in questions_array:
+    question.progress = progress
+    progress += progress_steps
 
 
 # -------- WRITE FILE -------------------------------------

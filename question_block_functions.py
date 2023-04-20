@@ -122,7 +122,7 @@ def create_question(question, type, id_base, count, write_beginning, contents, a
           "reviewAble": null,
           "noAnswerPreselection": null,
           "showHint": null,
-          "progress": 0,
+          "progress": %s,
           "worldObjectEntryKeyType": null,
           "nonOptionalKeyInsightHint": false,
           "optional": true,
@@ -185,7 +185,7 @@ def create_question(question, type, id_base, count, write_beginning, contents, a
             ],
             "refAdaptions": []
           }
-        },''' % (id_base, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base, texts[0], id_base, create_content_block(id_base, 2, contents, texts), id_base, next_logic_type, id_base_next_question, create_nextLogic_options(id_base, get_content_length(contents), next_logics, next_logic_type)),
+        },''' % (id_base, question.progress, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base, texts[0], id_base, create_content_block(id_base, 2, contents, texts), id_base, next_logic_type, id_base_next_question, create_nextLogic_options(id_base, get_content_length(contents), next_logics, next_logic_type)),
         "OPTION_QUESTION": '''
         {
           "id": "%s",
@@ -197,7 +197,7 @@ def create_question(question, type, id_base, count, write_beginning, contents, a
           "reviewAble": null,
           "noAnswerPreselection": null,
           "showHint": null,
-          "progress": 15,
+          "progress": %s,
           "worldObjectEntryKeyType": null,
           "nonOptionalKeyInsightHint": false,
           "optional": true,
@@ -376,7 +376,7 @@ def create_question(question, type, id_base, count, write_beginning, contents, a
             ],
             "refAdaptions": []
           }
-        },'''% (id_base, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base, texts[0], id_base, create_content_block(id_base,2, contents, texts),id_base, get_content_length(contents), get_content_length(contents), id_base, get_content_length(contents), id_base, get_content_length(contents), id_base, get_content_length(contents), id_base, get_content_length(contents), id_base, get_content_length(contents), id_base, get_content_length(contents), id_base, id_base, id_base, get_content_length(contents),  id_base, id_base, get_content_length(contents)),
+        },'''% (id_base, question.progress, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base, texts[0], id_base, create_content_block(id_base,2, contents, texts),id_base, get_content_length(contents), get_content_length(contents), id_base, get_content_length(contents), id_base, get_content_length(contents), id_base, get_content_length(contents), id_base, get_content_length(contents), id_base, get_content_length(contents), id_base, get_content_length(contents), id_base, id_base, id_base, get_content_length(contents),  id_base, id_base, get_content_length(contents)),
         "OPEN_QUESTION": '''
         {
           "id": "%s",
@@ -388,7 +388,7 @@ def create_question(question, type, id_base, count, write_beginning, contents, a
           "reviewAble": null,
           "noAnswerPreselection": null,
           "showHint": null,
-          "progress": 5,
+          "progress": %s,
           "worldObjectEntryKeyType": null,
           "nonOptionalKeyInsightHint": false,
           "optional": true,
@@ -510,7 +510,7 @@ def create_question(question, type, id_base, count, write_beginning, contents, a
             ],
             "refAdaptions": []
           }
-        },''' % (id_base, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base, id_base,id_base,texts[0], id_base,create_content_block(id_base, 2, contents, texts), id_base, get_content_length(contents), get_content_length(contents), id_base, get_content_length(contents), id_base, next_logic_type,id_base_next_question,create_nextLogic_options(id_base, get_content_length(contents), next_logics, next_logic_type)),
+        },''' % (id_base, question.progress, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base, id_base,id_base,texts[0], id_base,create_content_block(id_base, 2, contents, texts), id_base, get_content_length(contents), get_content_length(contents), id_base, get_content_length(contents), id_base, next_logic_type,id_base_next_question,create_nextLogic_options(id_base, get_content_length(contents), next_logics, next_logic_type)),
         "SCALA_SLIDER":'''
         {
           "id": "%s",
@@ -522,7 +522,7 @@ def create_question(question, type, id_base, count, write_beginning, contents, a
           "reviewAble": null,
           "noAnswerPreselection": null,
           "showHint": null,
-          "progress": 4,
+          "progress": %s,
           "worldObjectEntryKeyType": null,
           "nonOptionalKeyInsightHint": false,
           "optional": true,
@@ -669,7 +669,7 @@ def create_question(question, type, id_base, count, write_beginning, contents, a
             ],
             "refAdaptions": []
           }
-        },''' % (id_base, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base,texts[0], id_base, create_content_block(id_base, 2, contents, texts) ,id_base, get_content_length(contents), get_content_length(contents), id_base, get_content_length(contents), id_base, get_content_length(contents), id_base, get_content_length(contents), id_base, id_base, id_base),
+        },''' % (id_base, question.progress, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base,texts[0], id_base, create_content_block(id_base, 2, contents, texts) ,id_base, get_content_length(contents), get_content_length(contents), id_base, get_content_length(contents), id_base, get_content_length(contents), id_base, get_content_length(contents), id_base, id_base, id_base),
         "ITEM_LIST_EXPANDABLE": '''
         {
           "id": "%s",
@@ -681,7 +681,7 @@ def create_question(question, type, id_base, count, write_beginning, contents, a
           "reviewAble": null,
           "noAnswerPreselection": null,
           "showHint": null,
-          "progress": 5,
+          "progress": %s,
           "worldObjectEntryKeyType": null,
           "nonOptionalKeyInsightHint": false,
           "optional": true,
@@ -747,7 +747,7 @@ def create_question(question, type, id_base, count, write_beginning, contents, a
             ,{
               "id": "%s-%s",
               "type": "ANSWER_OPTION",
-              "required": true,
+              "required": %s,
               "showHidden": null,
               "order": %s,
               "imageName": null,
@@ -787,7 +787,7 @@ def create_question(question, type, id_base, count, write_beginning, contents, a
             ],
             "refAdaptions": []
           }
-        },''' % (id_base, question.maxNumber, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base, id_base,id_base, texts[0], id_base,create_content_block(id_base, 2, contents, texts), id_base, get_content_length(contents), get_content_length(contents), create_answer_options(question, id_base, get_content_length(contents),answer_options, texts), id_base, next_logic_type, id_base_next_question, create_nextLogic_options(id_base, get_content_length(contents), next_logics, next_logic_type)),
+        },''' % (id_base, question.maxNumber, question.progress, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base, id_base,id_base, texts[0], id_base,create_content_block(id_base, 2, contents, texts), id_base, get_content_length(contents), question.answer_required, get_content_length(contents), create_answer_options(question, id_base, get_content_length(contents),answer_options, texts), id_base, next_logic_type, id_base_next_question, create_nextLogic_options(id_base, get_content_length(contents), next_logics, next_logic_type)),
         "ITEM_LIST_SINGLE_CHOICE": '''
         {
           "id": "%s",
@@ -799,7 +799,7 @@ def create_question(question, type, id_base, count, write_beginning, contents, a
           "reviewAble": null,
           "noAnswerPreselection": null,
           "showHint": null,
-          "progress": 0,
+          "progress": %s,
           "worldObjectEntryKeyType": null,
           "nonOptionalKeyInsightHint": false,
           "optional": true,
@@ -899,6 +899,6 @@ def create_question(question, type, id_base, count, write_beginning, contents, a
             ],
             "refAdaptions": []
           }
-        },'''%(id_base, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base, id_base, id_base,texts[0], id_base, create_content_block(id_base,2,contents, texts), id_base, get_content_length(contents), get_content_length(contents), create_answer_options(question, id_base, get_content_length(contents),answer_options, texts), id_base, next_logic_type,id_base_next_question, create_nextLogic_options(id_base, get_content_length(contents), next_logics, next_logic_type))
+        },'''%(id_base, question.progress, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base, id_base, id_base,texts[0], id_base, create_content_block(id_base,2,contents, texts), id_base, get_content_length(contents), get_content_length(contents), create_answer_options(question, id_base, get_content_length(contents),answer_options, texts), id_base, next_logic_type,id_base_next_question, create_nextLogic_options(id_base, get_content_length(contents), next_logics, next_logic_type))
         } 
     return questions_dict[type]

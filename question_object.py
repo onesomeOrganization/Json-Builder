@@ -1,28 +1,37 @@
 import numpy as np
 
-def check_dependencies(self, structure, texts):
+def check_dependencies(self):
     # clean of nan
     clean_structure = np.empty((0,))
-    for entry in structure:
+    for entry in self.structure:
         if isinstance(entry, str):
             clean_structure = np.append(clean_structure, entry)
-    structure = clean_structure
+    self.structure = clean_structure
 
     # check dependencies
     # solve antwort problem
-    if 'ITEM(Multiple)' in structure and 'Antwortmöglichkeit' in structure:
-        structure[np.where(structure == 'Antwortmöglichkeit')] = 'Mehrere Antwortmöglichkeiten'
-    if 'ITEM(Single)' in structure and 'Antwortmöglichkeit' in structure:
-        structure[np.where(structure == 'Antwortmöglichkeit')] = 'Mehrere Antwortmöglichkeiten'
+    if 'ITEM(Multiple)' in self.structure and 'Antwortmöglichkeit' in self.structure:
+        self.structure[np.where(self.structure == 'Antwortmöglichkeit')] = 'Mehrere Antwortmöglichkeiten'
+
+    if 'ITEM(Single)' in self.structure and 'Antwortmöglichkeit' in self.structure:
+        self.structure[np.where(self.structure == 'Antwortmöglichkeit')] = 'Mehrere Antwortmöglichkeiten'
 
     # solve single choice with antwort problem
-    if "ITEM(Single)" in structure and 'Mehrere Antwortmöglichkeiten' in structure:
+    if "ITEM(Single)" in self.structure and 'Mehrere Antwortmöglichkeiten' in self.structure:
         self.maxNumber = '1'
+        self.structure = np.core.defchararray.replace(self.structure, 'ITEM(Single)', 'ITEM(Multiple)')
     else:
         self.maxNumber = 'null'
 
-    
-    return structure, texts
+    # optional
+    if 'optional' in self.structure:
+        self.answer_required = 'false'
+        self.texts = np.delete(self.texts, np.where(self.structure == 'optional'))
+        self.structure = np.delete(self.structure, np.where(self.structure == 'optional'))
+
+    else:
+        self.answer_required = 'true'
+
 
 def map_structure_to_type(structure):
     # ITEM_LIST_SINGLE_CHOICE (R): Item
@@ -86,13 +95,9 @@ class Question:
         self.structure = structure.values #array
         self.texts = texts.values #array
         # check dependencies and set structure and text right
-        self.structure, self.texts = check_dependencies(self, self.structure, self.texts)
+        check_dependencies(self)
         self.type = map_structure_to_type(self.structure) 
         self.content = map_structure_to_content(self.structure)
         self.answer_option = map_structure_to_answer_option(self.structure, self.type)
         self.next_logic_type= 'NEXT'
         self.next_logic_option = None
-        #if 'maxNumber' in self.structure:
-        #    self.maxNumber = self.texts[np.where(self.structure == 'maxNumber')][0]
-        #else:
-        #    self.maxNumber = 'null'

@@ -105,7 +105,7 @@
           "reviewAble": null,
           "noAnswerPreselection": null,
           "showHint": null,
-          "progress": 5,
+          "progress": 30,
           "worldObjectEntryKeyType": null,
           "nonOptionalKeyInsightHint": false,
           "optional": true,
@@ -353,7 +353,7 @@
             ,{
               "id": "flora-v12-1-1-8",
               "type": "ANSWER_OPTION",
-              "required": true,
+              "required": false,
               "showHidden": null,
               "order": 8,
               "imageName": null,
@@ -379,6 +379,102 @@
                 {
                   "id": "flora-v12-1-1-8-1",
                   "order": 1,
+                  "number": null,
+                  "type": "CHECKBOX",
+                  "imageName": null,
+                  "hidden": null,
+                  "escapeOption": null,
+                  "sliderType": null,
+                  "negative": null,
+                  "unselectOthers": null,
+                  "booleanHelper": null,
+                  "refQuestionAnswerOptionId": null,
+                  "secondRefQuestionAnswerOptionId": null,
+                  "questionLoopCycleId": null,
+                  "translations": [
+                    {
+                      "id": "flora-v12-1-1-8-1-DE",
+                      "language": "DE",
+                      "title": null,
+                      "text": "Text für Single choice Item 1",
+                      "description": ""
+                    },
+                    {
+                      "id": "flora-v12-1-1-8-1-EN",
+                      "language": "EN",
+                      "title": "",
+                      "text": "Englisch",
+                      "description": ""
+                    }
+                  ]
+                },
+                {
+                  "id": "flora-v12-1-1-8-2",
+                  "order": 2,
+                  "number": null,
+                  "type": "CHECKBOX",
+                  "imageName": null,
+                  "hidden": null,
+                  "escapeOption": null,
+                  "sliderType": null,
+                  "negative": null,
+                  "unselectOthers": null,
+                  "booleanHelper": null,
+                  "refQuestionAnswerOptionId": null,
+                  "secondRefQuestionAnswerOptionId": null,
+                  "questionLoopCycleId": null,
+                  "translations": [
+                    {
+                      "id": "flora-v12-1-1-8-2-DE",
+                      "language": "DE",
+                      "title": null,
+                      "text": "Text für Single choice Item 2",
+                      "description": ""
+                    },
+                    {
+                      "id": "flora-v12-1-1-8-2-EN",
+                      "language": "EN",
+                      "title": "",
+                      "text": "Englisch",
+                      "description": ""
+                    }
+                  ]
+                },
+                {
+                  "id": "flora-v12-1-1-8-3",
+                  "order": 3,
+                  "number": null,
+                  "type": "CHECKBOX",
+                  "imageName": null,
+                  "hidden": null,
+                  "escapeOption": null,
+                  "sliderType": null,
+                  "negative": null,
+                  "unselectOthers": null,
+                  "booleanHelper": null,
+                  "refQuestionAnswerOptionId": null,
+                  "secondRefQuestionAnswerOptionId": null,
+                  "questionLoopCycleId": null,
+                  "translations": [
+                    {
+                      "id": "flora-v12-1-1-8-3-DE",
+                      "language": "DE",
+                      "title": null,
+                      "text": "item 3",
+                      "description": ""
+                    },
+                    {
+                      "id": "flora-v12-1-1-8-3-EN",
+                      "language": "EN",
+                      "title": "",
+                      "text": "Englisch",
+                      "description": ""
+                    }
+                  ]
+                },
+                {
+                  "id": "flora-v12-1-1-8-4",
+                  "order": 4,
                   "number": null,
                   "type": "TEXT_FIELD_EXPANDABLE",
                   "imageName": null,
@@ -421,7 +517,7 @@
           "reviewAble": null,
           "noAnswerPreselection": null,
           "showHint": null,
-          "progress": 5,
+          "progress": 60,
           "worldObjectEntryKeyType": null,
           "nonOptionalKeyInsightHint": false,
           "optional": true,
@@ -665,7 +761,7 @@
           "reviewAble": null,
           "noAnswerPreselection": null,
           "showHint": null,
-          "progress": 5,
+          "progress": 90,
           "worldObjectEntryKeyType": null,
           "nonOptionalKeyInsightHint": false,
           "optional": true,
