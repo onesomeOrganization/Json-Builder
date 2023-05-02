@@ -110,7 +110,7 @@ def get_content_length(contents):
 
 def create_question(question, type, id_base, count, write_beginning, contents, answer_options, next_logics, next_logic_type, texts, id_base_next_question):
     # DICTIONARY
-    questions_dict = {
+    return {
         "CONTENT": ''' 
         {
           "id": "%s",
@@ -516,8 +516,8 @@ def create_question(question, type, id_base, count, write_beginning, contents, a
           "id": "%s",
           "type": "SCALA_SLIDER",
           "number": null,
-          "minNumber": 0,
-          "maxNumber": 5,
+          "minNumber": %s,
+          "maxNumber": %s,
           "screenDuration": null,
           "reviewAble": null,
           "noAnswerPreselection": null,
@@ -615,7 +615,7 @@ def create_question(question, type, id_base, count, write_beginning, contents, a
                       "id": "%s-%s-1-DE",
                       "language": "DE",
                       "title": null,
-                      "text": "XY, ,XY",
+                      "text": "%s, ,%s",
                       "description": ""
                     },
                     {
@@ -632,44 +632,19 @@ def create_question(question, type, id_base, count, write_beginning, contents, a
           ],
           "nextLogic": {
             "id": "%s",
-            "type": "VALUE",
+            "type": "%s",
             "count": null,
-            "nextQuestionId": null,
+            "nextQuestionId": "%s",
             "prevQuestionId": null,
             "refQuestionId": null,
             "questionRefLogicId": null,
             "sessionId": null,
             "options": [
-              {
-                "id": "%s-opt1",
-                "order": 1,
-                "type": "VALUE_LT",
-                "number": 1,
-                "count": null,
-                "secondNumber": null,
-                "secondCount": null,
-                "questionAnswerOptionId": null,
-                "secondQuestionAnswerOptionId": null,
-                "questionId": "XY",
-                "refQuestionId": null
-              },
-              {
-                "id": "%s-opt2",
-                "order": 2,
-                "type": "VALUE_GTE",
-                "number": 1,
-                "count": null,
-                "secondNumber": null,
-                "secondCount": null,
-                "questionAnswerOptionId": null,
-                "secondQuestionAnswerOptionId": null,
-                "questionId": "XY",
-                "refQuestionId": null
-              }
+            %s
             ],
             "refAdaptions": []
           }
-        },''' % (id_base, question.progress, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base,texts[0], id_base, create_content_block(id_base, 2, contents, texts) ,id_base, get_content_length(contents), get_content_length(contents), id_base, get_content_length(contents), id_base, get_content_length(contents), id_base, get_content_length(contents), id_base, id_base, id_base),
+        },''' % (id_base,question.scala_min,question.scala_max, question.progress, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base,texts[0], id_base, create_content_block(id_base, 2, contents, texts) ,id_base, get_content_length(contents), get_content_length(contents), id_base, get_content_length(contents), id_base, get_content_length(contents), question.scala_min_text, question.scala_max_text,id_base, get_content_length(contents), id_base, next_logic_type,id_base_next_question,create_nextLogic_options(id_base, get_content_length(contents), next_logics, next_logic_type)),
         "ITEM_LIST_EXPANDABLE": '''
         {
           "id": "%s",
@@ -900,5 +875,5 @@ def create_question(question, type, id_base, count, write_beginning, contents, a
             "refAdaptions": []
           }
         },'''%(id_base, question.progress, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base, id_base, id_base,texts[0], id_base, create_content_block(id_base,2,contents, texts), id_base, get_content_length(contents), get_content_length(contents), create_answer_options(question, id_base, get_content_length(contents),answer_options, texts), id_base, next_logic_type,id_base_next_question, create_nextLogic_options(id_base, get_content_length(contents), next_logics, next_logic_type))
-        } 
-    return questions_dict[type]
+        }.get(type, None) 
+    #return questions_dict[type]

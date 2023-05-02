@@ -1,4 +1,5 @@
 import numpy as np
+import re
 
 def check_dependencies(self):
     # clean of nan
@@ -31,6 +32,29 @@ def check_dependencies(self):
 
     else:
         self.answer_required = 'true'
+
+    # scala
+    if 'SCALA' in self.structure:
+        # Test Scala Texts:
+        # Define the regular expression pattern
+        pattern = r"(\d+)\s*\((\w+\s*\w+)\)\s*-\s*(\d+)\s*\((\w+\s*\w+)\)"
+        if 'SCALA' in self.structure and not re.match(pattern, self.texts[np.where(self.structure == 'SCALA')][0]):
+            raise Exception ('Scala Text is not correct: ', self.texts[np.where(self.structure == 'SCALA')][0])
+
+        # declare numbers and texts     
+        # get digits
+        digits = re.findall(r'\d', self.texts[np.where(self.structure == 'SCALA')][0])
+        self.scala_min = digits[0]
+        self.scala_max = digits[1]
+        texts = re.findall(r'\((.*?)\)', self.texts[np.where(self.structure == 'SCALA')][0])
+        self.scala_min_text = texts[0]
+        self.scala_max_text = texts[1]
+
+    else:
+        self.scala_min = None
+        self.scala_max = None
+        self.scala_min_text = None
+        self.scala_max_text = None
 
 
 def map_structure_to_type(structure):

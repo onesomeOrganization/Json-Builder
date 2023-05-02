@@ -4,6 +4,7 @@ from content_block_functions import *
 from question_block_functions import *
 from question_object import *
 import pandas as pd
+import re
 # 
 #  ------ VARIABLES ------------------------------------
 # Auszufüllen
@@ -15,7 +16,7 @@ write_beginning = True
 write_ending = True
 etappe = "-1-"
 startnumber = 1 # 1 if it should start from beginning
-excel_path_or_name = "Jsons/Tests/23_04_19_Json_Excel_Template.xlsx"
+excel_path_or_name = "Jsons/Json Builder/Templates/Json_Excel_Template_Scala.xlsx"
 
 # -------- EXPLANATIONS ----------
 # type: CONTENT, OPTION_QUESTION, OPEN_QUESTION, SCALA_SLIDER, ITEM_LIST_EXPANDABLE (T OR C as answeroption), ITEM_LIST_SINGLE_CHOICE (R)
@@ -31,6 +32,7 @@ excel_path_or_name = "Jsons/Tests/23_04_19_Json_Excel_Template.xlsx"
 # TODO: Schlüsselerk. referenz -> ref key insight muss ref_logik in der frage zuvor sein -> es muss ein next_question object mitgegeben werden
 # TODO: Scala beschriftung
 # TODO: Englisch text
+# TODO: TEST wenn ein text fach leer ist, obwohl es das nicht sein sollte
 # question_array = [Question('CONTENT','AM'),Question('SCALA_SLIDER','PRPM'), Question('OPTION_QUESTION','PRP'), Question('CONTENT'), Question('CONTENT'), Question('OPEN_QUESTION','PRP'), Question('SCALA_SLIDER'), Question('CONTENT','PR'), Question('OPEN_QUESTION','PRP'), Question('OPTION_QUESTION'), Question('CONTENT'), Question('CONTENT'), Question('CONTENT')]
 
 
@@ -84,6 +86,7 @@ for q_count, question in enumerate(questions_array):
     
 if formatting_flag == 0:
     raise Exception ('Not formatted')
+
 
 
 # ---------- TEXT FORMATIERUNG ---------
