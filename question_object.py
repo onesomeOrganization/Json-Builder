@@ -9,6 +9,9 @@ def check_dependencies(self):
             clean_structure = np.append(clean_structure, entry)
     self.structure = clean_structure
 
+    # make structure and text array of equal length
+    self.texts = self.texts[:len(self.structure)]
+
     # check dependencies
     # solve antwort problem
     if 'ITEM(Multiple)' in self.structure and 'Antwortmöglichkeit' in self.structure:

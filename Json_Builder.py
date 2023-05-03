@@ -30,7 +30,6 @@ excel_path_or_name = "Jsons/Json Builder/Templates/Json_Excel_Template_Scala.xls
 # TODO: Einzelne Questions sind einzelne Objects die von Question erben
 # TODO: Next_logic_type: Next_option -> bei nicht linearer json
 # TODO: Schlüsselerk. referenz -> ref key insight muss ref_logik in der frage zuvor sein -> es muss ein next_question object mitgegeben werden
-# TODO: Scala beschriftung
 # TODO: Englisch text
 # TODO: TEST wenn ein text fach leer ist, obwohl es das nicht sein sollte
 # question_array = [Question('CONTENT','AM'),Question('SCALA_SLIDER','PRPM'), Question('OPTION_QUESTION','PRP'), Question('CONTENT'), Question('CONTENT'), Question('OPEN_QUESTION','PRP'), Question('SCALA_SLIDER'), Question('CONTENT','PR'), Question('OPEN_QUESTION','PRP'), Question('OPTION_QUESTION'), Question('CONTENT'), Question('CONTENT'), Question('CONTENT')]
@@ -71,18 +70,26 @@ for question in questions_array:
 for q_count, question in enumerate(questions_array):
     # Test 1: immer mit subtitle starten
     if not question.structure[0] == 'SUB_TITEL':
-        raise Exception ('SUB_TITEL is missing for question ',q_count)
+        raise Exception ('SUB_TITEL is missing for question ',q_count+1)
     # Test 2: kein item single und item multiple in einer frage 
     if 'ITEM(Multiple)' in question.structure and 'ITEM(Single)' in question.structure:
-        raise Exception ('ITEM(Single) und ITEM(Multiple) gemischt in Frage: ', q_count)
+        raise Exception ('ITEM(Single) und ITEM(Multiple) gemischt in Frage: ', q_count+1)
     # Test more Information:
     if 'MORE_INFORMATION' in question.structure and not '_' in question.texts[np.where(question.structure == 'MORE_INFORMATION')][0]:
-        raise Exception ('More information field is missing a title in Question:', q_count)
+        raise Exception ('More information field is missing a title in Question:', q_count+1)
     # Test:
     for text in question.texts:
         if isinstance(text, str):
             if '<br>' in text or '<strong>' in text:
                 formatting_flag = 1
+    # Test empty Text
+    needs_text_array = ['SUB_TITEL','PARAGRAPH','AUDIO', 'IMAGE', 'MORE_INFORMATION', 'MORE_INFORMATION_EXPANDED', 'ITEM(Single)', 'ITEM(Multiple)','SCALA']
+    for i,text in enumerate(question.texts):
+        # if nan
+        if not isinstance(text, str):
+            # if it needs some text
+            if question.structure[i] in needs_text_array: #and not isinstance(question.structure[i], str):
+                raise Exception ('There is a text field missing at question: ', q_count+1)
     
 if formatting_flag == 0:
     raise Exception ('Not formatted')
