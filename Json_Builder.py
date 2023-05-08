@@ -26,12 +26,10 @@ excel_path_or_name = "Jsons/Json Builder/Templates/Json_Excel_Template_Scala.xls
 # next_logic_options: N = option with next
 
 # --------- TO DO --------------
-# TODO: Scala Slider with next statt value und between als zusätzliche option
 # TODO: Einzelne Questions sind einzelne Objects die von Question erben
 # TODO: Next_logic_type: Next_option -> bei nicht linearer json
 # TODO: Schlüsselerk. referenz -> ref key insight muss ref_logik in der frage zuvor sein -> es muss ein next_question object mitgegeben werden
 # TODO: Englisch text
-# TODO: TEST wenn ein text fach leer ist, obwohl es das nicht sein sollte
 # question_array = [Question('CONTENT','AM'),Question('SCALA_SLIDER','PRPM'), Question('OPTION_QUESTION','PRP'), Question('CONTENT'), Question('CONTENT'), Question('OPEN_QUESTION','PRP'), Question('SCALA_SLIDER'), Question('CONTENT','PR'), Question('OPEN_QUESTION','PRP'), Question('OPTION_QUESTION'), Question('CONTENT'), Question('CONTENT'), Question('CONTENT')]
 
 
