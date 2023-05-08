@@ -16,7 +16,7 @@ def create_next_logic_option(id_base, count, answer_option_base):
               }''' %(id_base, count, id_base, answer_option_base, count)
     return next_logic_option
 
-def create_ref_key_insight_option(id_base):
+def create_ref_key_insight_option(id_base, next_question_reference, id_base_next_question, id_base_skip_question):
     ref_key_insight_option = '''
                 {
                 "id": "%s-opt1",
@@ -28,7 +28,7 @@ def create_ref_key_insight_option(id_base):
                 "secondCount": null,
                 "questionAnswerOptionId": null,
                 "secondQuestionAnswerOptionId": null,
-                "questionId": "XY-ifkeyexists",
+                "questionId": "%s",
                 "refQuestionId": null
               },
               {
@@ -41,7 +41,7 @@ def create_ref_key_insight_option(id_base):
                 "secondCount": null,
                 "questionAnswerOptionId": null,
                 "secondQuestionAnswerOptionId": null,
-                "questionId": "XY-ifkeynotexists",
+                "questionId": "%s",
                 "refQuestionId": null
               },
               {
@@ -54,19 +54,24 @@ def create_ref_key_insight_option(id_base):
                 "secondCount": null,
                 "questionAnswerOptionId": null,
                 "secondQuestionAnswerOptionId": null,
-                "questionId": "XY-ifkeyexists",
-                "worldObjectEntryKey": "XY-KEY",
+                "questionId": "%s",
+                "worldObjectEntryKey": "%s",
                 "refQuestionId": null
-              }''' %(id_base, id_base, id_base)
+              }''' %(id_base, id_base_next_question, id_base, id_base_skip_question ,id_base, id_base_next_question, next_question_reference)
     return ref_key_insight_option
+# TODO: If key exists nächster screeen, sonst übernächster screen
 
-def create_nextLogic_options(id_base, answer_option_base, next_logics, next_logic_type):
+def create_nextLogic_options(id_base, answer_option_base, next_logics, next_logic_type, next_question_reference, id_base_next_question):
     next_logics_block = '' 
+    # for key insights
     if next_logic_type == 'REF_KEY_INSIGHT':
-        next_logics_block += create_ref_key_insight_option(id_base)
+        plus_one = int(id_base_next_question[-1])+1
+        id_base_skip_question = id_base_next_question[:-1] + str(plus_one)
+        next_logics_block += create_ref_key_insight_option(id_base, next_question_reference, id_base_next_question, id_base_skip_question)
+    count = 1
+    # if no logics just return empty
     if next_logics == None:
         return next_logics_block
-    count = 1
     for number, letter in enumerate(next_logics):
         if letter == 'N':
             if number != 0:

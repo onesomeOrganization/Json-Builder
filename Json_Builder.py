@@ -16,7 +16,7 @@ write_beginning = True
 write_ending = True
 etappe = "-1-"
 startnumber = 1 # 1 if it should start from beginning
-excel_path_or_name = "Jsons/Json Builder/Templates/Json_Excel_Template_Scala.xlsx"
+excel_path_or_name = "Jsons/Json Builder/Templates/23_05_08_Json_Excel_Template_Refs.xlsx"
 
 # -------- EXPLANATIONS ----------
 # type: CONTENT, OPTION_QUESTION, OPEN_QUESTION, SCALA_SLIDER, ITEM_LIST_EXPANDABLE (T OR C as answeroption), ITEM_LIST_SINGLE_CHOICE (R)
@@ -49,6 +49,21 @@ df = df.drop(df.columns[[0, 1]], axis=1)
 questions_array = []
 for i in range(0, len(df.columns), 2):
     questions_array.append(Question(df.iloc[:, i], df.iloc[:, i+1]))
+
+# ---------- INTER QUESTION DEPENDENCIES ----------
+
+# add next question references
+# loop through and add reference backward
+for i, question in enumerate(questions_array):
+    for x, struct in enumerate(question.structure):
+        # check if structure has reference
+        if struct == 'REFERENCE':
+            # check if key insight reference
+            if question.texts[x].isupper():
+                # add to question before
+                questions_array[i-1].next_question_reference = question.texts[x]
+                questions_array[i-1].next_logic_type = 'REF_KEY_INSIGHT'
+    
 
 # -------- TESTS --------
 
@@ -125,9 +140,9 @@ with open(os.path.join(sys.path[0], name_of_json_file+".json"), 'w+') as file:
 
         # WRITE & remove comma for the last entry
         if count == (len(questions_array)-1):
-            file.write(create_question(question, question.type, id_base, count, write_beginning, question.content, question.answer_option, question.next_logic_option, question.next_logic_type, question.texts, id_base_next_question)[:-1])
+            file.write(create_question(question, id_base, count, write_beginning, id_base_next_question)[:-1])
         else:
-            file.write(create_question(question, question.type, id_base, count, write_beginning, question.content, question.answer_option, question.next_logic_option, question.next_logic_type, question.texts, id_base_next_question))
+            file.write(create_question(question, id_base, count, write_beginning, id_base_next_question))
 
     # ENDING
     if write_ending:   

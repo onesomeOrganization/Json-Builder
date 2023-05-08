@@ -214,7 +214,7 @@
               "showHidden": null,
               "order": 3,
               "imageName": null,
-              "audioName": "audio_file_name.wav",
+              "audioName": "audio_file_name.png",
               "style": null,
               "refAdaptionType": null,
               "refAdaptionNumber": null,
@@ -240,7 +240,7 @@
               "showHidden": null,
               "order": 4,
               "imageName": null,
-              "audioName": "audio_file_name.wav",
+              "audioName": "audio_file_name.png",
               "style": null,
               "refAdaptionType": null,
               "refAdaptionNumber": null,
@@ -586,13 +586,39 @@
                 }
               ],
               "answerOptions": []
-            }
+            }  
             ,{
               "id": "flora-v12-1-2-3",
+              "type": "ANSWER_OPTION_REF",
+              "required": null,
+              "showHidden": null,
+              "order": 3,
+              "imageName": null,
+              "audioName": null,
+              "style": "TEXT",
+              "refAdaptionType": null,
+              "refAdaptionNumber": null,
+              "refOrderType": null,
+              "refOrderColumn": null,
+              "refOffset": null,
+              "refLimit": null,
+              "downloadName": null,
+              "checkForSpecialTextReplacement": null,
+              "questionAnswerOptionId": null,
+              "language": null,
+              "contentShowType": null,
+              "worldObjectEntryKey": null,
+              "refQuestionId": "strengths-v1-2-3",
+              "refQuestionAnswerOptionId": null,
+              "translations": [],
+              "answerOptions": []
+            }
+            ,{
+              "id": "flora-v12-1-2-4",
               "type": "ANSWER_OPTION",
               "required": true,
               "showHidden": null,
-              "order": 3,
+              "order": 4,
               "imageName": null,
               "audioName": null,
               "style": null,
@@ -614,7 +640,7 @@
               "answerOptions": [
                 
                 {
-                  "id": "flora-v12-1-2-3-1",
+                  "id": "flora-v12-1-2-4-1",
                   "order": 1,
                   "number": null,
                   "type": "CHECKBOX",
@@ -630,14 +656,14 @@
                   "questionLoopCycleId": null,
                   "translations": [
                     {
-                      "id": "flora-v12-1-2-3-1-DE",
+                      "id": "flora-v12-1-2-4-1-DE",
                       "language": "DE",
                       "title": null,
                       "text": "Text für multiple choice Item 1",
                       "description": ""
                     },
                     {
-                      "id": "flora-v12-1-2-3-1-EN",
+                      "id": "flora-v12-1-2-4-1-EN",
                       "language": "EN",
                       "title": "",
                       "text": "Englisch",
@@ -646,7 +672,7 @@
                   ]
                 },
                 {
-                  "id": "flora-v12-1-2-3-2",
+                  "id": "flora-v12-1-2-4-2",
                   "order": 2,
                   "number": null,
                   "type": "CHECKBOX",
@@ -662,14 +688,14 @@
                   "questionLoopCycleId": null,
                   "translations": [
                     {
-                      "id": "flora-v12-1-2-3-2-DE",
+                      "id": "flora-v12-1-2-4-2-DE",
                       "language": "DE",
                       "title": null,
                       "text": "Text für multiple choice Item 2",
                       "description": ""
                     },
                     {
-                      "id": "flora-v12-1-2-3-2-EN",
+                      "id": "flora-v12-1-2-4-2-EN",
                       "language": "EN",
                       "title": "",
                       "text": "Englisch",
@@ -678,7 +704,7 @@
                   ]
                 },
                 {
-                  "id": "flora-v12-1-2-3-3",
+                  "id": "flora-v12-1-2-4-3",
                   "order": 3,
                   "number": null,
                   "type": "TEXT_FIELD_EXPANDABLE",
@@ -699,7 +725,7 @@
           ],
           "nextLogic": {
             "id": "flora-v12-1-2",
-            "type": "NEXT",
+            "type": "REF_KEY_INSIGHT",
             "count": null,
             "nextQuestionId": "flora-v12-1-3",
             "prevQuestionId": null,
@@ -708,6 +734,46 @@
             "sessionId": null,
             "options": [
               
+                {
+                "id": "flora-v12-1-2-opt1",
+                "order": 1,
+                "type": "NEXT",
+                "number": null,
+                "count": null,
+                "secondNumber": null,
+                "secondCount": null,
+                "questionAnswerOptionId": null,
+                "secondQuestionAnswerOptionId": null,
+                "questionId": "flora-v12-1-3",
+                "refQuestionId": null
+              },
+              {
+                "id": "flora-v12-1-2-opt2",
+                "order": 2,
+                "type": "NEXT",
+                "number": null,
+                "count": null,
+                "secondNumber": null,
+                "secondCount": null,
+                "questionAnswerOptionId": null,
+                "secondQuestionAnswerOptionId": null,
+                "questionId": "flora-v12-1-4",
+                "refQuestionId": null
+              },
+              {
+                "id": "flora-v12-1-2-opt3",
+                "order": 3,
+                "type": "REF_KEY_INSIGHT_GENERATE",
+                "number": null,
+                "count": null,
+                "secondNumber": null,
+                "secondCount": null,
+                "questionAnswerOptionId": null,
+                "secondQuestionAnswerOptionId": null,
+                "questionId": "flora-v12-1-3",
+                "worldObjectEntryKey": "VALUE_TOP_VALUES",
+                "refQuestionId": null
+              }
             ],
             "refAdaptions": []
           }
@@ -823,13 +889,39 @@
                 }
               ],
               "answerOptions": []
-            }     
+            }  
             ,{
               "id": "flora-v12-1-3-3",
+              "type": "ANSWER_OPTION_REF",
+              "required": null,
+              "showHidden": null,
+              "order": 3,
+              "imageName": null,
+              "audioName": null,
+              "style": "TEXT",
+              "refAdaptionType": null,
+              "refAdaptionNumber": null,
+              "refOrderType": null,
+              "refOrderColumn": null,
+              "refOffset": null,
+              "refLimit": null,
+              "downloadName": null,
+              "checkForSpecialTextReplacement": null,
+              "questionAnswerOptionId": null,
+              "language": null,
+              "contentShowType": null,
+              "worldObjectEntryKey": "VALUE_TOP_VALUES",
+              "refQuestionId": null,
+              "refQuestionAnswerOptionId": null,
+              "translations": [],
+              "answerOptions": []
+            }     
+            ,{
+              "id": "flora-v12-1-3-4",
               "type": "ANSWER_OPTION",
               "required": true,
               "showHidden": null,
-              "order": 3,
+              "order": 4,
               "imageName": null,
               "audioName": null,
               "style": null,
@@ -850,7 +942,7 @@
               "translations": [],
               "answerOptions": [
                 {
-                  "id": "flora-v12-1-3-3-1",
+                  "id": "flora-v12-1-3-4-1",
                   "order": 1,
                   "number": null,
                   "type": "TEXT_FIELD",
@@ -888,7 +980,7 @@
           "id": "flora-v12-1-4",
           "type": "SCALA_SLIDER",
           "number": null,
-          "minNumber": 1,
+          "minNumber": 0,
           "maxNumber": 5,
           "screenDuration": null,
           "reviewAble": null,

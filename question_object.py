@@ -124,7 +124,8 @@ class Question:
         # check dependencies and set structure and text right
         check_dependencies(self)
         self.type = map_structure_to_type(self.structure) 
-        self.content = map_structure_to_content(self.structure)
+        #self.content = map_structure_to_content(self.structure)
         self.answer_option = map_structure_to_answer_option(self.structure, self.type)
-        self.next_logic_type= 'NEXT'
+        self.next_logic_type = 'NEXT'
         self.next_logic_option = None
+        self.next_question_reference = None

@@ -31,6 +31,36 @@ def create_ref(id_base, count, texts, text_count):
             }'''%(id_base, count, count, texts[text_count])
   return referenzierung
 
+def create_keyinsight_ref(id_base, count, texts, text_count):
+  referenzierung = '''  
+            ,{
+              "id": "%s-%s",
+              "type": "ANSWER_OPTION_REF",
+              "required": null,
+              "showHidden": null,
+              "order": %s,
+              "imageName": null,
+              "audioName": null,
+              "style": "TEXT",
+              "refAdaptionType": null,
+              "refAdaptionNumber": null,
+              "refOrderType": null,
+              "refOrderColumn": null,
+              "refOffset": null,
+              "refLimit": null,
+              "downloadName": null,
+              "checkForSpecialTextReplacement": null,
+              "questionAnswerOptionId": null,
+              "language": null,
+              "contentShowType": null,
+              "worldObjectEntryKey": "%s",
+              "refQuestionId": null,
+              "refQuestionAnswerOptionId": null,
+              "translations": [],
+              "answerOptions": []
+            }'''%(id_base, count, count, texts[text_count])
+  return referenzierung
+
 def create_par(id_base, count, texts, text_count):
   paragraph = '''
             ,{
@@ -278,26 +308,29 @@ def create_more_information(id_base, count, texts, text_count):
             }'''%(id_base, count, count, id_base, count, title, text, id_base, count)
   return more_information
 
-def create_content_block(id_base, count, refs, texts):
+def create_content_block(id_base, count, structure, texts):
   ref_block = '' 
-  for text_count, letter in enumerate(refs):
-    if letter == 'R':
-      ref_block += create_ref(id_base, count, texts, text_count+1)
+  for i, entry in enumerate(structure):
+    if entry == 'REFERENCE' and texts[i].isupper():
+      ref_block += create_keyinsight_ref(id_base, count, texts, i)
       count+=1
-    elif letter == 'P':
-      ref_block += create_par(id_base, count, texts, text_count+1)
+    elif entry == 'REFERENCE' and not texts[i].isupper():
+      ref_block += create_ref(id_base, count, texts, i)
       count+=1
-    elif letter == 'A':
-      ref_block += create_audio(id_base, count, texts, text_count+1)
+    elif entry == 'PARAGRAPH':
+      ref_block += create_par(id_base, count, texts, i)
+      count+=1
+    elif entry == 'AUDIO':
+      ref_block += create_audio(id_base, count, texts, i)
       count+=2
-    elif letter == 'I':
-      ref_block += create_image(id_base, count, texts, text_count+1)
+    elif entry == 'IMAGE':
+      ref_block += create_image(id_base, count, texts, i)
       count+=2
-    elif letter == 'E':
-      ref_block += create_more_information_expanded(id_base, count, texts, text_count+1)
+    elif entry == 'MORE_INFORMATION_EXPANDED':
+      ref_block += create_more_information_expanded(id_base, count, texts, i)
       count+=1
-    elif letter == 'M':
-      ref_block += create_more_information(id_base, count, texts, text_count+1)
+    elif entry == 'MORE_INFORMATION':
+      ref_block += create_more_information(id_base, count, texts, i)
       count+=1
 
   return ref_block 

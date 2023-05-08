@@ -102,13 +102,31 @@ def create_beginning(id, version, journey_key, information):
         ''' % (id+version, journey_key, version, id+version, information[0], id+version, id+version, id+version, information[1], id+version, id+version, id+version, information[3], id+version, id+version, information[5], information[6], id+version, information[2], id+version)
     return beginning
 
-def get_content_length(contents):
-    count_A = contents.count('A')
-    count_I = contents.count('I')
-    length = len(contents)+count_A+count_I+2
+def get_content_length(structure):
+    length = 0
+    for entry in structure:
+      if entry == 'REFERENCE':
+        length+=1
+      elif entry == 'PARAGRAPH':
+        length+=1
+      elif entry == 'AUDIO':
+        length+=2
+      elif entry == 'IMAGE':
+        length+=2
+      elif entry == 'MORE_INFORMATION_EXPANDED':
+        length+=1
+      elif entry == 'MORE_INFORMATION':
+        length+=1
     return length
 
-def create_question(question, type, id_base, count, write_beginning, contents, answer_options, next_logics, next_logic_type, texts, id_base_next_question):
+def create_question(question, id_base, count, write_beginning, id_base_next_question):
+    content_length = get_content_length(question.structure)+2 # fragen fangen nicht von 0 an und Subititel 
+    type = question.type
+    answer_options = question.answer_option
+    next_logics = question.next_logic_option
+    next_logic_type = question.next_logic_type
+    texts = question.texts
+
     # DICTIONARY
     return {
         "CONTENT": ''' 
@@ -185,7 +203,7 @@ def create_question(question, type, id_base, count, write_beginning, contents, a
             ],
             "refAdaptions": []
           }
-        },''' % (id_base, question.progress, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base, texts[0], id_base, create_content_block(id_base, 2, contents, texts), id_base, next_logic_type, id_base_next_question, create_nextLogic_options(id_base, get_content_length(contents), next_logics, next_logic_type)),
+        },''' % (id_base, question.progress, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base, texts[0], id_base, create_content_block(id_base, 2, question.structure, texts), id_base, next_logic_type, id_base_next_question, create_nextLogic_options(id_base, content_length, next_logics, next_logic_type, question.next_question_reference, id_base_next_question)),
         "OPTION_QUESTION": '''
         {
           "id": "%s",
@@ -376,7 +394,7 @@ def create_question(question, type, id_base, count, write_beginning, contents, a
             ],
             "refAdaptions": []
           }
-        },'''% (id_base, question.progress, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base, texts[0], id_base, create_content_block(id_base,2, contents, texts),id_base, get_content_length(contents), get_content_length(contents), id_base, get_content_length(contents), id_base, get_content_length(contents), id_base, get_content_length(contents), id_base, get_content_length(contents), id_base, get_content_length(contents), id_base, get_content_length(contents), id_base, id_base, id_base, get_content_length(contents),  id_base, id_base, get_content_length(contents)),
+        },'''% (id_base, question.progress, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base, texts[0], id_base, create_content_block(id_base,2, question.structure, texts),id_base, content_length, content_length, id_base, content_length, id_base, content_length, id_base, content_length, id_base, content_length, id_base, content_length, id_base, content_length, id_base, id_base, id_base, content_length,  id_base, id_base, content_length),
         "OPEN_QUESTION": '''
         {
           "id": "%s",
@@ -510,7 +528,7 @@ def create_question(question, type, id_base, count, write_beginning, contents, a
             ],
             "refAdaptions": []
           }
-        },''' % (id_base, question.progress, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base, id_base,id_base,texts[0], id_base,create_content_block(id_base, 2, contents, texts), id_base, get_content_length(contents), get_content_length(contents), id_base, get_content_length(contents), id_base, next_logic_type,id_base_next_question,create_nextLogic_options(id_base, get_content_length(contents), next_logics, next_logic_type)),
+        },''' % (id_base, question.progress, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base, id_base,id_base,texts[0], id_base,create_content_block(id_base, 2, question.structure, texts), id_base, content_length, content_length, id_base, content_length, id_base, next_logic_type,id_base_next_question,create_nextLogic_options(id_base, content_length, next_logics, next_logic_type, question.next_question_reference, id_base_next_question)),
         "SCALA_SLIDER":'''
         {
           "id": "%s",
@@ -644,7 +662,7 @@ def create_question(question, type, id_base, count, write_beginning, contents, a
             ],
             "refAdaptions": []
           }
-        },''' % (id_base,question.scala_min,question.scala_max, question.progress, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base,texts[0], id_base, create_content_block(id_base, 2, contents, texts) ,id_base, get_content_length(contents), get_content_length(contents), id_base, get_content_length(contents), id_base, get_content_length(contents), question.scala_min_text, question.scala_max_text,id_base, get_content_length(contents), id_base, next_logic_type,id_base_next_question,create_nextLogic_options(id_base, get_content_length(contents), next_logics, next_logic_type)),
+        },''' % (id_base,question.scala_min,question.scala_max, question.progress, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base,texts[0], id_base, create_content_block(id_base, 2, question.structure, texts) ,id_base, content_length, content_length, id_base, content_length, id_base, content_length, question.scala_min_text, question.scala_max_text,id_base, content_length, id_base, next_logic_type,id_base_next_question,create_nextLogic_options(id_base, content_length, next_logics, next_logic_type, question.next_question_reference, id_base_next_question)),
         "ITEM_LIST_EXPANDABLE": '''
         {
           "id": "%s",
@@ -762,7 +780,7 @@ def create_question(question, type, id_base, count, write_beginning, contents, a
             ],
             "refAdaptions": []
           }
-        },''' % (id_base, question.maxNumber, question.progress, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base, id_base,id_base, texts[0], id_base,create_content_block(id_base, 2, contents, texts), id_base, get_content_length(contents), question.answer_required, get_content_length(contents), create_answer_options(question, id_base, get_content_length(contents),answer_options, texts), id_base, next_logic_type, id_base_next_question, create_nextLogic_options(id_base, get_content_length(contents), next_logics, next_logic_type)),
+        },''' % (id_base, question.maxNumber, question.progress, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base, id_base,id_base, texts[0], id_base,create_content_block(id_base, 2, question.structure, texts), id_base, content_length, question.answer_required, content_length, create_answer_options(question, id_base, content_length,answer_options, texts), id_base, next_logic_type, id_base_next_question, create_nextLogic_options(id_base, content_length, next_logics, next_logic_type, question.next_question_reference, id_base_next_question)),
         "ITEM_LIST_SINGLE_CHOICE": '''
         {
           "id": "%s",
@@ -874,6 +892,6 @@ def create_question(question, type, id_base, count, write_beginning, contents, a
             ],
             "refAdaptions": []
           }
-        },'''%(id_base, question.progress, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base, id_base, id_base,texts[0], id_base, create_content_block(id_base,2,contents, texts), id_base, get_content_length(contents), get_content_length(contents), create_answer_options(question, id_base, get_content_length(contents),answer_options, texts), id_base, next_logic_type,id_base_next_question, create_nextLogic_options(id_base, get_content_length(contents), next_logics, next_logic_type))
+        },'''%(id_base, question.progress, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base, id_base, id_base,texts[0], id_base, create_content_block(id_base,2, question.structure, texts), id_base, content_length, content_length, create_answer_options(question, id_base, content_length,answer_options, texts), id_base, next_logic_type,id_base_next_question, create_nextLogic_options(id_base, content_length, next_logics, next_logic_type, question.next_question_reference, id_base_next_question))
         }.get(type, None) 
     #return questions_dict[type]
