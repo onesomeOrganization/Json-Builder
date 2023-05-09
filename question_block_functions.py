@@ -127,9 +127,6 @@ def create_question(question, id_base, count, write_beginning, id_base_next_ques
     next_logic_type = question.next_logic_type
     texts = question.texts
 
-    if type == 'Neue Etappe':
-      etappe = str(int(etappe)+1)
-
     # DICTIONARY
     return {
         "CONTENT": ''' 
@@ -196,7 +193,7 @@ def create_question(question, id_base, count, write_beginning, id_base_next_ques
             "id": "%s",
             "type": "%s",
             "count": null,
-            "nextQuestionId": "%s",
+            "nextQuestionId": %s,
             "prevQuestionId": null,
             "refQuestionId": null,
             "questionRefLogicId": null,
@@ -521,7 +518,7 @@ def create_question(question, id_base, count, write_beginning, id_base_next_ques
             "id": "%s",
             "type": "%s",
             "count": null,
-            "nextQuestionId": "%s",
+            "nextQuestionId": %s,
             "prevQuestionId": null,
             "refQuestionId": null,
             "questionRefLogicId": null,
@@ -655,7 +652,7 @@ def create_question(question, id_base, count, write_beginning, id_base_next_ques
             "id": "%s",
             "type": "%s",
             "count": null,
-            "nextQuestionId": "%s",
+            "nextQuestionId": %s,
             "prevQuestionId": null,
             "refQuestionId": null,
             "questionRefLogicId": null,
@@ -773,7 +770,7 @@ def create_question(question, id_base, count, write_beginning, id_base_next_ques
             "id": "%s",
             "type": "%s",
             "count": null,
-            "nextQuestionId": "%s",
+            "nextQuestionId": %s,
             "prevQuestionId": null,
             "refQuestionId": null,
             "questionRefLogicId": null,
@@ -885,7 +882,7 @@ def create_question(question, id_base, count, write_beginning, id_base_next_ques
             "id": "%s",
             "type": "%s",
             "count": null,
-            "nextQuestionId": "%s",
+            "nextQuestionId": %s,
             "prevQuestionId": null,
             "refQuestionId": null,
             "questionRefLogicId": null,
@@ -918,6 +915,6 @@ def create_question(question, id_base, count, write_beginning, id_base_next_ques
         }
       ],
       "questions": [
-        '''%(id, version, etappe, etappe, texts[np.where(question.structure == 'Zeit min')], texts[np.where(question.structure == 'Zeit max')], id, version, etappe, texts[np.where(question.structure == 'Etappen-Titel')],id, version, etappe)
+        '''%(id, version, etappe, etappe, int(texts[np.where(question.structure == 'Zeit min')][0]) if 'Zeit min' in question.structure else '', int(texts[np.where(question.structure == 'Zeit max')][0]) if 'Zeit max' in question.structure else '', id, version, etappe, texts[np.where(question.structure == 'Etappen-Titel')][0] if 'Zeit min' in question.structure else '',id, version, etappe)
         }.get(type, None) 
     

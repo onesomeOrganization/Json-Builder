@@ -28,7 +28,7 @@ def create_ref_key_insight_option(id_base, next_question_reference, id_base_next
                 "secondCount": null,
                 "questionAnswerOptionId": null,
                 "secondQuestionAnswerOptionId": null,
-                "questionId": "%s",
+                "questionId": %s,
                 "refQuestionId": null
               },
               {
@@ -41,7 +41,7 @@ def create_ref_key_insight_option(id_base, next_question_reference, id_base_next
                 "secondCount": null,
                 "questionAnswerOptionId": null,
                 "secondQuestionAnswerOptionId": null,
-                "questionId": "%s",
+                "questionId": %s,
                 "refQuestionId": null
               },
               {
@@ -54,7 +54,7 @@ def create_ref_key_insight_option(id_base, next_question_reference, id_base_next
                 "secondCount": null,
                 "questionAnswerOptionId": null,
                 "secondQuestionAnswerOptionId": null,
-                "questionId": "%s",
+                "questionId": %s,
                 "worldObjectEntryKey": "%s",
                 "refQuestionId": null
               }''' %(id_base, id_base_next_question, id_base, id_base_skip_question ,id_base, id_base_next_question, next_question_reference)
@@ -65,8 +65,8 @@ def create_nextLogic_options(id_base, answer_option_base, next_logics, next_logi
     next_logics_block = '' 
     # for key insights
     if next_logic_type == 'REF_KEY_INSIGHT':
-        plus_one = int(id_base_next_question[-1])+1
-        id_base_skip_question = id_base_next_question[:-1] + str(plus_one)
+        plus_one = int(id_base_next_question[-2])+1
+        id_base_skip_question = id_base_next_question[:-2] + str(plus_one) + '"'
         next_logics_block += create_ref_key_insight_option(id_base, next_question_reference, id_base_next_question, id_base_skip_question)
     count = 1
     # if no logics just return empty

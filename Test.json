@@ -13,9 +13,9 @@
   "publishedEN": false,
   "feedbackLink": null,
   "version": 12,
-  "type": "SHORT_TRIP",
+  "type": "WORLD",
   "compulsoryOrder": false,
-  "topicId": null,
+  "topicId": "awareness",
   "backgroundImageLockedName": "dark_main.png",
   "translations": [
     {
@@ -64,7 +64,7 @@
           "id": "flora-v12-s1-DE",
           "language": "DE",
           "title": null,
-          "text": "Beginne deinen Kurztrip"
+          "text": "Etappenweise zum Ziel"
         },
         {
           "id": "flora-v12-s1-EN",
@@ -105,7 +105,7 @@
           "reviewAble": null,
           "noAnswerPreselection": null,
           "showHint": null,
-          "progress": 22,
+          "progress": 18,
           "worldObjectEntryKeyType": null,
           "nonOptionalKeyInsightHint": false,
           "optional": true,
@@ -485,7 +485,7 @@
           "reviewAble": null,
           "noAnswerPreselection": null,
           "showHint": null,
-          "progress": 44,
+          "progress": 36,
           "worldObjectEntryKeyType": null,
           "nonOptionalKeyInsightHint": false,
           "optional": true,
@@ -608,7 +608,7 @@
               "language": null,
               "contentShowType": null,
               "worldObjectEntryKey": null,
-              "refQuestionId": "strengths-v1-2-3",
+              "refQuestionId": "1.1",
               "refQuestionAnswerOptionId": null,
               "translations": [],
               "answerOptions": []
@@ -788,7 +788,7 @@
           "reviewAble": null,
           "noAnswerPreselection": null,
           "showHint": null,
-          "progress": 66,
+          "progress": 54,
           "worldObjectEntryKeyType": null,
           "nonOptionalKeyInsightHint": false,
           "optional": true,
@@ -965,7 +965,7 @@
             "id": "flora-v12-1-3",
             "type": "NEXT",
             "count": null,
-            "nextQuestionId": "flora-v12-1-4",
+            "nextQuestionId": null,
             "prevQuestionId": null,
             "refQuestionId": null,
             "questionRefLogicId": null,
@@ -975,9 +975,31 @@
             ],
             "refAdaptions": []
           }
+        }
+        ],
+      "questionLoops": []
+    },
+    {
+      "id": "flora-v-v12-2",
+      "order": 2,
+      "durationMin": 5,
+      "durationMax": 10,
+      "translations": [
+        {
+          "id": "flora-v-v12-2-DE",
+          "language": "DE",
+          "title": "Titel Etappe 2"
         },
         {
-          "id": "flora-v12-1-4",
+          "id": "flora-v-v12-2-EN",
+          "language": "EN",
+          "title": "Englisch"
+        }
+      ],
+      "questions": [
+        
+        {
+          "id": "flora-v12-2-1",
           "type": "SCALA_SLIDER",
           "number": null,
           "minNumber": 0,
@@ -986,17 +1008,17 @@
           "reviewAble": null,
           "noAnswerPreselection": null,
           "showHint": null,
-          "progress": 88,
+          "progress": 90,
           "worldObjectEntryKeyType": null,
           "nonOptionalKeyInsightHint": false,
           "optional": true,
-          "firstJourneyQuestion": null,
-          "firstSessionQuestion": null,
+          "firstJourneyQuestion": true,
+          "firstSessionQuestion": true,
           "questionLoopId": null,
           "translations": [],
           "content": [
             {
-              "id": "flora-v12-1-4-1",
+              "id": "flora-v12-2-1-1",
               "type": "SUB_TITLE",
               "required": null,
               "showHidden": null,
@@ -1020,13 +1042,13 @@
               "refQuestionAnswerOptionId": null,
               "translations": [
                 {
-                  "id": "flora-v12-1-4-1-DE",
+                  "id": "flora-v12-2-1-1-DE",
                   "language": "DE",
                   "title": null,
                   "text": "Das ist der Beispieltitel von Frage 4"
                 },
                 {
-                  "id": "flora-v12-1-4-1-EN",
+                  "id": "flora-v12-2-1-1-EN",
                   "language": "EN",
                   "title": null,
                   "text": "Englisch"
@@ -1035,7 +1057,7 @@
               "answerOptions": []
             }
             ,{
-              "id": "flora-v12-1-4-2",
+              "id": "flora-v12-2-1-2",
               "type": "PARAGRAPH",
               "required": null,
               "showHidden": null,
@@ -1059,13 +1081,13 @@
               "refQuestionAnswerOptionId": null,
               "translations": [
                 {
-                  "id": "flora-v12-1-4-2-DE",
+                  "id": "flora-v12-2-1-2-DE",
                   "language": "DE",
                   "title": null,
                   "text": "Das ein Beispiel Paragraph für Frage 4"
                 },
                 {
-                  "id": "flora-v12-1-4-2-EN",
+                  "id": "flora-v12-2-1-2-EN",
                   "language": "EN",
                   "title": null,
                   "text": "Englisch"
@@ -1074,7 +1096,7 @@
               "answerOptions": []
             }
             ,{
-              "id": "flora-v12-1-4-3",
+              "id": "flora-v12-2-1-3",
               "type": "ANSWER_OPTION",
               "required": true,
               "showHidden": null,
@@ -1099,7 +1121,7 @@
               "translations": [],
               "answerOptions": [
                 {
-                  "id": "flora-v12-1-4-3-1",
+                  "id": "flora-v12-2-1-3-1",
                   "order": 1,
                   "number": null,
                   "type": "SLIDER",
@@ -1115,14 +1137,14 @@
                   "questionLoopCycleId": null,
                   "translations": [
                     {
-                      "id": "flora-v12-1-4-3-1-DE",
+                      "id": "flora-v12-2-1-3-1-DE",
                       "language": "DE",
                       "title": null,
                       "text": "wenig motiviert, ,sehr motiviert",
                       "description": ""
                     },
                     {
-                      "id": "flora-v12-1-4-3-1-EN",
+                      "id": "flora-v12-2-1-3-1-EN",
                       "language": "EN",
                       "title": null,
                       "text": "Englisch",
@@ -1134,10 +1156,10 @@
             }
           ],
           "nextLogic": {
-            "id": "flora-v12-1-4",
+            "id": "flora-v12-2-1",
             "type": "NEXT",
             "count": null,
-            "nextQuestionId": "flora-v12-1-5",
+            "nextQuestionId": null,
             "prevQuestionId": null,
             "refQuestionId": null,
             "questionRefLogicId": null,
