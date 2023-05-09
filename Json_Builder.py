@@ -26,10 +26,15 @@ excel_path_or_name = "Jsons/Json Builder/Templates/23_05_08_Json_Excel_Template_
 # next_logic_options: N = option with next
 
 # --------- TO DO --------------
-# TODO: Einzelne Questions sind einzelne Objects die von Question erben
-# TODO: Next_logic_type: Next_option -> bei nicht linearer json
-# TODO: Schlüsselerk. referenz -> ref key insight muss ref_logik in der frage zuvor sein -> es muss ein next_question object mitgegeben werden
-# TODO: Englisch text
+# DONE: neue Etape brauch immer Etappenbeschreibung un dZeit min und Zeit max
+# DONE: Etappenweise zum ziel /Starte deinen Kurztrip
+# DONE: topicID
+# DONE: shorttrip/world
+# DONE: Bei kurztrip keine "neue Etappe" möglich
+# DONE: Aus den tests ausnehmen
+# TODO: Remove komma for last entry in etappe
+# TODO: Count überlegen
+
 # question_array = [Question('CONTENT','AM'),Question('SCALA_SLIDER','PRPM'), Question('OPTION_QUESTION','PRP'), Question('CONTENT'), Question('CONTENT'), Question('OPEN_QUESTION','PRP'), Question('SCALA_SLIDER'), Question('CONTENT','PR'), Question('OPEN_QUESTION','PRP'), Question('OPTION_QUESTION'), Question('CONTENT'), Question('CONTENT'), Question('CONTENT')]
 
 
@@ -37,11 +42,17 @@ excel_path_or_name = "Jsons/Json Builder/Templates/23_05_08_Json_Excel_Template_
 
 df = pd.read_excel(excel_path_or_name)
 
-# set defaults and clean
-if pd.isna(df.iloc[3,1]):
-    df.iloc[3,1] = 'Beginne deinen Kurztrip'
-# get first informations and delete them from the dataframe
+
+# get first informations and set defaults
 information = df.iloc[:, 1]
+if information[0] == 'Reise' or information[0] == 'reise':
+    information[0] = 'WORLD'
+    information[1] = '"'+information[1]+'"'
+elif information[0] == 'Kurztrip' or information[0] == 'kurztrip':
+    information[0] = 'SHORT_TRIP'
+    information[1] = 'null'
+
+
 # drop the first two columns
 df = df.drop(df.columns[[0, 1]], axis=1)
 
@@ -69,7 +80,7 @@ for i, question in enumerate(questions_array):
 
 # Check if all information fields are there
 for i,info in enumerate(information):
-    if i > 6:
+    if i > 8:
         break
     if pd.isna(info):
         raise Exception('There is some starting information missing')
@@ -81,28 +92,41 @@ for question in questions_array:
         questions_array.remove(question)
 
 for q_count, question in enumerate(questions_array):
-    # Test 1: immer mit subtitle starten
-    if not question.structure[0] == 'SUB_TITEL':
+    # Test: immer mit subtitle starten
+    if not question.structure[0] == 'SUB_TITEL' or 'Neue Etappe':
         raise Exception ('SUB_TITEL is missing for question ',q_count+1)
-    # Test 2: kein item single und item multiple in einer frage 
+    # Test: kein item single und item multiple in einer frage 
     if 'ITEM(Multiple)' in question.structure and 'ITEM(Single)' in question.structure:
         raise Exception ('ITEM(Single) und ITEM(Multiple) gemischt in Frage: ', q_count+1)
     # Test more Information:
     if 'MORE_INFORMATION' in question.structure and not '_' in question.texts[np.where(question.structure == 'MORE_INFORMATION')][0]:
         raise Exception ('More information field is missing a title in Question:', q_count+1)
-    # Test:
+    # Test formatting
     for text in question.texts:
         if isinstance(text, str):
             if '<br>' in text or '<strong>' in text:
                 formatting_flag = 1
     # Test empty Text
-    needs_text_array = ['SUB_TITEL','PARAGRAPH','AUDIO', 'IMAGE', 'MORE_INFORMATION', 'MORE_INFORMATION_EXPANDED', 'ITEM(Single)', 'ITEM(Multiple)','SCALA']
+    needs_text_array = ['SUB_TITEL','PARAGRAPH','AUDIO', 'IMAGE', 'MORE_INFORMATION', 'MORE_INFORMATION_EXPANDED', 'ITEM(Single)', 'ITEM(Multiple)','SCALA', 'Etappen-Titel','Zeit min','Zeit max']
     for i,text in enumerate(question.texts):
         # if nan
         if not isinstance(text, str):
             # if it needs some text
             if question.structure[i] in needs_text_array: #and not isinstance(question.structure[i], str):
                 raise Exception ('There is a text field missing at question: ', q_count+1)
+
+    # Test Neue Etappe
+    if 'Neue Etappe' in question.structure:
+        if not 'Etappen-Titel' in question.structure:
+            raise Exception ('Etappen-Titel missing at question: ', q_count+1)
+        elif not 'Zeit min' in question.structure:
+            raise Exception ('Zeit min missing at question: ', q_count+1)
+        elif not 'Zeit max' in question.structure:
+            raise Exception ('Zeit max missing at question: ', q_count+1)
+        
+    # Test Short trip and Neue etappe
+    if 'Neue Etappe' in question.structure and information[0] == 'SHORT_TRIP':
+        raise Exception ('It is not possible to a create a neue etappe at: ', q_count+1)
     
 if formatting_flag == 0:
     raise Exception ('Not formatted')
@@ -140,9 +164,9 @@ with open(os.path.join(sys.path[0], name_of_json_file+".json"), 'w+') as file:
 
         # WRITE & remove comma for the last entry
         if count == (len(questions_array)-1):
-            file.write(create_question(question, id_base, count, write_beginning, id_base_next_question)[:-1])
+            file.write(create_question(question, id_base, count, write_beginning, id_base_next_question, id, version, etappe)[:-1])
         else:
-            file.write(create_question(question, id_base, count, write_beginning, id_base_next_question))
+            file.write(create_question(question, id_base, count, write_beginning, id_base_next_question, id, version, etappe))
 
     # ENDING
     if write_ending:   

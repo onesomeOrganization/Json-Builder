@@ -18,9 +18,9 @@ def create_beginning(id, version, journey_key, information):
   "publishedEN": false,
   "feedbackLink": null,
   "version": %s,
-  "type": "SHORT_TRIP",
+  "type": "%s",
   "compulsoryOrder": false,
-  "topicId": null,
+  "topicId": %s,
   "backgroundImageLockedName": "dark_main.png",
   "translations": [
     {
@@ -99,7 +99,7 @@ def create_beginning(id, version, journey_key, information):
         }
       ],
       "questions": [
-        ''' % (id+version, journey_key, version, id+version, information[0], id+version, id+version, id+version, information[1], id+version, id+version, id+version, information[3], id+version, id+version, information[5], information[6], id+version, information[2], id+version)
+        ''' % (id+version, journey_key, version, information[0], information[1], id+version, information[2], id+version, id+version, id+version, information[3], id+version, id+version, id+version, information[4], id+version, id+version, information[7], information[8], id+version, information[5], id+version)
     return beginning
 
 def get_content_length(structure):
@@ -119,13 +119,16 @@ def get_content_length(structure):
         length+=1
     return length
 
-def create_question(question, id_base, count, write_beginning, id_base_next_question):
+def create_question(question, id_base, count, write_beginning, id_base_next_question, id, version, etappe):
     content_length = get_content_length(question.structure)+2 # fragen fangen nicht von 0 an und Subititel 
     type = question.type
     answer_options = question.answer_option
     next_logics = question.next_logic_option
     next_logic_type = question.next_logic_type
     texts = question.texts
+
+    if type == 'Neue Etappe':
+      etappe = str(int(etappe)+1)
 
     # DICTIONARY
     return {
@@ -892,6 +895,29 @@ def create_question(question, id_base, count, write_beginning, id_base_next_ques
             ],
             "refAdaptions": []
           }
-        },'''%(id_base, question.progress, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base, id_base, id_base,texts[0], id_base, create_content_block(id_base,2, question.structure, texts), id_base, content_length, content_length, create_answer_options(question, id_base, content_length,answer_options, texts), id_base, next_logic_type,id_base_next_question, create_nextLogic_options(id_base, content_length, next_logics, next_logic_type, question.next_question_reference, id_base_next_question))
+        },'''%(id_base, question.progress, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base, id_base, id_base,texts[0], id_base, create_content_block(id_base,2, question.structure, texts), id_base, content_length, content_length, create_answer_options(question, id_base, content_length,answer_options, texts), id_base, next_logic_type,id_base_next_question, create_nextLogic_options(id_base, content_length, next_logics, next_logic_type, question.next_question_reference, id_base_next_question)),
+        "Neue Etappe": '''
+        ],
+      "questionLoops": []
+    },
+    {
+      "id": "%s-v%s-%s",
+      "order": %s,
+      "durationMin": %s,
+      "durationMax": %s,
+      "translations": [
+        {
+          "id": "%s-v%s-%s-DE",
+          "language": "DE",
+          "title": "%s"
+        },
+        {
+          "id": "%s-v%s-%s-EN",
+          "language": "EN",
+          "title": "Englisch"
+        }
+      ],
+      "questions": [
+        '''%(id, version, etappe, etappe, texts[np.where(question.structure == 'Zeit min')], texts[np.where(question.structure == 'Zeit max')], id, version, etappe, texts[np.where(question.structure == 'Etappen-Titel')],id, version, etappe)
         }.get(type, None) 
-    #return questions_dict[type]
+    
