@@ -26,7 +26,6 @@ excel_path_or_name = "Jsons/Json Builder/Templates/23_05_09_Json_Excel_Template_
 # next_logic_options: N = option with next
 # question_array = [Question('CONTENT','AM'),Question('SCALA_SLIDER','PRPM'), Question('OPTION_QUESTION','PRP'), Question('CONTENT'), Question('CONTENT'), Question('OPEN_QUESTION','PRP'), Question('SCALA_SLIDER'), Question('CONTENT','PR'), Question('OPEN_QUESTION','PRP'), Question('OPTION_QUESTION'), Question('CONTENT'), Question('CONTENT'), Question('CONTENT')]
 
-# TODO: Screen refs
 # TODO: Nummerierung kontrollieren
 
 # --------- EXCEL ---------
@@ -78,6 +77,25 @@ for i, question in enumerate(questions_array):
 
 
 # -------- TESTS --------
+
+# Test nummeration
+nummeration = []
+pattern = '^\d+\.\d+$'
+for column in df.columns:
+    if re.match(pattern, column):
+        nummeration.append(column)
+
+for i, number in enumerate(nummeration):
+    if i == len(nummeration)-1:
+        break
+    splits = number.split('.')
+    # first number has to be the same and second counting or first number counting and second a 1
+    if splits[0] == nummeration[i+1].split('.')[0] and int(splits[1])+1 == int(nummeration[i+1].split('.')[1]):
+        continue
+    elif int(splits[0])+1 == int(nummeration[i+1].split('.')[0]) and nummeration[i+1].split('.')[1] == '1':
+        continue
+    else:
+        raise Exception ('Nummeration is wrong somwhere around position: ', i+1)
 
 # Check if all information fields are there
 for i,info in enumerate(information):
