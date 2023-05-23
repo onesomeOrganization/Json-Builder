@@ -1,8 +1,15 @@
 import numpy as np
 import re
 
+
+def create_id (self, reference_id_excel):
+    reference_id_excel = reference_id_excel.strip()
+    id_numbers = reference_id_excel.split('.')
+    new_id = self.id_base + self.version + '-'+ id_numbers[0]+'-'+ id_numbers[1]
+    return new_id
+
 def check_dependencies(self):
-    # clean of nan
+    # CLEAN OF NAN
     clean_structure = np.empty((0,))
     for entry in self.structure:
         if isinstance(entry, str):
@@ -12,22 +19,21 @@ def check_dependencies(self):
     # make structure and text array of equal length
     self.texts = self.texts[:len(self.structure)]
 
-    # check dependencies
-    # solve antwort problem
+    # SOLVE ANTWORT PROBLEM
     if 'ITEM(Multiple)' in self.structure and 'ANSWER OPTION' in self.structure:
         self.structure[np.where(self.structure == 'ANSWER OPTION')] = 'SEVERAL ANSWER OPTIONS'
 
     if 'ITEM(Single)' in self.structure and 'ANSWER OPTION' in self.structure:
         self.structure[np.where(self.structure == 'ANSWER OPTION')] = 'SEVERAL ANSWER OPTIONS'
 
-    # solve single choice with antwort problem
+    # SINGLE CHOICE WITH ANTWORT
     if "ITEM(Single)" in self.structure and 'SEVERAL ANSWER OPTIONS' in self.structure:
         self.maxNumber = '1'
         self.structure = np.core.defchararray.replace(self.structure, 'ITEM(Single)', 'ITEM(Multiple)')
     else:
         self.maxNumber = 'null'
 
-    # optional
+    # OPTIONAL
     if 'OPTIONAL' in self.structure:
         self.answer_required = 'false'
         self.texts = np.delete(self.texts, np.where(self.structure == 'OPTIONAL'))
@@ -36,7 +42,7 @@ def check_dependencies(self):
     else:
         self.answer_required = 'true'
 
-    # scala
+    # SCALA
     if 'SCALA' in self.structure:
         # Test Scala Texts:
         # Define the regular expression pattern
@@ -52,12 +58,49 @@ def check_dependencies(self):
         texts = re.findall(r'\((.*?)\)', self.texts[np.where(self.structure == 'SCALA')][0])
         self.scala_min_text = texts[0]
         self.scala_max_text = texts[1]
-
     else:
         self.scala_min = None
         self.scala_max = None
         self.scala_min_text = None
         self.scala_max_text = None
+
+    # BUTTONS
+    if 'BUTTON' in self.structure:
+        # Test -> for buttons
+        button_texts = self.texts[np.where(self.structure == 'BUTTON')]
+        for button_text in button_texts:
+            if not '->' in button_text:
+                raise Exception ('"->" missing at one of the Buttons')
+        button_one = button_texts[0].split('->')
+        button_two = button_texts[1].split('->')
+        self.button_one_text = button_one[0].strip()
+        self.button_two_text = button_two[0].strip()
+        self.button_one_nextquestion = create_id(self, button_one[1])
+        self.button_two_nextquestion = create_id(self, button_two[1])
+    else:
+        self.button_one_text = None
+        self.button_two_text = None
+        self.button_one_nextquestion = None
+        self.button_two_nextquestion = None
+
+    # KEY INSIGHT
+    if 'KEY INSIGHT (optional)' in self.structure or 'KEY INSIGHT (verpflichtend)' in self.structure:
+        self.reviewable = 'true'
+        if 'KEY INSIGHT (optional)' in self.structure:
+            self.worldObjectEntryKeyType = '"'+ self.texts[np.where(self.structure == 'KEY INSIGHT (optional)')][0]+'"'
+            self.optional = 'true'
+        elif 'KEY INSIGHT (verpflichtend)' in self.structure:
+            self.worldObjectEntryKeyType = '"'+self.texts[np.where(self.structure == 'KEY INSIGHT (verpflichtend)')][0]+'"'
+            self.optional = 'false'
+    else:
+        self.reviewable = 'false'
+        self.worldObjectEntryKeyType = 'null'
+        self.optional = 'true'
+
+    # NEXT OPTIONS ITEMS
+    if 'Item(Single)' in self.structure and '->' in self.texts[np.where(self.structure == 'Item(Single)')][0]:
+        pass
+
 
 
 def map_structure_to_type(structure):
@@ -71,7 +114,7 @@ def map_structure_to_type(structure):
     elif "ITEM(Single)" in structure and 'SEVERAL ANSWER OPTIONS' in structure:
         question_type = 'ITEM_LIST_EXPANDABLE'
         # OPTION_QUESTION: S P Button
-    elif 'Button' in structure:
+    elif 'BUTTON' in structure:
         question_type = 'OPTION_QUESTION'
         # SCALA_SLIDER,
     elif 'SCALA' in structure:
@@ -104,7 +147,10 @@ def map_structure_to_answer_option(structure, type):
     return answer_option
 
 class Question:
-    def __init__(self, structure, texts):
+    def __init__(self, id_base, version, structure, texts, id):
+        self.id_base = id_base
+        self.id = id
+        self.version = version
         self.structure = structure.values #array
         self.texts = texts.values #array
         # check dependencies and set structure and text right
@@ -113,4 +159,6 @@ class Question:
         self.answer_option = map_structure_to_answer_option(self.structure, self.type)
         self.next_logic_type = 'NEXT'
         self.next_logic_option = None
-        self.next_question_reference = None
+        self.reference_of_next_question = None
+
+        

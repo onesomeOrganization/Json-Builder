@@ -99,7 +99,7 @@ def create_beginning(id, version, journey_key, information):
         }
       ],
       "questions": [
-        ''' % (id+version, journey_key, version, information[0], information[1], id+version, information[2], id+version, id+version, id+version, information[3], id+version, id+version, id+version, information[4], id+version, id+version, information[7], information[8], id+version, information[5], id+version)
+        ''' % (id+version, journey_key, version, information[0], information[1], id+version, information[2], id+version, id+version, id+version, information[3].replace('"', '\\"').replace('\n', ''), id+version, id+version, id+version, information[4], id+version, id+version, information[7], information[8], id+version, information[5], id+version)
     return beginning
 
 def get_content_length(structure):
@@ -119,7 +119,7 @@ def get_content_length(structure):
         length+=1
     return length
 
-def create_question(question, id_base, count, write_beginning, id_base_next_question, id, version, etappe):
+def create_question(question, id_base, count, write_beginning, id_base_next_question, question_id, version, etappe):
     content_length = get_content_length(question.structure)+2 # fragen fangen nicht von 0 an und Subititel 
     type = question.type
     answer_options = question.answer_option
@@ -137,13 +137,13 @@ def create_question(question, id_base, count, write_beginning, id_base_next_ques
           "minNumber": null,
           "maxNumber": null,
           "screenDuration": null,
-          "reviewAble": null,
+          "reviewAble": %s,
           "noAnswerPreselection": null,
           "showHint": null,
           "progress": %s,
-          "worldObjectEntryKeyType": null,
+          "worldObjectEntryKeyType": %s,
           "nonOptionalKeyInsightHint": false,
-          "optional": true,
+          "optional": %s,
           "firstJourneyQuestion": %s,
           "firstSessionQuestion": %s,
           "questionLoopId": null,
@@ -203,7 +203,7 @@ def create_question(question, id_base, count, write_beginning, id_base_next_ques
             ],
             "refAdaptions": []
           }
-        },''' % (id_base, question.progress, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base, texts[0], id_base, create_content_block(id_base, 2, question.structure, texts), id_base, next_logic_type, id_base_next_question, create_nextLogic_options(id_base, content_length, next_logics, next_logic_type, question.next_question_reference, id_base_next_question)),
+        },''' % (question_id, question.reviewable, question.progress, question.worldObjectEntryKeyType, question.optional, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", question_id, question_id, texts[0], question_id, create_content_block(question_id, 2, question.structure, texts), question_id, next_logic_type, id_base_next_question, create_nextLogic_options(question_id, content_length, next_logics, next_logic_type, question.reference_of_next_question, id_base_next_question)),
         "OPTION_QUESTION": '''
         {
           "id": "%s",
@@ -212,13 +212,13 @@ def create_question(question, id_base, count, write_beginning, id_base_next_ques
           "minNumber": null,
           "maxNumber": null,
           "screenDuration": null,
-          "reviewAble": null,
+          "reviewAble": %s,
           "noAnswerPreselection": null,
           "showHint": null,
           "progress": %s,
-          "worldObjectEntryKeyType": null,
+          "worldObjectEntryKeyType": %s,
           "nonOptionalKeyInsightHint": false,
-          "optional": true,
+          "optional": %s,
           "firstJourneyQuestion": %s,
           "firstSessionQuestion": %s,
           "questionLoopId": null,
@@ -308,7 +308,7 @@ def create_question(question, id_base, count, write_beginning, id_base_next_ques
                       "id": "%s-%s-1-DE",
                       "language": "DE",
                       "title": null,
-                      "text": "Ja",
+                      "text": "%s",
                       "description": ""
                     },
                     {
@@ -340,7 +340,7 @@ def create_question(question, id_base, count, write_beginning, id_base_next_ques
                       "id": "%s-%s-2-DE",
                       "language": "DE",
                       "title": null,
-                      "text": "Nein",
+                      "text": "%s",
                       "description": ""
                     },
                     {
@@ -375,7 +375,7 @@ def create_question(question, id_base, count, write_beginning, id_base_next_ques
                 "secondCount": null,
                 "questionAnswerOptionId": "%s-%s-1",
                 "secondQuestionAnswerOptionId": null,
-                "questionId": "XY",
+                "questionId": "%s",
                 "refQuestionId": null
               },
               {
@@ -388,13 +388,13 @@ def create_question(question, id_base, count, write_beginning, id_base_next_ques
                 "secondCount": null,
                 "questionAnswerOptionId": "%s-%s-2",
                 "secondQuestionAnswerOptionId": null,
-                "questionId": "XY",
+                "questionId": "%s",
                 "refQuestionId": null
               }
             ],
             "refAdaptions": []
           }
-        },'''% (id_base, question.progress, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base, texts[0], id_base, create_content_block(id_base,2, question.structure, texts),id_base, content_length, content_length, id_base, content_length, id_base, content_length, id_base, content_length, id_base, content_length, id_base, content_length, id_base, content_length, id_base, id_base, id_base, content_length,  id_base, id_base, content_length),
+        },'''% (question_id, question.reviewable, question.progress, question.worldObjectEntryKeyType, question.optional, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", question_id, question_id, texts[0], question_id, create_content_block(question_id,2, question.structure, texts),question_id, content_length, content_length, question_id, content_length, question_id, content_length, question.button_one_text, question_id, content_length, question_id, content_length, question_id, content_length, question.button_two_text, question_id, content_length, question_id, question_id, question_id, content_length, question.button_one_nextquestion,  question_id, question_id, content_length, question.button_two_nextquestion),
         "OPEN_QUESTION": '''
         {
           "id": "%s",
@@ -403,32 +403,17 @@ def create_question(question, id_base, count, write_beginning, id_base_next_ques
           "minNumber": null,
           "maxNumber": null,
           "screenDuration": null,
-          "reviewAble": null,
+          "reviewAble": %s,
           "noAnswerPreselection": null,
           "showHint": null,
           "progress": %s,
-          "worldObjectEntryKeyType": null,
+          "worldObjectEntryKeyType": %s,
           "nonOptionalKeyInsightHint": false,
-          "optional": true,
+          "optional": %s,
           "firstJourneyQuestion": %s,
           "firstSessionQuestion": %s,
           "questionLoopId": null,
-          "translations": [
-            {
-              "id": "%s-DE",
-              "language": "DE",
-              "title": "",
-              "text": "",
-              "notAnsweredText": null
-            },
-            {
-              "id": "%s-EN",
-              "language": "EN",
-              "title": "",
-              "text": "",
-              "notAnsweredText": null
-            }
-          ],
+          "translations": [],
           "content": [
             {
               "id": "%s-1",
@@ -528,7 +513,7 @@ def create_question(question, id_base, count, write_beginning, id_base_next_ques
             ],
             "refAdaptions": []
           }
-        },''' % (id_base, question.progress, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base, id_base,id_base,texts[0], id_base,create_content_block(id_base, 2, question.structure, texts), id_base, content_length, content_length, id_base, content_length, id_base, next_logic_type,id_base_next_question,create_nextLogic_options(id_base, content_length, next_logics, next_logic_type, question.next_question_reference, id_base_next_question)),
+        },''' % (question_id, question.reviewable, question.progress, question.worldObjectEntryKeyType, question.optional, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", question_id,question_id,texts[0], question_id,create_content_block(question_id, 2, question.structure, texts), question_id, content_length, content_length, question_id, content_length, question_id, next_logic_type,id_base_next_question,create_nextLogic_options(question_id, content_length, next_logics, next_logic_type, question.reference_of_next_question, id_base_next_question)),
         "SCALA_SLIDER":'''
         {
           "id": "%s",
@@ -537,13 +522,13 @@ def create_question(question, id_base, count, write_beginning, id_base_next_ques
           "minNumber": %s,
           "maxNumber": %s,
           "screenDuration": null,
-          "reviewAble": null,
+          "reviewAble": %s,
           "noAnswerPreselection": null,
           "showHint": null,
           "progress": %s,
-          "worldObjectEntryKeyType": null,
+          "worldObjectEntryKeyType": %s,
           "nonOptionalKeyInsightHint": false,
-          "optional": true,
+          "optional": %s,
           "firstJourneyQuestion": %s,
           "firstSessionQuestion": %s,
           "questionLoopId": null,
@@ -662,7 +647,7 @@ def create_question(question, id_base, count, write_beginning, id_base_next_ques
             ],
             "refAdaptions": []
           }
-        },''' % (id_base,question.scala_min,question.scala_max, question.progress, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base,texts[0], id_base, create_content_block(id_base, 2, question.structure, texts) ,id_base, content_length, content_length, id_base, content_length, id_base, content_length, question.scala_min_text, question.scala_max_text,id_base, content_length, id_base, next_logic_type,id_base_next_question,create_nextLogic_options(id_base, content_length, next_logics, next_logic_type, question.next_question_reference, id_base_next_question)),
+        },''' % (question_id,question.scala_min,question.scala_max, question.reviewable, question.progress, question.worldObjectEntryKeyType, question.optional, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", question_id, question_id,texts[0], question_id, create_content_block(question_id, 2, question.structure, texts) ,question_id, content_length, content_length, question_id, content_length, question_id, content_length, question.scala_min_text, question.scala_max_text,question_id, content_length, question_id, next_logic_type,id_base_next_question,create_nextLogic_options(question_id, content_length, next_logics, next_logic_type, question.reference_of_next_question, id_base_next_question)),
         "ITEM_LIST_EXPANDABLE": '''
         {
           "id": "%s",
@@ -671,32 +656,17 @@ def create_question(question, id_base, count, write_beginning, id_base_next_ques
           "minNumber": 1,
           "maxNumber": %s,
           "screenDuration": null,
-          "reviewAble": null,
+          "reviewAble": %s,
           "noAnswerPreselection": null,
           "showHint": null,
           "progress": %s,
-          "worldObjectEntryKeyType": null,
+          "worldObjectEntryKeyType": %s,
           "nonOptionalKeyInsightHint": false,
-          "optional": true,
+          "optional": %s,
           "firstJourneyQuestion": %s,
           "firstSessionQuestion": %s,
           "questionLoopId": null,
-          "translations": [
-            {
-              "id": "%s-DE",
-              "language": "DE",
-              "title": "",
-              "text": "",
-              "notAnsweredText": null
-            },
-            {
-              "id": "%s-EN",
-              "language": "EN",
-              "title": "",
-              "text": "",
-              "notAnsweredText": null
-            }
-          ],
+          "translations": [],
           "content": [
             {
               "id": "%s-1",
@@ -780,7 +750,7 @@ def create_question(question, id_base, count, write_beginning, id_base_next_ques
             ],
             "refAdaptions": []
           }
-        },''' % (id_base, question.maxNumber, question.progress, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base, id_base,id_base, texts[0], id_base,create_content_block(id_base, 2, question.structure, texts), id_base, content_length, question.answer_required, content_length, create_answer_options(question, id_base, content_length,answer_options, texts), id_base, next_logic_type, id_base_next_question, create_nextLogic_options(id_base, content_length, next_logics, next_logic_type, question.next_question_reference, id_base_next_question)),
+        },''' % (question_id, question.maxNumber, question.reviewable, question.progress, question.worldObjectEntryKeyType, question.optional, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", question_id,question_id, texts[0], question_id,create_content_block(question_id, 2, question.structure, texts), question_id, content_length, question.answer_required, content_length, create_answer_options(question, question_id, content_length,answer_options, texts), question_id, next_logic_type, id_base_next_question, create_nextLogic_options(question_id, content_length, next_logics, next_logic_type, question.reference_of_next_question, id_base_next_question)),
         "ITEM_LIST_SINGLE_CHOICE": '''
         {
           "id": "%s",
@@ -789,30 +759,17 @@ def create_question(question, id_base, count, write_beginning, id_base_next_ques
           "minNumber": null,
           "maxNumber": null,
           "screenDuration": null,
-          "reviewAble": null,
+          "reviewAble": %s,
           "noAnswerPreselection": null,
           "showHint": null,
           "progress": %s,
-          "worldObjectEntryKeyType": null,
+          "worldObjectEntryKeyType": %s,
           "nonOptionalKeyInsightHint": false,
-          "optional": true,
+          "optional": %s,
           "firstJourneyQuestion": %s,
           "firstSessionQuestion": %s,
           "questionLoopId": null,
-          "translations": [
-            {
-                "id": "%s-DE",
-                "language": "DE",
-                "title": null,
-                "text": "XY"
-            },
-            {
-                "id": "%s-EN",
-                "language": "EN",
-                "title": null,
-                "text": "Englisch"
-            }
-          ],
+          "translations": [],
           "content": [
             {
               "id": "%s-1",
@@ -892,29 +849,29 @@ def create_question(question, id_base, count, write_beginning, id_base_next_ques
             ],
             "refAdaptions": []
           }
-        },'''%(id_base, question.progress, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", id_base, id_base, id_base, id_base,texts[0], id_base, create_content_block(id_base,2, question.structure, texts), id_base, content_length, content_length, create_answer_options(question, id_base, content_length,answer_options, texts), id_base, next_logic_type,id_base_next_question, create_nextLogic_options(id_base, content_length, next_logics, next_logic_type, question.next_question_reference, id_base_next_question)),
+        },'''%(question_id, question.reviewable, question.progress, question.worldObjectEntryKeyType, question.optional,"true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", question_id, question_id,texts[0], question_id, create_content_block(question_id,2, question.structure, texts), question_id, content_length, content_length, create_answer_options(question, question_id, content_length,answer_options, texts), question_id, next_logic_type,id_base_next_question, create_nextLogic_options(question_id, content_length, next_logics, next_logic_type, question.reference_of_next_question, id_base_next_question)),
         "Neue Etappe": '''
         ],
       "questionLoops": []
     },
     {
-      "id": "%s-v%s-%s",
+      "id": "%s%s-%s",
       "order": %s,
       "durationMin": %s,
       "durationMax": %s,
       "translations": [
         {
-          "id": "%s-v%s-%s-DE",
+          "id": "%s%s-%s-DE",
           "language": "DE",
           "title": "%s"
         },
         {
-          "id": "%s-v%s-%s-EN",
+          "id": "%s%s-%s-EN",
           "language": "EN",
           "title": "Englisch"
         }
       ],
       "questions": [
-        '''%(id, version, etappe, etappe, int(texts[np.where(question.structure == 'Zeit min')][0]) if 'Zeit min' in question.structure else '', int(texts[np.where(question.structure == 'Zeit max')][0]) if 'Zeit max' in question.structure else '', id, version, etappe, texts[np.where(question.structure == 'Etappen-Titel')][0] if 'Zeit min' in question.structure else '',id, version, etappe)
+        '''%(id_base, version, etappe, etappe, int(texts[np.where(question.structure == 'Zeit min')][0]) if 'Zeit min' in question.structure else '', int(texts[np.where(question.structure == 'Zeit max')][0]) if 'Zeit max' in question.structure else '', id_base, version, etappe, texts[np.where(question.structure == 'Etappen-Titel')][0] if 'Zeit min' in question.structure else '',id_base, version, etappe)
         }.get(type, None) 
     

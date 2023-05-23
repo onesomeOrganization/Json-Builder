@@ -46,13 +46,14 @@ def do_tests(df, information, questions_array):
         # Test more Information:
         if 'MORE_INFORMATION' in question.structure and not '_' in question.texts[np.where(question.structure == 'MORE_INFORMATION')][0]:
             raise Exception ('More information field is missing a title in Question:', q_count+1)
+        
         # Test formatting
         for text in question.texts:
             if isinstance(text, str):
                 if '<br>' in text or '<strong>' in text:
                     formatting_flag = 1
         # Test empty Text
-        needs_text_array = ['SUB_TITEL','PARAGRAPH','AUDIO', 'IMAGE', 'MORE_INFORMATION', 'MORE_INFORMATION_EXPANDED', 'ITEM(Single)', 'ITEM(Multiple)','SCALA', 'REFERENCE', 'Etappen-Titel','Zeit min','Zeit max']
+        needs_text_array = ['SUB_TITEL','PARAGRAPH','AUDIO', 'IMAGE', 'MORE_INFORMATION', 'MORE_INFORMATION_EXPANDED', 'ITEM(Single)', 'ITEM(Multiple)','SCALA', 'REFERENCE', 'Etappen-Titel','Zeit min','Zeit max', 'KEY INSIGHT (optional)','KEY INSIGHT (verpflichtend)']
         for i,text in enumerate(question.texts):
             # if nan
             # check if text is str
@@ -69,10 +70,7 @@ def do_tests(df, information, questions_array):
             elif not 'Zeit max' in question.structure:
                 raise Exception ('Zeit max missing at question: ', q_count+1)
             
-        # Test References only for key insights
-    #    if 'REFERENCE' in question.structure and not question.texts[np.where(question.structure == 'REFERENCE')][0].isupper():
-    #        raise Exception ('Key Insight key missing or incorrect in Reference of question', q_count+1)
-            
+        
         # Test Short trip and Neue etappe
         if 'Neue Etappe' in question.structure and information[0] == 'SHORT_TRIP':
             raise Exception ('It is not possible to a create a neue etappe in a Short trip. Around position: ', q_count+1)

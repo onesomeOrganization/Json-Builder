@@ -2,22 +2,24 @@ import os
 import sys
 from content_block_functions import *
 from question_block_functions import *
-from question_object import *
+from question_object import Question
 import pandas as pd
 import re
 from tests import do_tests
+from progress import check_for_progress_type,create_progress, create_etappen_array
 # 
 #  ------ VARIABLES ------------------------------------
 # Auszufüllen
 name_of_json_file = "Test"
 journey_key = "Test_Short_Trip_Flora"
-id = "flora-v"
-version = str(12)
+id_base = "flora-v"
+version = str(13)
 write_beginning = True
 write_ending = True
 etappe = 1
 startnumber = 1 # 1 if it should start from beginning
-excel_path_or_name = "Jsons/Json Builder/Templates/23_05_09_Json_Excel_Template_screenrefs.xlsx"
+#excel_path_or_name = "Jsons/Json Builder/Templates/23_05_23_Json_Excel_Template_intro_schlüsselerk.xlsx"
+excel_path_or_name = "Jsons/Json Builder/Templates/Json_Excel_Template3.0.xlsx"
 
 # -------- EXPLANATIONS ----------
 # type: CONTENT, OPTION_QUESTION, OPEN_QUESTION, SCALA_SLIDER, ITEM_LIST_EXPANDABLE (T OR C as answeroption), ITEM_LIST_SINGLE_CHOICE (R)
@@ -26,6 +28,26 @@ excel_path_or_name = "Jsons/Json Builder/Templates/23_05_09_Json_Excel_Template_
 # next_logic_type: NEXT, NEXT_OPTION, REF_KEY_INSIGHT
 # next_logic_options: N = option with next
 # question_array = [Question('CONTENT','AM'),Question('SCALA_SLIDER','PRPM'), Question('OPTION_QUESTION','PRP'), Question('CONTENT'), Question('CONTENT'), Question('OPEN_QUESTION','PRP'), Question('SCALA_SLIDER'), Question('CONTENT','PR'), Question('OPEN_QUESTION','PRP'), Question('OPTION_QUESTION'), Question('CONTENT'), Question('CONTENT'), Question('CONTENT')]
+
+
+# TODO: Item SIngle mit -> check for it and extract it
+# TODO: Progress bei mehreren verästelungen
+
+
+# ---------- HELPER ----------
+def create_id(reference_id_excel):
+    id_numbers = reference_id_excel.split('.')
+    new_id = question_id + version + '-'+ id_numbers[0]+'-'+ id_numbers[1]
+    return new_id
+
+def get_number_etappen(questions_array):
+    number_etappen = set()
+    for question in questions_array:
+        if question.id.split('.')[0].isdigit():
+            number_etappen.add(question.id.split('.')[0])
+        else:
+            question.progress = None
+    return number_etappen
 
 # --------- EXCEL ---------
 df = pd.read_excel(excel_path_or_name)
@@ -57,7 +79,7 @@ df = df.astype(str)
 # save always two arrays into the Question object with structure and texts respectively
 questions_array = []
 for i in range(0, len(df.columns), 2):
-    questions_array.append(Question(df.iloc[:, i], df.iloc[:, i+1]))
+    questions_array.append(Question(id_base, version, df.iloc[:, i], df.iloc[:, i+1], df.columns[i]))
 
 
 # ---------- INTER QUESTION DEPENDENCIES ----------
@@ -71,7 +93,7 @@ for i, question in enumerate(questions_array):
             # check if key insight reference
             if question.texts[x].isupper():
                 # add to question before
-                questions_array[i-1].next_question_reference = question.texts[x]
+                questions_array[i-1].reference_of_next_question = question.texts[x]
                 questions_array[i-1].next_logic_type = 'REF_KEY_INSIGHT'
 
 
@@ -89,13 +111,20 @@ for question in questions_array:
             question.texts[i] = text.replace('"', '\\"').replace('\n', '')
 
 # ---------- PROGRESS -------
-number_questions = len(questions_array)
-progress_steps = round(90/number_questions)
-progress = progress_steps
-for question in questions_array:
-    question.progress = progress
-    progress += progress_steps
 
+new_array = []
+for et in get_number_etappen(questions_array):
+    etappen_array = create_etappen_array(et, questions_array)
+    type, splitscreen_number, number_questions_until_letzter_screen, count_branch, connectionscreen_number = check_for_progress_type(etappen_array)
+    etappen_questions_array = create_progress(etappen_array, type, splitscreen_number, number_questions_until_letzter_screen, count_branch, connectionscreen_number)
+    new_array.extend(etappen_questions_array)
+
+# copy progress to actually array
+for q1 in questions_array:
+    for q2 in new_array:
+        if q1.id == q2.id:
+            q1.progress = q2.progress
+   
 
 # -------- WRITE FILE -------------------------------------
 
@@ -103,7 +132,7 @@ with open(os.path.join(sys.path[0], name_of_json_file+".json"), 'w+') as file:
 
     # BEGINNING
     if write_beginning:    
-        file.write(create_beginning(id, version, journey_key, information))
+        file.write(create_beginning(id_base, version, journey_key, information))
 
     count = 0
     for i, question in enumerate(questions_array): 
@@ -113,19 +142,33 @@ with open(os.path.join(sys.path[0], name_of_json_file+".json"), 'w+') as file:
             etappe += 1
         
         # calculate id base
-        id_base = id+version+"-"+str(etappe)+"-"+str(startnumber+count)
-        id_base_next_question = '"'+id+version+"-"+str(etappe)+"-"+str(startnumber+count+1)+'"'   
+        question_id = id_base+version+"-"+str(etappe)+"-"+str(startnumber+count)
+        id_base_next_question = '"'+id_base+version+"-"+str(etappe)+"-"+str(startnumber+count+1)+'"'   
 
-        # WRITE & remove comma for the last entry
-        if i == (len(questions_array)-1):
-            id_base_next_question = 'null'
-            file.write(create_question(question, id_base, count, write_beginning, id_base_next_question, id, version, etappe)[:-1])
-        elif i < (len(questions_array)-1):
-            if questions_array[i+1].type == 'Neue Etappe':
-                id_base_next_question = 'null'
-                file.write(create_question(question, id_base, count, write_beginning, id_base_next_question, id, version, etappe)[:-1])
+        # WRITE & NEXT_QUESTION_ID & REMOVE COMMA
+        # Option A - weiter mit screen
+        if 'weiter mit Screen' in question.structure:
+            id_base_next_question = '"'+create_id(question.texts[np.where(question.structure == 'weiter mit Screen')][0])+'"'
+            if i == (len(questions_array)-1) or (i < (len(questions_array)-1) and questions_array[i+1].type == 'Neue Etappe'):
+                file.write(create_question(question, id_base, count, write_beginning, id_base_next_question, question_id, version, etappe)[:-1])
             else:
-                file.write(create_question(question, id_base, count, write_beginning, id_base_next_question, id, version, etappe))
+                file.write(create_question(question, id_base, count, write_beginning, id_base_next_question, question_id, version, etappe))
+
+        # Option B - letzter Screen
+        elif 'letzter Screen' in question.structure:
+            id_base_next_question = 'null'
+            if i == (len(questions_array)-1) or (i < (len(questions_array)-1) and questions_array[i+1].type == 'Neue Etappe'):
+                file.write(create_question(question, id_base, count, write_beginning, id_base_next_question, question_id, version, etappe)[:-1])
+            else:
+                file.write(create_question(question, id_base, count, write_beginning, id_base_next_question, question_id, version, etappe))
+
+        # Option C - keins von beiden
+        else: 
+            if i == (len(questions_array)-1) or (i < (len(questions_array)-1) and questions_array[i+1].type == 'Neue Etappe'):
+                id_base_next_question = 'null'
+                file.write(create_question(question, id_base, count, write_beginning, id_base_next_question, question_id, version, etappe)[:-1])
+            else:
+                file.write(create_question(question, id_base, count, write_beginning, id_base_next_question, question_id, version, etappe))
         
         # increase count
         count += 1
