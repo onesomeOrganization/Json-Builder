@@ -8,15 +8,15 @@ import re
 # 
 #  ------ VARIABLES ------------------------------------
 # Auszufüllen
-name_of_json_file = "Test"
+name_of_json_file = "kickoff-one-v2"
 journey_key = "Test_Short_Trip_Flora"
 id = "flora-v"
-version = str(12)
+version = str(15)
 write_beginning = True
 write_ending = True
 etappe = "-1-"
 startnumber = 1 # 1 if it should start from beginning
-excel_path_or_name = "Jsons/Json Builder/Templates/23_05_08_Json_Excel_Template_Refs.xlsx"
+excel_path_or_name = "Jsons/Json Builder/Templates/Kick-Off Begleitung.xlsx"
 
 # -------- EXPLANATIONS ----------
 # type: CONTENT, OPTION_QUESTION, OPEN_QUESTION, SCALA_SLIDER, ITEM_LIST_EXPANDABLE (T OR C as answeroption), ITEM_LIST_SINGLE_CHOICE (R)
