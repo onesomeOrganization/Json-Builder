@@ -10,7 +10,7 @@ from progress import check_for_progress_type,create_progress, create_etappen_arr
 # 
 #  ------ VARIABLES ------------------------------------
 # Auszufüllen
-name_of_json_file = "Intro_V6"
+name_of_json_file = "Test"
 journey_key = "Test_Short_Trip_Flora"
 id_base = "flora-v"
 version = str(14)
@@ -18,8 +18,8 @@ write_beginning = True
 write_ending = True
 etappe = 1
 startnumber = 1 # 1 if it should start from beginning
-excel_path_or_name = "Jsons/Json Builder/Templates/23_05_23_Json_Excel_Template_intro_schlüsselerk.xlsx"
-#excel_path_or_name = "Jsons/Json Builder/Templates/Json_Excel_Template3.0.xlsx"
+#excel_path_or_name = "Jsons/Json Builder/Templates/23_05_23_Json_Excel_Template_intro_schlüsselerk.xlsx"
+excel_path_or_name = "Jsons/Json Builder/Templates/Json_Excel_Template3.0.xlsx"
 
 # -------- EXPLANATIONS ----------
 # type: CONTENT, OPTION_QUESTION, OPEN_QUESTION, SCALA_SLIDER, ITEM_LIST_EXPANDABLE (T OR C as answeroption), ITEM_LIST_SINGLE_CHOICE (R)
@@ -29,10 +29,7 @@ excel_path_or_name = "Jsons/Json Builder/Templates/23_05_23_Json_Excel_Template_
 # next_logic_options: N = option with next
 # question_array = [Question('CONTENT','AM'),Question('SCALA_SLIDER','PRPM'), Question('OPTION_QUESTION','PRP'), Question('CONTENT'), Question('CONTENT'), Question('OPEN_QUESTION','PRP'), Question('SCALA_SLIDER'), Question('CONTENT','PR'), Question('OPEN_QUESTION','PRP'), Question('OPTION_QUESTION'), Question('CONTENT'), Question('CONTENT'), Question('CONTENT')]
 
-
-# TODO: Item SIngle mit -> check for it and extract it
 # TODO: Progress bei mehreren verästelungen
-
 
 # ---------- HELPER ----------
 def create_id(reference_id_excel):

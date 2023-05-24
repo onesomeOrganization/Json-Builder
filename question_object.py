@@ -98,9 +98,12 @@ def check_dependencies(self):
         self.optional = 'true'
 
     # NEXT OPTIONS ITEMS
-    if 'Item(Single)' in self.structure and '->' in self.texts[np.where(self.structure == 'Item(Single)')][0]:
-        pass
-
+    for num, struc in enumerate(self.structure):
+        if struc == 'ITEM(Single)' and '->' in self.texts[num]:
+            self.next_logic_option += 'N'
+            self.next_logic_type = 'NEXT_OPTION'
+            self.next_logic_option_screen_refs.append(create_id(self, self.texts[num].split('->')[1]))
+            self.texts[num] = self.texts[num].split('->')[0].strip()
 
 
 def map_structure_to_type(structure):
@@ -153,12 +156,13 @@ class Question:
         self.version = version
         self.structure = structure.values #array
         self.texts = texts.values #array
+        self.next_logic_type = 'NEXT'
+        self.next_logic_option = ''
+        self.next_logic_option_screen_refs = []
         # check dependencies and set structure and text right
         check_dependencies(self)
         self.type = map_structure_to_type(self.structure) 
         self.answer_option = map_structure_to_answer_option(self.structure, self.type)
-        self.next_logic_type = 'NEXT'
-        self.next_logic_option = None
         self.reference_of_next_question = None
 
         
