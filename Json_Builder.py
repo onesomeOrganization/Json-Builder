@@ -10,7 +10,7 @@ import openpyxl
 # 
 #  ------ VARIABLES ------------------------------------
 # Auszufüllen
-name_of_json_file = "kickoff-one-v2"
+name_of_json_file = "Test"
 journey_key = "Test_Short_Trip_Flora"
 id_base = "flora-v"
 version = str(15)
@@ -46,10 +46,9 @@ def get_number_etappen(questions_array):
     return number_etappen
 
 # --------- EXCEL ---------
-df = pd.read_excel(excel_path_or_name)
 
 # Load the Excel file
-workbook = openpyxl.load_workbook('/Users/FloraValentina/Library/Mobile Documents/com~apple~CloudDocs/Dokumente/Arbeit/Onesome/Coding/Jsons/Json Builder/Templates/23_05_23_Json_Excel_Template_intro_schlüsselerk.xlsx')
+workbook = openpyxl.load_workbook(excel_path_or_name)
 sheet = workbook.active
 
 # Convert the sheet data to a list of lists
@@ -92,6 +91,16 @@ df = df.astype(str)
 questions_array = []
 for i in range(0, len(df.columns), 2):
     questions_array.append(Question(id_base, version, df.iloc[:, i], df.iloc[:, i+1], df.columns[i]))
+
+# ------ CLEAN OF NONE QUESTIONS ---------
+none_questions = []
+    # Test: delete empty questions
+for question in questions_array:
+    all_none = all(element == 'None' for element in question.structure)
+    if question.structure.size == 0 or all_none:
+        none_questions.append(question)
+
+questions_array = [question for question in questions_array if question not in none_questions]
 
 
 # ---------- INTER QUESTION DEPENDENCIES ----------

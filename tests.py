@@ -32,11 +32,7 @@ def do_tests(df, information, questions_array):
         if pd.isna(info):
             raise Exception('There is some starting information missing')
         
-    formatting_flag = 0
-        # Test: delete empty questions
-    for question in questions_array:
-        if question.structure.size == 0:
-            questions_array.remove(question)
+    
 
     for q_count, question in enumerate(questions_array):
         # Test: immer mit subtitle starten

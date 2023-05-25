@@ -99,7 +99,7 @@ def create_beginning(id, version, journey_key, information):
         }
       ],
       "questions": [
-        ''' % (id+version, journey_key, information[9], information[10], information[11], information[12], information[13], information[14], version, information[0], information[1], id+version, information[2], id+version, id+version, id+version, information[3].replace('"', '\\"').replace('\n', ''), id+version, id+version, id+version, information[4], id+version, id+version, information[7], information[8], id+version, information[5], id+version)
+        ''' % (id+version, journey_key, information[9], information[10], information[11], information[12], information[13], information[14], version, information[0], information[1], id+version, information[2], id+version, id+version, id+version, information[3].replace('"', '\\"').replace('\n', '').replace("_x000B_", "")+'<br><br>', id+version, id+version, id+version, information[4], id+version, id+version, information[7], information[8], id+version, information[5], id+version)
     return beginning
 
 def get_content_length(structure):

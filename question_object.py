@@ -19,10 +19,9 @@ def check_dependencies(self):
     # make structure and text array of equal length
     self.texts = self.texts[:len(self.structure)]
 
-    # SOLVE ANTWORT PROBLEM
+    # SOLVE ANTWORT PROBLEM -> with item it is always a several answer options field
     if 'ITEM(Multiple)' in self.structure and 'ANSWER OPTION' in self.structure:
         self.structure[np.where(self.structure == 'ANSWER OPTION')] = 'SEVERAL ANSWER OPTIONS'
-
     if 'ITEM(Single)' in self.structure and 'ANSWER OPTION' in self.structure:
         self.structure[np.where(self.structure == 'ANSWER OPTION')] = 'SEVERAL ANSWER OPTIONS'
 
@@ -116,6 +115,9 @@ def map_structure_to_type(structure):
         # ITEM_LIST_EXPANDABLE as single version
     elif "ITEM(Single)" in structure and 'SEVERAL ANSWER OPTIONS' in structure:
         question_type = 'ITEM_LIST_EXPANDABLE'
+        # ITEM_LIST_EXPANDABLE without items but with textfield expandable
+    elif 'SEVERAL ANSWER OPTIONS' in structure:
+        question_type = 'ITEM_LIST_EXPANDABLE'
         # OPTION_QUESTION: S P Button
     elif 'BUTTON' in structure:
         question_type = 'OPTION_QUESTION'
@@ -143,7 +145,7 @@ def map_structure_to_answer_option(structure, type):
         if type == 'ITEM_LIST_EXPANDABLE' and value == 'ITEM(Multiple)':
             answer_option += 'C'
         # T = Text_Field_Expandable
-        if type == 'ITEM_LIST_EXPANDABLE' and value == 'SEVERAL ANSWER OPTIONS':
+        if type == 'ITEM_LIST_EXPANDABLE' and value == 'SEVERAL ANSWER OPTIONS' and not ('ITEM(Multiple)' or 'ITEM(Single)') in structure:
             answer_option += 'T'
     if answer_option == '':
         answer_option = None
