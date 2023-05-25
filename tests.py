@@ -8,6 +8,8 @@ def do_tests(df, information, questions_array):
     nummeration = []
     pattern = '^\d+\.\d+$'
     for column in df.columns:
+        if column == None:
+            break
         if re.match(pattern, column):
             nummeration.append(column)
 
@@ -25,7 +27,7 @@ def do_tests(df, information, questions_array):
 
     # Check if all information fields are there
     for i,info in enumerate(information):
-        if i > 8:
+        if i > 14:
             break
         if pd.isna(info):
             raise Exception('There is some starting information missing')

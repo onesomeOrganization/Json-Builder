@@ -4,22 +4,21 @@ from content_block_functions import *
 from question_block_functions import *
 from question_object import Question
 import pandas as pd
-import re
 from tests import do_tests
 from progress import check_for_progress_type,create_progress, create_etappen_array
+import openpyxl
 # 
 #  ------ VARIABLES ------------------------------------
 # Auszufüllen
-name_of_json_file = "Test"
+name_of_json_file = "kickoff-one-v2"
 journey_key = "Test_Short_Trip_Flora"
 id_base = "flora-v"
-version = str(14)
+version = str(15)
 write_beginning = True
 write_ending = True
 etappe = 1
 startnumber = 1 # 1 if it should start from beginning
-#excel_path_or_name = "Jsons/Json Builder/Templates/23_05_23_Json_Excel_Template_intro_schlüsselerk.xlsx"
-excel_path_or_name = "Jsons/Json Builder/Templates/Json_Excel_Template3.0.xlsx"
+excel_path_or_name = "Jsons/Excels/Kick-Off Begleitung.xlsx"
 
 # -------- EXPLANATIONS ----------
 # type: CONTENT, OPTION_QUESTION, OPEN_QUESTION, SCALA_SLIDER, ITEM_LIST_EXPANDABLE (T OR C as answeroption), ITEM_LIST_SINGLE_CHOICE (R)
@@ -34,7 +33,7 @@ excel_path_or_name = "Jsons/Json Builder/Templates/Json_Excel_Template3.0.xlsx"
 # ---------- HELPER ----------
 def create_id(reference_id_excel):
     id_numbers = reference_id_excel.split('.')
-    new_id = question_id + version + '-'+ id_numbers[0]+'-'+ id_numbers[1]
+    new_id = id_base + version + '-'+ id_numbers[0]+'-'+ id_numbers[1]
     return new_id
 
 def get_number_etappen(questions_array):
@@ -48,6 +47,22 @@ def get_number_etappen(questions_array):
 
 # --------- EXCEL ---------
 df = pd.read_excel(excel_path_or_name)
+
+# Load the Excel file
+workbook = openpyxl.load_workbook('/Users/FloraValentina/Library/Mobile Documents/com~apple~CloudDocs/Dokumente/Arbeit/Onesome/Coding/Jsons/Json Builder/Templates/23_05_23_Json_Excel_Template_intro_schlüsselerk.xlsx')
+sheet = workbook.active
+
+# Convert the sheet data to a list of lists
+data = sheet.values
+data_list = list(data)
+
+# Create a DataFrame from the list of lists
+df = pd.DataFrame(data_list)
+
+# set first row as heading
+df.columns = df.iloc[0]
+#df.drop(index=df.index[0], axis=0)
+df = df.iloc[1:].reset_index(drop=True)
 
 # get first informations and set defaults
 information = df.iloc[:, 1]
@@ -100,12 +115,13 @@ do_tests(df, information, questions_array)
 
 
 # ---------- TEXT FORMATIERUNG ---------
+
 for question in questions_array:
     for i, text in enumerate(question.texts):
         if not pd.isnull(text):
             # find " and replace with \"
             # find breaks and delete them
-            question.texts[i] = text.replace('"', '\\"').replace('\n', '')
+            question.texts[i] = text.replace('"', '\\"').replace('\n', '').replace("_x000B_", "")
 
 # ---------- PROGRESS -------
 

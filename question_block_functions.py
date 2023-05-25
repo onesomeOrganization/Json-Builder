@@ -8,12 +8,12 @@ def create_beginning(id, version, journey_key, information):
   "id": "%s",
   "key": "%s",
   "order": 10,
-  "mainImageName": "red_main.png",
-  "mainImageLongName": "red_main.png",
-  "topicIconImageName": "core.svg",
-  "mainImageLockedLongName": "red_main.png",
-  "backgroundImageName": "red_background.jpeg",
-  "sessionImageName": "red_session.png",
+  "mainImageName": "%s",
+  "mainImageLongName": "%s",
+  "topicIconImageName": "%s",
+  "mainImageLockedLongName": "%s",
+  "backgroundImageName": "%s",
+  "sessionImageName": "%s",
   "published": true,
   "publishedEN": false,
   "feedbackLink": null,
@@ -99,7 +99,7 @@ def create_beginning(id, version, journey_key, information):
         }
       ],
       "questions": [
-        ''' % (id+version, journey_key, version, information[0], information[1], id+version, information[2], id+version, id+version, id+version, information[3].replace('"', '\\"').replace('\n', ''), id+version, id+version, id+version, information[4], id+version, id+version, information[7], information[8], id+version, information[5], id+version)
+        ''' % (id+version, journey_key, information[9], information[10], information[11], information[12], information[13], information[14], version, information[0], information[1], id+version, information[2], id+version, id+version, id+version, information[3].replace('"', '\\"').replace('\n', ''), id+version, id+version, id+version, information[4], id+version, id+version, information[7], information[8], id+version, information[5], id+version)
     return beginning
 
 def get_content_length(structure):
