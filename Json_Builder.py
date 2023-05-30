@@ -10,15 +10,15 @@ import openpyxl
 # 
 #  ------ VARIABLES ------------------------------------
 # Auszufüllen
-name_of_json_file = "Test"
+name_of_json_file = "Buddy_Werte"
 journey_key = "Test_Short_Trip_Flora"
 id_base = "flora-v"
-version = str(15)
+version = str(21)
 write_beginning = True
 write_ending = True
 etappe = 1
 startnumber = 1 # 1 if it should start from beginning
-excel_path_or_name = "Jsons/Excels/Kick-Off Begleitung.xlsx"
+excel_path_or_name = "Jsons/Excels/Json_Excel_Buddy_Werte.xlsx"
 
 # -------- EXPLANATIONS ----------
 # type: CONTENT, OPTION_QUESTION, OPEN_QUESTION, SCALA_SLIDER, ITEM_LIST_EXPANDABLE (T OR C as answeroption), ITEM_LIST_SINGLE_CHOICE (R)
