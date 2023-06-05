@@ -5,20 +5,20 @@ from question_block_functions import *
 from question_object import Question
 import pandas as pd
 from tests import do_tests
-from progress import check_for_progress_type,create_progress, create_etappen_array
+from progress import create_progress
 import openpyxl
 # 
 #  ------ VARIABLES ------------------------------------
 # Auszufüllen
-name_of_json_file = "Buddy_Werte"
+name_of_json_file = "Test"
 journey_key = "Test_Short_Trip_Flora"
 id_base = "flora-v"
-version = str(21)
+version = str(23)
 write_beginning = True
 write_ending = True
 etappe = 1
 startnumber = 1 # 1 if it should start from beginning
-excel_path_or_name = "Jsons/Excels/Json_Excel_Buddy_Werte.xlsx"
+excel_path_or_name = "Jsons/Excels/Json_Excel_Buddy1.xlsx"
 
 # -------- EXPLANATIONS ----------
 # type: CONTENT, OPTION_QUESTION, OPEN_QUESTION, SCALA_SLIDER, ITEM_LIST_EXPANDABLE (T OR C as answeroption), ITEM_LIST_SINGLE_CHOICE (R)
@@ -29,6 +29,8 @@ excel_path_or_name = "Jsons/Excels/Json_Excel_Buddy_Werte.xlsx"
 # question_array = [Question('CONTENT','AM'),Question('SCALA_SLIDER','PRPM'), Question('OPTION_QUESTION','PRP'), Question('CONTENT'), Question('CONTENT'), Question('OPEN_QUESTION','PRP'), Question('SCALA_SLIDER'), Question('CONTENT','PR'), Question('OPEN_QUESTION','PRP'), Question('OPTION_QUESTION'), Question('CONTENT'), Question('CONTENT'), Question('CONTENT')]
 
 # TODO: Progress bei mehreren verästelungen
+# TODO: questiontypes erben von questions
+# TODO create_id als helper function -> id_base usw teil eines jsonfile objects welches questions besitzt
 
 # ---------- HELPER ----------
 def create_id(reference_id_excel):
@@ -134,6 +136,8 @@ for question in questions_array:
 
 # ---------- PROGRESS -------
 
+create_progress(questions_array)
+'''
 new_array = []
 for et in get_number_etappen(questions_array):
     etappen_array = create_etappen_array(et, questions_array)
@@ -146,7 +150,7 @@ for q1 in questions_array:
     for q2 in new_array:
         if q1.id == q2.id:
             q1.progress = q2.progress
-   
+'''   
 
 # -------- WRITE FILE -------------------------------------
 
