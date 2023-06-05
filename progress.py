@@ -7,7 +7,6 @@ def find_longest_chain(graph, start_node, end_nodes):
 
     current_chain = []
     join_node_id = dfs(graph, start_node, visited, current_chain, longest_chain, end_nodes, join_node_id)
-    #dfs(graph, start_node, visited, current_chain, longest_chain, end_nodes)
 
     return longest_chain, join_node_id
 
