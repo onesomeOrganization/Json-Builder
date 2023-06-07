@@ -1,14 +1,47 @@
 import re
 
-# ------- HELPER FUNCTIONS ------------------------------
+
+def normal_screen_reference(text):
+  pattern = '^[+-]?\d+([.,]\d+)?$'
+  it_is_screen_ref = bool(re.match(pattern, text))
+  return it_is_screen_ref
 
 def create_ref(id_base, count, texts, text_count):
-  # create referenz-id
-  id_splits = id_base.split('-')
-  ref_numbers = texts[text_count].split('.')
-  reference_id = id_splits[0]+'-'+id_splits[1]+'-'+ref_numbers[0]+'-'+ref_numbers[1]
+  if normal_screen_reference(texts[text_count]):
+    # create referenz-id
+    id_splits = id_base.split('-')
+    ref_numbers = texts[text_count].split('.')
+    reference_id = id_splits[0]+'-'+id_splits[1]+'-'+ref_numbers[0]+'-'+ref_numbers[1]
 
-  referenzierung = '''  
+    referenzierung = '''  
+              ,{
+                "id": "%s-%s",
+                "type": "ANSWER_OPTION_REF",
+                "required": null,
+                "showHidden": null,
+                "order": %s,
+                "imageName": null,
+                "audioName": null,
+                "style": null,
+                "refAdaptionType": null,
+                "refAdaptionNumber": null,
+                "refOrderType": null,
+                "refOrderColumn": null,
+                "refOffset": null,
+                "refLimit": null,
+                "downloadName": null,
+                "checkForSpecialTextReplacement": null,
+                "questionAnswerOptionId": null,
+                "language": null,
+                "contentShowType": null,
+                "worldObjectEntryKey": null,
+                "refQuestionId": "%s",
+                "refQuestionAnswerOptionId": null,
+                "translations": [],
+                "answerOptions": []
+              }'''%(id_base, count, count, reference_id)
+  else: # can be keyinsight or reference out of reflogic      
+    referenzierung = '''  
             ,{
               "id": "%s-%s",
               "type": "ANSWER_OPTION_REF",
@@ -29,42 +62,12 @@ def create_ref(id_base, count, texts, text_count):
               "questionAnswerOptionId": null,
               "language": null,
               "contentShowType": null,
-              "worldObjectEntryKey": null,
-              "refQuestionId": "%s",
-              "refQuestionAnswerOptionId": null,
-              "translations": [],
-              "answerOptions": []
-            }'''%(id_base, count, count, reference_id)
-  return referenzierung
-
-def create_keyinsight_ref(id_base, count, texts, text_count):
-  referenzierung = '''  
-            ,{
-              "id": "%s-%s",
-              "type": "ANSWER_OPTION_REF",
-              "required": null,
-              "showHidden": null,
-              "order": %s,
-              "imageName": null,
-              "audioName": null,
-              "style": null,
-              "refAdaptionType": null,
-              "refAdaptionNumber": null,
-              "refOrderType": null,
-              "refOrderColumn": null,
-              "refOffset": null,
-              "refLimit": null,
-              "downloadName": null,
-              "checkForSpecialTextReplacement": null,
-              "questionAnswerOptionId": null,
-              "language": null,
-              "contentShowType": null,
-              "worldObjectEntryKey": "%s",
+              "worldObjectEntryKey": %s,
               "refQuestionId": null,
               "refQuestionAnswerOptionId": null,
               "translations": [],
               "answerOptions": []
-            }'''%(id_base, count, count, texts[text_count])
+            }'''%(id_base, count, count, texts[text_count] if texts[text_count] == 'null' else '"'+texts[text_count]+'"')
   return referenzierung
 
 def create_par(id_base, count, texts, text_count):
@@ -314,18 +317,12 @@ def create_more_information(id_base, count, texts, text_count):
             }'''%(id_base, count, count, id_base, count, title, text, id_base, count)
   return more_information
 
-def check_íf_screen_reference(text):
-  pattern = '^[+-]?\d+([.,]\d+)?$'
-  check = bool(re.match(pattern, text))
-  return check
+
 
 def create_content_block(id_base, count, structure, texts):
   ref_block = '' 
   for i, entry in enumerate(structure):
-    if entry == 'REFERENCE' and not check_íf_screen_reference(texts[i]):
-      ref_block += create_keyinsight_ref(id_base, count, texts, i)
-      count+=1
-    elif entry == 'REFERENCE' and check_íf_screen_reference(texts[i]):
+    if entry == 'REFERENCE':
       ref_block += create_ref(id_base, count, texts, i)
       count+=1
     elif entry == 'PARAGRAPH':

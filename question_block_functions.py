@@ -1,6 +1,7 @@
 from content_block_functions import create_content_block
 from answer_option_functions import *
 from nextLogic_functions import *
+from refLogic_functions import *
 
 def create_beginning(id, version, journey_key, information):
     beginning = '''
@@ -189,21 +190,8 @@ def create_question(question, id_base, count, write_beginning, id_base_next_ques
               "answerOptions": []
             }%s
           ],
-          "nextLogic": {
-            "id": "%s",
-            "type": "%s",
-            "count": null,
-            "nextQuestionId": %s,
-            "prevQuestionId": null,
-            "refQuestionId": null,
-            "questionRefLogicId": null,
-            "sessionId": null,
-            "options": [
-            %s
-            ],
-            "refAdaptions": []
-          }
-        },''' % (question_id, question.reviewable, question.progress, question.worldObjectEntryKeyType, question.optional, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", question_id, question_id, texts[0], question_id, create_content_block(question_id, 2, question.structure, texts), question_id, next_logic_type, id_base_next_question, create_nextLogic_options(question_id, content_length, next_logics, next_logic_type, question.reference_of_next_question, id_base_next_question, question.next_logic_option_screen_refs)),
+          %s
+        },''' % (question_id, question.reviewable, question.progress, question.worldObjectEntryKeyType, question.optional, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", question_id, question_id, texts[0], question_id, create_content_block(question_id, 2, question.structure, texts), create_nextLogic(question, content_length, question_id, id_base_next_question)),
         "OPTION_QUESTION": '''
         {
           "id": "%s",
@@ -355,46 +343,8 @@ def create_question(question, id_base, count, write_beginning, id_base_next_ques
               ]
             }
           ],
-          "nextLogic": {
-            "id": "%s",
-            "type": "NEXT_OPTION",
-            "count": null,
-            "nextQuestionId": null,
-            "prevQuestionId": null,
-            "refQuestionId": null,
-            "questionRefLogicId": null,
-            "sessionId": null,
-            "options": [
-              {
-                "id": "%s-opt1",
-                "order": null,
-                "type": "NEXT",
-                "number": null,
-                "count": null,
-                "secondNumber": null,
-                "secondCount": null,
-                "questionAnswerOptionId": "%s-%s-1",
-                "secondQuestionAnswerOptionId": null,
-                "questionId": "%s",
-                "refQuestionId": null
-              },
-              {
-                "id": "%s-opt2",
-                "order": null,
-                "type": "NEXT",
-                "number": null,
-                "count": null,
-                "secondNumber": null,
-                "secondCount": null,
-                "questionAnswerOptionId": "%s-%s-2",
-                "secondQuestionAnswerOptionId": null,
-                "questionId": "%s",
-                "refQuestionId": null
-              }
-            ],
-            "refAdaptions": []
-          }
-        },'''% (question_id, question.reviewable, question.progress, question.worldObjectEntryKeyType, question.optional, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", question_id, question_id, texts[0], question_id, create_content_block(question_id,2, question.structure, texts),question_id, content_length, content_length, question_id, content_length, question_id, content_length, question.button_one_text, question_id, content_length, question_id, content_length, question_id, content_length, question.button_two_text, question_id, content_length, question_id, question_id, question_id, content_length, question.button_one_nextquestion,  question_id, question_id, content_length, question.button_two_nextquestion),
+          %s
+        },'''% (question_id, question.reviewable, question.progress, question.worldObjectEntryKeyType, question.optional, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", question_id, question_id, texts[0], question_id, create_content_block(question_id,2, question.structure, texts),question_id, content_length, content_length, question_id, content_length, question_id, content_length, question.button_one_text, question_id, content_length, question_id, content_length, question_id, content_length, question.button_two_text, question_id, content_length, create_nextLogic(question,content_length,question_id,id_base_next_question)),
         "OPEN_QUESTION": '''
         {
           "id": "%s",
@@ -499,21 +449,8 @@ def create_question(question, id_base, count, write_beginning, id_base_next_ques
               ]
             }
           ],
-          "nextLogic": {
-            "id": "%s",
-            "type": "%s",
-            "count": null,
-            "nextQuestionId": %s,
-            "prevQuestionId": null,
-            "refQuestionId": null,
-            "questionRefLogicId": null,
-            "sessionId": null,
-            "options": [
-            %s
-            ],
-            "refAdaptions": []
-          }
-        },''' % (question_id, question.reviewable, question.progress, question.worldObjectEntryKeyType, question.optional, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", question_id,question_id,texts[0], question_id,create_content_block(question_id, 2, question.structure, texts), question_id, content_length, content_length, question_id, content_length, question_id, next_logic_type,id_base_next_question,create_nextLogic_options(question_id, content_length, next_logics, next_logic_type, question.reference_of_next_question, id_base_next_question, question.next_logic_option_screen_refs)),
+          %s
+        },''' % (question_id, question.reviewable, question.progress, question.worldObjectEntryKeyType, question.optional, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", question_id,question_id,texts[0], question_id,create_content_block(question_id, 2, question.structure, texts), question_id, content_length, content_length, question_id, content_length, create_nextLogic(question, content_length, question_id, id_base_next_question)),
         "SCALA_SLIDER":'''
         {
           "id": "%s",
@@ -633,21 +570,8 @@ def create_question(question, id_base, count, write_beginning, id_base_next_ques
               ]
             }
           ],
-          "nextLogic": {
-            "id": "%s",
-            "type": "%s",
-            "count": null,
-            "nextQuestionId": %s,
-            "prevQuestionId": null,
-            "refQuestionId": null,
-            "questionRefLogicId": null,
-            "sessionId": null,
-            "options": [
-            %s
-            ],
-            "refAdaptions": []
-          }
-        },''' % (question_id,question.scala_min,question.scala_max, question.reviewable, question.progress, question.worldObjectEntryKeyType, question.optional, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", question_id, question_id,texts[0], question_id, create_content_block(question_id, 2, question.structure, texts) ,question_id, content_length, content_length, question_id, content_length, question_id, content_length, question.scala_min_text, question.scala_max_text,question_id, content_length, question_id, next_logic_type,id_base_next_question,create_nextLogic_options(question_id, content_length, next_logics, next_logic_type, question.reference_of_next_question, id_base_next_question, question.next_logic_option_screen_refs)),
+         %s
+        },''' % (question_id,question.scala_min,question.scala_max, question.reviewable, question.progress, question.worldObjectEntryKeyType, question.optional, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", question_id, question_id,texts[0], question_id, create_content_block(question_id, 2, question.structure, texts) ,question_id, content_length, content_length, question_id, content_length, question_id, content_length, question.scala_min_text, question.scala_max_text,question_id, content_length, create_nextLogic(question, content_length, question_id, id_base_next_question)),
         "ITEM_LIST_EXPANDABLE": '''
         {
           "id": "%s",
@@ -736,21 +660,8 @@ def create_question(question, id_base, count, write_beginning, id_base_next_ques
               ]
             }
           ],
-          "nextLogic": {
-            "id": "%s",
-            "type": "%s",
-            "count": null,
-            "nextQuestionId": %s,
-            "prevQuestionId": null,
-            "refQuestionId": null,
-            "questionRefLogicId": null,
-            "sessionId": null,
-            "options": [
-              %s
-            ],
-            "refAdaptions": []
-          }
-        },''' % (question_id, question.maxNumber, question.reviewable, question.progress, question.worldObjectEntryKeyType, question.optional, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", question_id,question_id, texts[0], question_id,create_content_block(question_id, 2, question.structure, texts), question_id, content_length, question.answer_required, content_length, create_answer_options(question, question_id, content_length,answer_options, texts), question_id, next_logic_type, id_base_next_question, create_nextLogic_options(question_id, content_length, next_logics, next_logic_type, question.reference_of_next_question, id_base_next_question, question.next_logic_option_screen_refs)),
+          %s
+        },''' % (question_id, question.maxNumber, question.reviewable, question.progress, question.worldObjectEntryKeyType, question.optional, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", question_id,question_id, texts[0], question_id,create_content_block(question_id, 2, question.structure, texts), question_id, content_length, question.answer_required, content_length, create_answer_options(question, question_id, content_length,answer_options, texts), create_nextLogic(question, content_length, question_id, id_base_next_question)),
         "ITEM_LIST_SINGLE_CHOICE": '''
         {
           "id": "%s",
@@ -835,21 +746,8 @@ def create_question(question, id_base, count, write_beginning, id_base_next_ques
               ]
             }
           ],
-          "nextLogic": {
-            "id": "%s",
-            "type": "%s",
-            "count": null,
-            "nextQuestionId": %s,
-            "prevQuestionId": null,
-            "refQuestionId": null,
-            "questionRefLogicId": null,
-            "sessionId": null,
-            "options": [
-              %s
-            ],
-            "refAdaptions": []
-          }
-        },'''%(question_id, question.reviewable, question.progress, question.worldObjectEntryKeyType, question.optional,"true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", question_id, question_id,texts[0], question_id, create_content_block(question_id,2, question.structure, texts), question_id, content_length, content_length, create_answer_options(question, question_id, content_length,answer_options, texts), question_id, next_logic_type,id_base_next_question, create_nextLogic_options(question_id, content_length, next_logics, next_logic_type, question.reference_of_next_question, id_base_next_question, question.next_logic_option_screen_refs)),
+          %s
+        },'''%(question_id, question.reviewable, question.progress, question.worldObjectEntryKeyType, question.optional,"true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", question_id, question_id,texts[0], question_id, create_content_block(question_id,2, question.structure, texts), question_id, content_length, content_length, create_answer_options(question, question_id, content_length,answer_options, texts), create_nextLogic(question, content_length, question_id, id_base_next_question)),
         "Neue Etappe": '''
         ],
       "questionLoops": []

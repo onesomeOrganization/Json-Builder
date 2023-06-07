@@ -18,7 +18,7 @@ write_beginning = True
 write_ending = True
 etappe = 1
 startnumber = 1 # 1 if it should start from beginning
-excel_path_or_name = "Jsons/Excels/Json_Excel_Buddy1.xlsx"
+excel_path_or_name = "Jsons/Excels/01_Templates/Json_Excel_Template3.2.xlsx"
 
 # -------- EXPLANATIONS ----------
 # type: CONTENT, OPTION_QUESTION, OPEN_QUESTION, SCALA_SLIDER, ITEM_LIST_EXPANDABLE (T OR C as answeroption), ITEM_LIST_SINGLE_CHOICE (R)
@@ -27,7 +27,6 @@ excel_path_or_name = "Jsons/Excels/Json_Excel_Buddy1.xlsx"
 # next_logic_type: NEXT, NEXT_OPTION, REF_KEY_INSIGHT
 # next_logic_options: N = option with next
 # question_array = [Question('CONTENT','AM'),Question('SCALA_SLIDER','PRPM'), Question('OPTION_QUESTION','PRP'), Question('CONTENT'), Question('CONTENT'), Question('OPEN_QUESTION','PRP'), Question('SCALA_SLIDER'), Question('CONTENT','PR'), Question('OPEN_QUESTION','PRP'), Question('OPTION_QUESTION'), Question('CONTENT'), Question('CONTENT'), Question('CONTENT')]
-
 # TODO: questiontypes erben von questions
 # TODO create_id als helper function -> id_base usw teil eines jsonfile objects welches questions besitzt
 
@@ -82,27 +81,18 @@ if information[0] == 'WORLD' and information[4] == 'Beginne deinen Kurztrip':
 elif information[0] == 'SHORT_TRIP' and information[4] == 'Etappenweise zum Ziel':
     raise Exception ('Aufruf passt nicht zum Kurztrip')
 
-# drop the first two columns
-df = df.drop(df.columns[[0, 1]], axis=1)
-
 # convert all entries to strings
 df = df.astype(str)
 
 # save always two arrays into the Question object with structure and texts respectively
 questions_array = []
-for i in range(0, len(df.columns), 2):
+for i in range(2, len(df.columns), 2): # start at 2 because of the information
+    # Create a boolean mask to check if values are None
+    mask = df.iloc[:, i] == 'None'
+    # Check if all values in the column are None
+    if mask.all():
+        break
     questions_array.append(Question(id_base, version, df.iloc[:, i], df.iloc[:, i+1], df.columns[i]))
-
-# ------ CLEAN OF NONE QUESTIONS ---------
-none_questions = []
-    # Test: delete empty questions
-for question in questions_array:
-    all_none = all(element == 'None' for element in question.structure)
-    if question.structure.size == 0 or all_none:
-        none_questions.append(question)
-
-questions_array = [question for question in questions_array if question not in none_questions]
-
 
 # ---------- INTER QUESTION DEPENDENCIES ----------
 

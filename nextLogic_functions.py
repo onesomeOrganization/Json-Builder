@@ -1,3 +1,4 @@
+from refLogic_functions import *
 
 def create_next_logic_option(id_base, count, answer_option_base, next_logic_option_screen_ref):
     next_logic_option = '''
@@ -78,3 +79,26 @@ def create_nextLogic_options(id_base, answer_option_base, next_logics, next_logi
             next_logics_block += create_next_logic_option(id_base, count, answer_option_base, next_logic_option_screen_refs[number])
         count+=1
     return next_logics_block
+
+def create_nextLogic(question, content_length, question_id, id_base_next_question):
+    if question.refLogic_type == None:
+        questionRefLogicId = 'null'
+    elif question.refLogic_type == 'REF_OPTIONAL':
+        questionRefLogicId = '"'+question_id+'"'
+
+    nextLogic = '''"nextLogic": {
+            "id": "%s",
+            "type": "%s",
+            "count": null,
+            "nextQuestionId": %s,
+            "prevQuestionId": null,
+            "refQuestionId": null,
+            "questionRefLogicId": %s,
+            "sessionId": null,
+            %s
+            "options": [
+            %s
+            ],
+            "refAdaptions": []
+          }'''%(question_id, question.next_logic_type, id_base_next_question, questionRefLogicId, create_refLogic(question), create_nextLogic_options(question_id, content_length, question.next_logic_option, question.next_logic_type, question.reference_of_next_question, id_base_next_question, question.next_logic_option_screen_refs))
+    return nextLogic
