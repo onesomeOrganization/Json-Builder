@@ -27,8 +27,6 @@ excel_path_or_name = "Jsons/Excels/01_Templates/Json_Excel_Template3.2.xlsx"
 # next_logic_type: NEXT, NEXT_OPTION, REF_KEY_INSIGHT
 # next_logic_options: N = option with next
 # question_array = [Question('CONTENT','AM'),Question('SCALA_SLIDER','PRPM'), Question('OPTION_QUESTION','PRP'), Question('CONTENT'), Question('CONTENT'), Question('OPEN_QUESTION','PRP'), Question('SCALA_SLIDER'), Question('CONTENT','PR'), Question('OPEN_QUESTION','PRP'), Question('OPTION_QUESTION'), Question('CONTENT'), Question('CONTENT'), Question('CONTENT')]
-# TODO: questiontypes erben von questions
-# TODO create_id als helper function -> id_base usw teil eines jsonfile objects welches questions besitzt
 
 # ---------- HELPER ----------
 def create_id(reference_id_excel):
