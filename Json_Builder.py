@@ -13,20 +13,28 @@ import openpyxl
 name_of_json_file = "Test"
 journey_key = "Test_Short_Trip_Flora"
 id_base = "flora-v"
-version = str(23)
+version = str(25)
 write_beginning = True
 write_ending = True
 etappe = 1
 startnumber = 1 # 1 if it should start from beginning
-excel_path_or_name = "Jsons/Excels/01_Templates/Json_Excel_Template3.2.xlsx"
-
-# -------- EXPLANATIONS ----------
+excel_path_or_name = "Jsons/Excels/01_Templates/features/Json_Excel_Template_ref_agg.xlsx"
+#excel_path_or_name = "Jsons/Excels/01_Templates/Json_Excel_Template3.2.xlsx"
+# -------- OLD EXPLANATIONS ----------
 # type: CONTENT, OPTION_QUESTION, OPEN_QUESTION, SCALA_SLIDER, ITEM_LIST_EXPANDABLE (T OR C as answeroption), ITEM_LIST_SINGLE_CHOICE (R)
 # content: P = Paragraph, R = Referenz, I = Image, A = Audio, M = More Information Expandable -> Titel ist immer dabei
 # answer_option: R = Radio Button, C = Checkbox, T = Text_Field_Expandable
 # next_logic_type: NEXT, NEXT_OPTION, REF_KEY_INSIGHT
 # next_logic_options: N = option with next
 # question_array = [Question('CONTENT','AM'),Question('SCALA_SLIDER','PRPM'), Question('OPTION_QUESTION','PRP'), Question('CONTENT'), Question('CONTENT'), Question('OPEN_QUESTION','PRP'), Question('SCALA_SLIDER'), Question('CONTENT','PR'), Question('OPEN_QUESTION','PRP'), Question('OPTION_QUESTION'), Question('CONTENT'), Question('CONTENT'), Question('CONTENT')]
+
+# DONE: Wenn "und" dann REF_AGGREGATION_ANSWER_OPTION_REF mit OPTION_WITH_CONTENT_ID
+# DONE: wenn mehrere "und" oder "sonst" dann REF_AGGREGATION_ANSWER_OPTION_REF und bei sonst mit OPTION_WITH_CONTENT_ID_SKIP
+# TODO: wenn "und" und "sonst" dann fehler
+# DONE: wenn mehrere einzelne und oder sonst dann auch REF_AGGREGATION_ANSWER_OPTION_REF
+# TODO: formatting flag
+# DONE: optional klappt nicht
+
 
 # ---------- HELPER ----------
 def create_id(reference_id_excel):

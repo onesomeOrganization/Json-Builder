@@ -33,7 +33,7 @@ def create_adjazenzliste(questions_array):
     adjazenzliste = {}
     for num, q in enumerate(questions_array):
         # add id as key
-        adjazenzliste[q.id] = []
+        adjazenzliste[q.excel_id] = []
         arrow_flag = False
         for text in q.texts:
             if "->" in text:
@@ -41,19 +41,19 @@ def create_adjazenzliste(questions_array):
                 # add ids after the -> as values
                 json_id = text.split('->')[1].strip()
                 # Retrieve the current value
-                current_value = adjazenzliste[q.id]
+                current_value = adjazenzliste[q.excel_id]
                 # Update the value by appending the new value
                 current_value.append(json_id)
                 # Assign the updated value back to the key
-                adjazenzliste[q.id] = current_value
+                adjazenzliste[q.excel_id] = current_value
         if not arrow_flag:
             if not 'weiter mit Screen' in q.structure and not 'letzter Screen' in q.structure and not num == len(questions_array)-1:
                 # add id+1 as value, e.g. id = flora-v13-1-3 -> flora-v13-1-4
-                adjazenzliste[q.id] = [q.id.split('.')[0]+'.'+str(int(q.id.split('.')[1])+1)]
+                adjazenzliste[q.excel_id] = [q.excel_id.split('.')[0]+'.'+str(int(q.excel_id.split('.')[1])+1)]
             elif 'weiter mit Screen' in q.structure:
                 # add weiter mit screen id
                 json_id = q.texts[np.where(q.structure == 'weiter mit Screen')][0]
-                adjazenzliste[q.id] = [json_id]
+                adjazenzliste[q.excel_id] = [json_id]
     return adjazenzliste
 
 def create_progress_along_chain(chain, start_progress, end_progress):
@@ -71,7 +71,7 @@ def chain_to_array(chain, questions_array):
     chain_array = []
     for chain_id in chain:
         for q in questions_array:
-            if q.id == chain_id:
+            if q.excel_id == chain_id:
                 chain_array.append(q)
     return chain_array
 
@@ -95,14 +95,14 @@ def progress_recursive(progress_not_done, graph, progress_done, questions_array)
     if id_before == None:
         start_progress = 0
     for q in questions_array:
-        if q.id == id_before:
+        if q.excel_id == id_before:
             start_progress = q.progress
     # end progress: 90 wenn letzte_id letzer screen oder ende vom question_array oder progress vom node wo sie zusammenführen
     last_id = longest_chain[-1]
-    last_q = next((q for q in questions_array if q.id == last_id), None)
+    last_q = next((q for q in questions_array if q.excel_id == last_id), None)
     if join_node_id != None:
-        end_progress = next((q.progress for q in questions_array if q.id == join_node_id), None)
-    elif 'letzter Screen' in last_q.structure or questions_array[-1].id == last_id:
+        end_progress = next((q.progress for q in questions_array if q.excel_id == join_node_id), None)
+    elif 'letzter Screen' in last_q.structure or questions_array[-1].excel_id == last_id:
         end_progress = 100
     # create the progress
     create_progress_along_chain(chain_to_array(longest_chain, questions_array), start_progress, end_progress)
@@ -124,5 +124,5 @@ def create_progress(questions_array):
     progress_not_done = []
     progress_done = []
     for q in questions_array:
-        progress_not_done.append(q.id)
+        progress_not_done.append(q.excel_id)
     progress_recursive(progress_not_done, graph, progress_done, questions_array)

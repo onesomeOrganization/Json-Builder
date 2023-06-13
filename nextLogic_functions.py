@@ -81,9 +81,9 @@ def create_nextLogic_options(id_base, answer_option_base, next_logics, next_logi
     return next_logics_block
 
 def create_nextLogic(question, content_length, question_id, id_base_next_question):
-    if question.refLogic_type == None:
+    if question.RefLogic.type == 'XY':
         questionRefLogicId = 'null'
-    elif question.refLogic_type == 'REF_OPTIONAL':
+    elif question.RefLogic.type == 'REF_OPTIONAL' or question.RefLogic.type == 'REF_AGGREGATION_ANSWER_OPTION_REF':
         questionRefLogicId = '"'+question_id+'"'
 
     nextLogic = '''"nextLogic": {
@@ -100,5 +100,5 @@ def create_nextLogic(question, content_length, question_id, id_base_next_questio
             %s
             ],
             "refAdaptions": []
-          }'''%(question_id, question.next_logic_type, id_base_next_question, questionRefLogicId, create_refLogic(question), create_nextLogic_options(question_id, content_length, question.next_logic_option, question.next_logic_type, question.reference_of_next_question, id_base_next_question, question.next_logic_option_screen_refs))
+          }'''%(question_id, question.next_logic_type, id_base_next_question, questionRefLogicId, question.RefLogic.json, create_nextLogic_options(question_id, content_length, question.next_logic_option, question.next_logic_type, question.reference_of_next_question, id_base_next_question, question.next_logic_option_screen_refs))
     return nextLogic

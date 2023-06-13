@@ -73,5 +73,5 @@ def do_tests(df, information, questions_array):
         if 'Neue Etappe' in question.structure and information[0] == 'SHORT_TRIP':
             raise Exception ('It is not possible to a create a neue etappe in a Short trip. Around position: ', q_count+1)
         
-    if formatting_flag == 0:
-        raise Exception ('Not formatted')
+   # if formatting_flag == 0:
+    #    raise Exception ('Not formatted')

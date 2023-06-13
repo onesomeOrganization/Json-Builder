@@ -1,6 +1,6 @@
 import numpy as np
 import re
-
+from refLogic_functions import RefLogic, RefLogicOption
 
 def create_id (self, reference_id_excel):
     reference_id_excel = reference_id_excel.strip()
@@ -9,8 +9,8 @@ def create_id (self, reference_id_excel):
     return new_id
 
 def create_etappe_screen_from_id(self):
-    etappe = self.id.split('.')[0]
-    screen = self.id.split('.')[1]
+    etappe = self.excel_id.split('.')[0]
+    screen = self.excel_id.split('.')[1]
     return etappe, screen
 
 def clear_of_nan(self):
@@ -117,22 +117,55 @@ def prepare_nextLogic(self):
 
 
 def prepare_refLogic(self):
-    self.refLogic_type = None
-    self.refLogic_options = {}
-    # check for "sonst" in Reference
-    if 'REFERENCE' in self.structure:
-        ref_text = self.texts[np.where(self.structure == 'REFERENCE')][0]
-        if 'sonst' in ref_text:
-            # if found set self.refLogic_type to REF_OPTIONAL
-            self.refLogic_type = 'REF_OPTIONAL'
-            # Add key without a value
-            self.refLogic_options['OPTION'] = []
-            # count how many and create options as self.refLogics
-            splits = ref_text.split('sonst')
-            for split in splits:
-                self.refLogic_options['OPTION'].append(create_id(self, split))
-            # set text to '' else it will appear in worldobjectentry
-            self.texts[np.where(self.structure == 'REFERENCE')] = 'null'
+    # REF LOGIC
+    # create ref logic object
+    self.RefLogic = RefLogic(id=self.id)
+    count_special_refs = 0
+    # check for several "sonst" "und"
+    for enum, struc in enumerate(self.structure):
+        if struc == 'REFERENCE' and ('sonst' in self.texts[enum] or 'und' in self.texts[enum]):
+            count_special_refs += 1
+    # check for "sonst" und "und" in Reference and set type
+    for ref_number, struc in enumerate(self.structure):
+        if struc == 'REFERENCE':
+            ref_text = self.texts[ref_number]
+            if 'sonst' in ref_text and count_special_refs == 1:
+                # if found set self.refLogic_type to REF_OPTIONAL
+                self.RefLogic.type = 'REF_OPTIONAL'
+                # count how many and create options as self.refLogics
+                splits = ref_text.split('sonst')
+                for split in splits:
+                    self.RefLogic.options.append(RefLogicOption(type = 'OPTION', questionId=create_id(self, split)))
+                # set text to '' else it will appear in worldobjectentry
+                self.texts[ref_number] = 'null'
+                mehrere = 1
+            elif 'und' in ref_text:
+                # if found set self.refLogic_type to REF_AGGREGATION_ANSWER_OPTION_REF mit OPTION_WITH_CONTENT_ID
+                self.RefLogic.type = 'REF_AGGREGATION_ANSWER_OPTION_REF'
+                # count how many and create options as self.refLogics
+                splits = ref_text.split('und')
+                for split in splits:
+                    # OPTION_WITH_CONTENT_ID
+                    self.RefLogic.options.append(RefLogicOption(type = 'OPTION_WITH_CONTENT_ID', questionContentId=ref_number+1, questionId=create_id(self, split)))
+                # set text to '' else it will appear in worldobjectentry
+                self.texts[ref_number] = 'null'
+                mehrere = 1
+            elif 'sonst' in ref_text and count_special_refs > 1:
+                 # if found set self.refLogic_type to REF_AGGREGATION_ANSWER_OPTION_REF mit OPTION_WITH_CONTENT_ID
+                self.RefLogic.type= 'REF_AGGREGATION_ANSWER_OPTION_REF'
+                # count how many and create options as self.refLogics
+                splits = ref_text.split('sonst')
+                for number, split in enumerate(splits):
+                    if number == 0:
+                        self.RefLogic.options.append(RefLogicOption(type = 'OPTION_WITH_CONTENT_ID', questionContentId=ref_number+1, questionId=create_id(self, split)))
+                    if number > 0:
+                        self.RefLogic.options.append(RefLogicOption(type = 'OPTION_WITH_CONTENT_ID_SKIP', questionContentId=ref_number+1, questionId=create_id(self, split)))
+                # set text to '' else it will appear in worldobjectentry
+                self.texts[ref_number] = 'null'
+    if self.RefLogic.type != 'XY':
+        self.RefLogic.create_json()
+        
+            
 
 
 def map_structure_to_type(structure):
@@ -181,13 +214,14 @@ def map_structure_to_answer_option(structure, type):
     return answer_option
 
 class Question:
-    def __init__(self, id_base, version, structure, texts, id):
+    def __init__(self, id_base, version, structure, texts, excel_id):
         self.id_base = id_base
-        self.id = id
+        self.excel_id = excel_id
         self.etappe, self.screen = create_etappe_screen_from_id(self)
         self.version = version
         self.structure = structure.values #array
         self.texts = texts.values #array
+        self.id = create_id(self, self.excel_id)
         self.next_logic_type = 'NEXT'
         self.next_logic_option = ''
         self.next_logic_option_screen_refs = []

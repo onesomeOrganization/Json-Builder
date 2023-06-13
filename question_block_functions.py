@@ -124,8 +124,6 @@ def create_question(question, id_base, count, write_beginning, id_base_next_ques
     content_length = get_content_length(question.structure)+2 # fragen fangen nicht von 0 an und Subititel 
     type = question.type
     answer_options = question.answer_option
-    next_logics = question.next_logic_option
-    next_logic_type = question.next_logic_type
     texts = question.texts
 
     # DICTIONARY
@@ -407,7 +405,7 @@ def create_question(question, id_base, count, write_beginning, id_base_next_ques
             ,{
               "id": "%s-%s",
               "type": "ANSWER_OPTION",
-              "required": true,
+              "required": %s,
               "showHidden": null,
               "order": %s,
               "imageName": null,
@@ -450,7 +448,7 @@ def create_question(question, id_base, count, write_beginning, id_base_next_ques
             }
           ],
           %s
-        },''' % (question_id, question.reviewable, question.progress, question.worldObjectEntryKeyType, question.optional, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", question_id,question_id,texts[0], question_id,create_content_block(question_id, 2, question.structure, texts), question_id, content_length, content_length, question_id, content_length, create_nextLogic(question, content_length, question_id, id_base_next_question)),
+        },''' % (question_id, question.reviewable, question.progress, question.worldObjectEntryKeyType, question.optional, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", question_id,question_id,texts[0], question_id,create_content_block(question_id, 2, question.structure, texts), question_id, content_length, question.answer_required, content_length, question_id, content_length, create_nextLogic(question, content_length, question_id, id_base_next_question)),
         "SCALA_SLIDER":'''
         {
           "id": "%s",
