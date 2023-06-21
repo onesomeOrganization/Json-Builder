@@ -18,7 +18,7 @@ write_beginning = True
 write_ending = True
 etappe = 1
 startnumber = 1 # 1 if it should start from beginning
-excel_path_or_name = "Jsons/Excels/01_Templates/features/Json_Excel_Template_ref_agg.xlsx"
+excel_path_or_name = "Jsons/Excels/01_Templates/Json_Excel_Template3.3.xlsx"
 #excel_path_or_name = "Jsons/Excels/01_Templates/Json_Excel_Template3.2.xlsx"
 # -------- OLD EXPLANATIONS ----------
 # type: CONTENT, OPTION_QUESTION, OPEN_QUESTION, SCALA_SLIDER, ITEM_LIST_EXPANDABLE (T OR C as answeroption), ITEM_LIST_SINGLE_CHOICE (R)
@@ -29,7 +29,6 @@ excel_path_or_name = "Jsons/Excels/01_Templates/features/Json_Excel_Template_ref
 # question_array = [Question('CONTENT','AM'),Question('SCALA_SLIDER','PRPM'), Question('OPTION_QUESTION','PRP'), Question('CONTENT'), Question('CONTENT'), Question('OPEN_QUESTION','PRP'), Question('SCALA_SLIDER'), Question('CONTENT','PR'), Question('OPEN_QUESTION','PRP'), Question('OPTION_QUESTION'), Question('CONTENT'), Question('CONTENT'), Question('CONTENT')]
 
 # TODO: formatting flag
-
 
 # ---------- HELPER ----------
 def create_id(reference_id_excel):
@@ -72,9 +71,14 @@ if information[0] == 'Reise' or information[0] == 'reise':
     if not isinstance(information[1], str):
         raise Exception ('OASE Zuordnung missing')
     information[1] = '"'+information[1]+'"'
+    # Test cardDisplayImageName
+    if not isinstance(information[15], str):
+        raise Exception ('cardDisplayImageName Zuordnung missing')
+    information[15] = '"'+information[15]+'"'
 elif information[0] == 'Kurztrip' or information[0] == 'kurztrip':
     information[0] = 'SHORT_TRIP'
     information[1] = 'null'
+    information[15] = 'null'
 
 # Test Aufruf
 if information[0] == 'WORLD' and information[4] == 'Beginne deinen Kurztrip':
