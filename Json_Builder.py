@@ -28,12 +28,7 @@ excel_path_or_name = "Jsons/Excels/01_Templates/features/Json_Excel_Template_ref
 # next_logic_options: N = option with next
 # question_array = [Question('CONTENT','AM'),Question('SCALA_SLIDER','PRPM'), Question('OPTION_QUESTION','PRP'), Question('CONTENT'), Question('CONTENT'), Question('OPEN_QUESTION','PRP'), Question('SCALA_SLIDER'), Question('CONTENT','PR'), Question('OPEN_QUESTION','PRP'), Question('OPTION_QUESTION'), Question('CONTENT'), Question('CONTENT'), Question('CONTENT')]
 
-# DONE: Wenn "und" dann REF_AGGREGATION_ANSWER_OPTION_REF mit OPTION_WITH_CONTENT_ID
-# DONE: wenn mehrere "und" oder "sonst" dann REF_AGGREGATION_ANSWER_OPTION_REF und bei sonst mit OPTION_WITH_CONTENT_ID_SKIP
-# TODO: wenn "und" und "sonst" dann fehler
-# DONE: wenn mehrere einzelne und oder sonst dann auch REF_AGGREGATION_ANSWER_OPTION_REF
 # TODO: formatting flag
-# DONE: optional klappt nicht
 
 
 # ---------- HELPER ----------
