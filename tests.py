@@ -4,6 +4,9 @@ import pandas as pd
 
 def do_tests(df, information, questions_array):
 
+    # Flag declarations
+    is_formatted = False
+
     # Test nummeration
     nummeration = []
     pattern = '^\d+\.\d+$'
@@ -49,7 +52,8 @@ def do_tests(df, information, questions_array):
         for text in question.texts:
             if isinstance(text, str):
                 if '<br>' in text or '<strong>' in text:
-                    formatting_flag = 1
+                    is_formatted = True
+        
         # Test empty Text
         needs_text_array = ['SUB_TITEL','PARAGRAPH','AUDIO', 'IMAGE', 'MORE_INFORMATION', 'MORE_INFORMATION_EXPANDED', 'ITEM(Single)', 'ITEM(Multiple)','SCALA', 'REFERENCE', 'Etappen-Titel','Zeit min','Zeit max', 'KEY INSIGHT (optional)','KEY INSIGHT (verpflichtend)']
         for i,text in enumerate(question.texts):
@@ -79,5 +83,5 @@ def do_tests(df, information, questions_array):
                 raise Exception('"und" and "sonst" not possible in one reference at question: ', q_count+1)
 
         
-   # if formatting_flag == 0:
-    #    raise Exception ('Not formatted')
+    if not is_formatted:
+        raise Exception ('Text not formatted')

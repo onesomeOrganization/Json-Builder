@@ -18,8 +18,8 @@ write_beginning = True
 write_ending = True
 etappe = 1
 startnumber = 1 # 1 if it should start from beginning
-excel_path_or_name = "Jsons/Excels/01_Templates/Json_Excel_Template3.3.xlsx"
-#excel_path_or_name = "Jsons/Excels/01_Templates/Json_Excel_Template3.2.xlsx"
+excel_path_or_name = "Jsons/Excels/01_Templates/features/Json_Excel_Template_ref_agg.xlsx"
+
 # -------- OLD EXPLANATIONS ----------
 # type: CONTENT, OPTION_QUESTION, OPEN_QUESTION, SCALA_SLIDER, ITEM_LIST_EXPANDABLE (T OR C as answeroption), ITEM_LIST_SINGLE_CHOICE (R)
 # content: P = Paragraph, R = Referenz, I = Image, A = Audio, M = More Information Expandable -> Titel ist immer dabei
@@ -27,8 +27,6 @@ excel_path_or_name = "Jsons/Excels/01_Templates/Json_Excel_Template3.3.xlsx"
 # next_logic_type: NEXT, NEXT_OPTION, REF_KEY_INSIGHT
 # next_logic_options: N = option with next
 # question_array = [Question('CONTENT','AM'),Question('SCALA_SLIDER','PRPM'), Question('OPTION_QUESTION','PRP'), Question('CONTENT'), Question('CONTENT'), Question('OPEN_QUESTION','PRP'), Question('SCALA_SLIDER'), Question('CONTENT','PR'), Question('OPEN_QUESTION','PRP'), Question('OPTION_QUESTION'), Question('CONTENT'), Question('CONTENT'), Question('CONTENT')]
-
-# TODO: formatting flag
 
 # ---------- HELPER ----------
 def create_id(reference_id_excel):
