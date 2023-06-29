@@ -1,21 +1,51 @@
-import re
+from helper import normal_screen_reference, get_one_id_higher
 
+class Content:
+  def __init__(self, id, structure, texts):
+    self.structure = structure
+    self.texts = texts
+    self.order = 2
+    self.id = id + '-' +str(self.order)
+    self.json = ''
+    self.create_json()
 
-def normal_screen_reference(text):
-  pattern = '^[+-]?\d+([.,]\d+)?$'
-  it_is_screen_ref = bool(re.match(pattern, text))
-  return it_is_screen_ref
+  def create_json(self):
+    for text_count, entry in enumerate(self.structure):
+      if entry == 'REFERENCE':
+        self.json += self.create_ref(text_count)
+        self.order+=1
+        self.id = '-'.join(self.id.split('-')[:-1] + [str(self.order)])
+      elif entry == 'PARAGRAPH':
+        self.json += self.create_par(text_count)
+        self.order+=1
+        self.id = '-'.join(self.id.split('-')[:-1] + [str(self.order)])
+      elif entry == 'AUDIO':
+        self.json += self.create_audio(text_count)
+        self.order+=2
+        self.id = '-'.join(self.id.split('-')[:-1] + [str(self.order)])
+      elif entry == 'IMAGE':
+        self.json += self.create_image(text_count)
+        self.order+=2
+        self.id = '-'.join(self.id.split('-')[:-1] + [str(self.order)])
+      elif entry == 'MORE_INFORMATION_EXPANDED':
+        self.json += self.create_more_information_expanded(text_count)
+        self.order+=1
+        self.id = '-'.join(self.id.split('-')[:-1] + [str(self.order)])
+      elif entry == 'MORE_INFORMATION':
+        self.json += self.create_more_information(text_count)
+        self.order+=1
+        self.id = '-'.join(self.id.split('-')[:-1] + [str(self.order)])
 
-def create_ref(id_base, count, texts, text_count):
-  if normal_screen_reference(texts[text_count]):
-    # create referenz-id
-    id_splits = id_base.split('-')
-    ref_numbers = texts[text_count].split('.')
-    reference_id = id_splits[0]+'-'+id_splits[1]+'-'+ref_numbers[0]+'-'+ref_numbers[1]
+  def create_ref(self, text_count):
+    if normal_screen_reference(self.texts[text_count]):
+      # create referenz-id
+      id_splits = self.id.split('-')
+      ref_numbers = self.texts[text_count].split('.')
+      refQuestionId = id_splits[0]+'-'+id_splits[1]+'-'+ref_numbers[0]+'-'+ref_numbers[1]
 
-    referenzierung = '''  
+      referenzierung = '''  
               ,{
-                "id": "%s-%s",
+                "id": "%s",
                 "type": "ANSWER_OPTION_REF",
                 "required": null,
                 "showHidden": null,
@@ -39,11 +69,12 @@ def create_ref(id_base, count, texts, text_count):
                 "refQuestionAnswerOptionId": null,
                 "translations": [],
                 "answerOptions": []
-              }'''%(id_base, count, count, reference_id)
-  else: # can be keyinsight or reference out of reflogic      
-    referenzierung = '''  
+              }'''%(self.id, self.order, refQuestionId)
+    else: # can be keyinsight or reference out of reflogic 
+      worldObjectEntryKey = self.texts[text_count] if self.texts[text_count] == 'null' else '"'+self.texts[text_count]+'"'     
+      referenzierung = '''  
             ,{
-              "id": "%s-%s",
+              "id": "%s",
               "type": "ANSWER_OPTION_REF",
               "required": null,
               "showHidden": null,
@@ -67,217 +98,16 @@ def create_ref(id_base, count, texts, text_count):
               "refQuestionAnswerOptionId": null,
               "translations": [],
               "answerOptions": []
-            }'''%(id_base, count, count, texts[text_count] if texts[text_count] == 'null' else '"'+texts[text_count]+'"')
-  return referenzierung
+            }'''%(self.id, self.order, worldObjectEntryKey)
+    return referenzierung
 
-def create_par(id_base, count, texts, text_count):
-  paragraph = '''
+  def create_more_information(self, text_count):
+    splitted_text = self.texts[text_count].split('_')
+    title = splitted_text[1]
+    text = splitted_text[2]
+    more_information = '''
             ,{
-              "id": "%s-%s",
-              "type": "PARAGRAPH",
-              "required": null,
-              "showHidden": null,
-              "order": %s,
-              "imageName": null,
-              "audioName": null,
-              "style": null,
-              "refAdaptionType": null,
-              "refAdaptionNumber": null,
-              "refOrderType": null,
-              "refOrderColumn": null,
-              "refOffset": null,
-              "refLimit": null,
-              "downloadName": null,
-              "checkForSpecialTextReplacement": null,
-              "questionAnswerOptionId": null,
-              "language": null,
-              "contentShowType": null,
-              "worldObjectEntryKey": null,
-              "refQuestionId": null,
-              "refQuestionAnswerOptionId": null,
-              "translations": [
-                {
-                  "id": "%s-%s-DE",
-                  "language": "DE",
-                  "title": null,
-                  "text": "%s"
-                },
-                {
-                  "id": "%s-%s-EN",
-                  "language": "EN",
-                  "title": null,
-                  "text": "Englisch"
-                }
-              ],
-              "answerOptions": []
-            }'''%(id_base, count, count, id_base, count,texts[text_count], id_base, count)
-  return paragraph
-
-def create_audio(id_base, count, texts, text_count):
-  audio = '''
-            ,{
-              "id": "%s-%s",
-              "type": "AUDIO",
-              "required": null,
-              "showHidden": null,
-              "order": %s,
-              "imageName": null,
-              "audioName": "%s",
-              "style": null,
-              "refAdaptionType": null,
-              "refAdaptionNumber": null,
-              "refOrderType": null,
-              "refOrderColumn": null,
-              "refOffset": null,
-              "refLimit": null,
-              "downloadName": null,
-              "checkForSpecialTextReplacement": null,
-              "questionAnswerOptionId": null,
-              "language": "DE",
-              "contentShowType": null,
-              "worldObjectEntryKey": null,
-              "refQuestionId": null,
-              "refQuestionAnswerOptionId": null,
-              "translations": [],
-              "answerOptions": []
-            },
-            {
-              "id": "%s-%s",
-              "type": "AUDIO",
-              "required": null,
-              "showHidden": null,
-              "order": %s,
-              "imageName": null,
-              "audioName": "%s",
-              "style": null,
-              "refAdaptionType": null,
-              "refAdaptionNumber": null,
-              "refOrderType": null,
-              "refOrderColumn": null,
-              "refOffset": null,
-              "refLimit": null,
-              "downloadName": null,
-              "checkForSpecialTextReplacement": null,
-              "questionAnswerOptionId": null,
-              "language": "EN",
-              "contentShowType": null,
-              "worldObjectEntryKey": null,
-              "refQuestionId": null,
-              "refQuestionAnswerOptionId": null,
-              "translations": [],
-              "answerOptions": []
-            }'''%(id_base, count, count,texts[text_count], id_base, count+1, count+1, texts[text_count])
-  return audio
-
-def create_image(id_base, count, texts, text_count):
-  image = '''
-            ,{
-              "id": "%s-%s",
-              "type": "IMAGE",
-              "required": null,
-              "showHidden": null,
-              "order": %s,
-              "imageName": "%s",
-              "audioName": null,
-              "style": null,
-              "refAdaptionType": null,
-              "refAdaptionNumber": null,
-              "refOrderType": null,
-              "refOrderColumn": null,
-              "refOffset": null,
-              "refLimit": null,
-              "downloadName": null,
-              "checkForSpecialTextReplacement": null,
-              "questionAnswerOptionId": null,
-              "language": "DE",
-              "contentShowType": null,
-              "worldObjectEntryKey": null,
-              "refQuestionId": null,
-              "refQuestionAnswerOptionId": null,
-              "translations": [],
-              "answerOptions": []
-            },
-            {
-              "id": "%s-%s",
-              "type": "IMAGE",
-              "required": null,
-              "showHidden": null,
-              "order": %s,
-              "imageName": "%s",
-              "audioName": null,
-              "style": null,
-              "refAdaptionType": null,
-              "refAdaptionNumber": null,
-              "refOrderType": null,
-              "refOrderColumn": null,
-              "refOffset": null,
-              "refLimit": null,
-              "downloadName": null,
-              "checkForSpecialTextReplacement": null,
-              "questionAnswerOptionId": null,
-              "language": "EN",
-              "contentShowType": null,
-              "worldObjectEntryKey": null,
-              "refQuestionId": null,
-              "refQuestionAnswerOptionId": null,
-              "translations": [],
-              "answerOptions": []
-            }'''%(id_base, count, count, texts[text_count], id_base, count+1, count+1, texts[text_count])
-  return image
-
-def create_more_information_expanded(id_base, count, texts, text_count):
-  splitted_text = texts[text_count].split('_')
-  title = splitted_text[1]
-  text = splitted_text[2]
-  more_information_expanded = '''
-            ,{
-              "id": "%s-%s",
-              "type": "MORE_INFORMATION_EXPANDED",
-              "required": null,
-              "showHidden": null,
-              "order": %s,
-              "imageName": null,
-              "audioName": null,
-              "style": null,
-              "refAdaptionType": null,
-              "refAdaptionNumber": null,
-              "refOrderType": null,
-              "refOrderColumn": null,
-              "refOffset": null,
-              "refLimit": null,
-              "downloadName": null,
-              "checkForSpecialTextReplacement": null,
-              "questionAnswerOptionId": null,
-              "language": null,
-              "contentShowType": null,
-              "worldObjectEntryKey": null,
-              "refQuestionId": null,
-              "refQuestionAnswerOptionId": null,
-              "translations": [
-                {
-                  "id": "%s-%s-DE",
-                  "language": "DE",
-                  "title": "%s",
-                  "text": "%s"
-                },
-                {
-                  "id": "%s-%s-EN",
-                  "language": "EN",
-                  "title": "Englisch",
-                  "text": "Englisch"
-                }
-              ],
-              "answerOptions": []
-            }'''%(id_base, count, count, id_base, count, title, text, id_base, count)
-  return more_information_expanded
-
-def create_more_information(id_base, count, texts, text_count):
-  splitted_text = texts[text_count].split('_')
-  title = splitted_text[1]
-  text = splitted_text[2]
-  more_information = '''
-            ,{
-              "id": "%s-%s",
+              "id": "%s",
               "type": "MORE_INFORMATION",
               "required": null,
               "showHidden": null,
@@ -301,45 +131,226 @@ def create_more_information(id_base, count, texts, text_count):
               "refQuestionAnswerOptionId": null,
               "translations": [
                 {
-                  "id": "%s-%s-DE",
+                  "id": "%s-DE",
                   "language": "DE",
                   "title": "%s",
                   "text": "%s"
                 },
                 {
-                  "id": "%s-%s-EN",
+                  "id": "%s-EN",
                   "language": "EN",
                   "title": "Englisch",
                   "text": "Englisch"
                 }
               ],
               "answerOptions": []
-            }'''%(id_base, count, count, id_base, count, title, text, id_base, count)
-  return more_information
+            }'''%(self.id, self.order, self.id, title, text, self.id)
+    return more_information
+
+  def create_par(self, text_count):
+    paragraph = '''
+            ,{
+              "id": "%s",
+              "type": "PARAGRAPH",
+              "required": null,
+              "showHidden": null,
+              "order": %s,
+              "imageName": null,
+              "audioName": null,
+              "style": null,
+              "refAdaptionType": null,
+              "refAdaptionNumber": null,
+              "refOrderType": null,
+              "refOrderColumn": null,
+              "refOffset": null,
+              "refLimit": null,
+              "downloadName": null,
+              "checkForSpecialTextReplacement": null,
+              "questionAnswerOptionId": null,
+              "language": null,
+              "contentShowType": null,
+              "worldObjectEntryKey": null,
+              "refQuestionId": null,
+              "refQuestionAnswerOptionId": null,
+              "translations": [
+                {
+                  "id": "%s-DE",
+                  "language": "DE",
+                  "title": null,
+                  "text": "%s"
+                },
+                {
+                  "id": "%s-EN",
+                  "language": "EN",
+                  "title": null,
+                  "text": "Englisch"
+                }
+              ],
+              "answerOptions": []
+            }'''%(self.id, self.order, self.id, self.texts[text_count], self.id)
+    return paragraph
+
+  def create_audio(self, text_count):
+    second_id = get_one_id_higher(self.id)
+    audioName = self.texts[text_count]
+    audio = '''
+            ,{
+              "id": "%s",
+              "type": "AUDIO",
+              "required": null,
+              "showHidden": null,
+              "order": %s,
+              "imageName": null,
+              "audioName": "%s",
+              "style": null,
+              "refAdaptionType": null,
+              "refAdaptionNumber": null,
+              "refOrderType": null,
+              "refOrderColumn": null,
+              "refOffset": null,
+              "refLimit": null,
+              "downloadName": null,
+              "checkForSpecialTextReplacement": null,
+              "questionAnswerOptionId": null,
+              "language": "DE",
+              "contentShowType": null,
+              "worldObjectEntryKey": null,
+              "refQuestionId": null,
+              "refQuestionAnswerOptionId": null,
+              "translations": [],
+              "answerOptions": []
+            },
+            {
+              "id": "%s",
+              "type": "AUDIO",
+              "required": null,
+              "showHidden": null,
+              "order": %s,
+              "imageName": null,
+              "audioName": "%s",
+              "style": null,
+              "refAdaptionType": null,
+              "refAdaptionNumber": null,
+              "refOrderType": null,
+              "refOrderColumn": null,
+              "refOffset": null,
+              "refLimit": null,
+              "downloadName": null,
+              "checkForSpecialTextReplacement": null,
+              "questionAnswerOptionId": null,
+              "language": "EN",
+              "contentShowType": null,
+              "worldObjectEntryKey": null,
+              "refQuestionId": null,
+              "refQuestionAnswerOptionId": null,
+              "translations": [],
+              "answerOptions": []
+            }'''%(self.id, self.order, audioName, second_id, self.order+1, audioName)
+    return audio
+
+  def create_image(self, text_count):
+    imageName = self.texts[text_count]
+    second_id = get_one_id_higher(self.id)
+    image = '''
+            ,{
+              "id": "%s",
+              "type": "IMAGE",
+              "required": null,
+              "showHidden": null,
+              "order": %s,
+              "imageName": "%s",
+              "audioName": null,
+              "style": null,
+              "refAdaptionType": null,
+              "refAdaptionNumber": null,
+              "refOrderType": null,
+              "refOrderColumn": null,
+              "refOffset": null,
+              "refLimit": null,
+              "downloadName": null,
+              "checkForSpecialTextReplacement": null,
+              "questionAnswerOptionId": null,
+              "language": "DE",
+              "contentShowType": null,
+              "worldObjectEntryKey": null,
+              "refQuestionId": null,
+              "refQuestionAnswerOptionId": null,
+              "translations": [],
+              "answerOptions": []
+            },
+            {
+              "id": "%s",
+              "type": "IMAGE",
+              "required": null,
+              "showHidden": null,
+              "order": %s,
+              "imageName": "%s",
+              "audioName": null,
+              "style": null,
+              "refAdaptionType": null,
+              "refAdaptionNumber": null,
+              "refOrderType": null,
+              "refOrderColumn": null,
+              "refOffset": null,
+              "refLimit": null,
+              "downloadName": null,
+              "checkForSpecialTextReplacement": null,
+              "questionAnswerOptionId": null,
+              "language": "EN",
+              "contentShowType": null,
+              "worldObjectEntryKey": null,
+              "refQuestionId": null,
+              "refQuestionAnswerOptionId": null,
+              "translations": [],
+              "answerOptions": []
+            }'''%(self.id, self.order, imageName, second_id, self.order+1, imageName)
+    return image
+
+  def create_more_information_expanded(self, text_count):
+    splitted_text = self.texts[text_count].split('_')
+    title = splitted_text[1]
+    text = splitted_text[2]
+    more_information_expanded = '''
+            ,{
+              "id": "%s",
+              "type": "MORE_INFORMATION_EXPANDED",
+              "required": null,
+              "showHidden": null,
+              "order": %s,
+              "imageName": null,
+              "audioName": null,
+              "style": null,
+              "refAdaptionType": null,
+              "refAdaptionNumber": null,
+              "refOrderType": null,
+              "refOrderColumn": null,
+              "refOffset": null,
+              "refLimit": null,
+              "downloadName": null,
+              "checkForSpecialTextReplacement": null,
+              "questionAnswerOptionId": null,
+              "language": null,
+              "contentShowType": null,
+              "worldObjectEntryKey": null,
+              "refQuestionId": null,
+              "refQuestionAnswerOptionId": null,
+              "translations": [
+                {
+                  "id": "%s-DE",
+                  "language": "DE",
+                  "title": "%s",
+                  "text": "%s"
+                },
+                {
+                  "id": "%s-EN",
+                  "language": "EN",
+                  "title": "Englisch",
+                  "text": "Englisch"
+                }
+              ],
+              "answerOptions": []
+            }'''%(self.id, self.order, self.id, title, text, self.id)
+    return more_information_expanded
 
 
-
-def create_content_block(id_base, count, structure, texts):
-  ref_block = '' 
-  for i, entry in enumerate(structure):
-    if entry == 'REFERENCE':
-      ref_block += create_ref(id_base, count, texts, i)
-      count+=1
-    elif entry == 'PARAGRAPH':
-      ref_block += create_par(id_base, count, texts, i)
-      count+=1
-    elif entry == 'AUDIO':
-      ref_block += create_audio(id_base, count, texts, i)
-      count+=2
-    elif entry == 'IMAGE':
-      ref_block += create_image(id_base, count, texts, i)
-      count+=2
-    elif entry == 'MORE_INFORMATION_EXPANDED':
-      ref_block += create_more_information_expanded(id_base, count, texts, i)
-      count+=1
-    elif entry == 'MORE_INFORMATION':
-      ref_block += create_more_information(id_base, count, texts, i)
-      count+=1
-
-  return ref_block 
 

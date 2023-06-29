@@ -33,7 +33,8 @@ def create_adjazenzliste(questions_array):
     adjazenzliste = {}
     for num, q in enumerate(questions_array):
         # add id as key
-        adjazenzliste[q.excel_id] = []
+        if not 'Neue Etappe' in q.structure: # check for neue etappe and skip entry
+            adjazenzliste[q.excel_id] = []
         arrow_flag = False
         for text in q.texts:
             if "->" in text:
@@ -47,7 +48,7 @@ def create_adjazenzliste(questions_array):
                 # Assign the updated value back to the key
                 adjazenzliste[q.excel_id] = current_value
         if not arrow_flag:
-            if not 'weiter mit Screen' in q.structure and not 'letzter Screen' in q.structure and not num == len(questions_array)-1:
+            if not 'weiter mit Screen' in q.structure and not 'letzter Screen' in q.structure and not num == len(questions_array)-1 and not 'Neue Etappe' in questions_array[num+1].structure and not 'Neue Etappe' in q.structure:
                 # add id+1 as value, e.g. id = flora-v13-1-3 -> flora-v13-1-4
                 adjazenzliste[q.excel_id] = [q.excel_id.split('.')[0]+'.'+str(int(q.excel_id.split('.')[1])+1)]
             elif 'weiter mit Screen' in q.structure:
@@ -81,7 +82,7 @@ def find_node_before(graph, node):
             return n
     return None
 
-def progress_recursive(progress_not_done, graph, progress_done, questions_array):
+def progress_recursive(trip, progress_not_done, graph, progress_done, questions_array):
     # done when all progress is done
     if len(progress_not_done) == 0:
         return
@@ -100,9 +101,10 @@ def progress_recursive(progress_not_done, graph, progress_done, questions_array)
     # end progress: 90 wenn letzte_id letzer screen oder ende vom question_array oder progress vom node wo sie zusammenführen
     last_id = longest_chain[-1]
     last_q = next((q for q in questions_array if q.excel_id == last_id), None)
+
     if join_node_id != None:
         end_progress = next((q.progress for q in questions_array if q.excel_id == join_node_id), None)
-    elif 'letzter Screen' in last_q.structure or questions_array[-1].excel_id == last_id:
+    elif questions_array[-1].excel_id == last_id or last_id in trip.etappen_end_screens.values():
         end_progress = 100
     # create the progress
     create_progress_along_chain(chain_to_array(longest_chain, questions_array), start_progress, end_progress)
@@ -115,14 +117,15 @@ def progress_recursive(progress_not_done, graph, progress_done, questions_array)
             progress_not_done.remove(id)
             progress_done.append(id)
         # start again with updated values
-        progress_recursive(progress_not_done, graph, progress_done, questions_array)
+        progress_recursive(trip, progress_not_done, graph, progress_done, questions_array)
 
 
-def create_progress(questions_array):
+def create_progress(trip, questions_array):
     graph = create_adjazenzliste(questions_array)
     # put all ids in not done
     progress_not_done = []
     progress_done = []
     for q in questions_array:
-        progress_not_done.append(q.excel_id)
-    progress_recursive(progress_not_done, graph, progress_done, questions_array)
+        if not 'Neue Etappe' in q.structure:
+            progress_not_done.append(q.excel_id)
+    progress_recursive(trip, progress_not_done, graph, progress_done, questions_array)
