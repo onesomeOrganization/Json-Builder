@@ -1,29 +1,11 @@
 import numpy as np
 import re
-from refLogic_functions import *
-from content_block_functions import Content
-from answer_option_functions import *
-from nextLogic_functions import *
+from refLogic_object import RefLogic
+from content_object import Content
+from answerOption_object import AnswerOption
+from nextLogic_object import NextLogic
 from helper import create_id, get_content_length
 
-
-
-# TODO: Answer options 
-def map_structure_to_answer_option(structure, type):
-    answer_option = ''
-    # R = Radio Button
-    for value in structure:
-        if type == 'ITEM_LIST_SINGLE_CHOICE' and value == 'ITEM(Single)':
-            answer_option += 'R'
-        # C = Checkbox, 
-        if type == 'ITEM_LIST_EXPANDABLE' and value == 'ITEM(Multiple)':
-            answer_option += 'C'
-        # T = Text_Field_Expandable
-        if type == 'ITEM_LIST_EXPANDABLE' and value == 'SEVERAL ANSWER OPTIONS' and not ('ITEM(Multiple)' or 'ITEM(Single)') in structure:
-            answer_option += 'T'
-    if answer_option == '':
-        answer_option = None
-    return answer_option
 
 class Question:
     def __init__(self, id_base, version, structure, texts, next_question_structure, next_question_texts, excel_id, write_beginning, write_ending):
@@ -44,34 +26,23 @@ class Question:
 
         # PREPARATIONS
         self.clear_of_nan()
-        self.solve_answer_problem()
+        self.maxNumber = self.solve_answer_problem()
         self.type = self.map_structure_to_type() 
         self.answer_required = self.prepare_optional()
         self.scala_min, self.scala_max, self.scala_min_text, self.scala_max_text = self.prepare_scala()
-        
-        # TODO clean
-        self.prepare_keyInsight()
-        self.answer_option = map_structure_to_answer_option(self.structure, self.type)
-        
+        self.reviewable, self.worldObjectEntryKeyType, self.optional = self.prepare_keyInsight()
 
         # BUILDING BLOCKS
-        self.id_next_question = self.calc_id_next_question()
-        self.check_for_ref_key_insight_reflogic()
-        self.RefLogic = RefLogic(self.structure, self.texts, self.id_base, self.version, id=self.id)
-        self.NextLogic = NextLogic(self.id, self.id_base, self.version, self.RefLogic, self.structure, self.texts, self.id_next_question, self.reference_of_next_question, self.next_logic_type)
-        self.prepare_for_content()
-        self.Content = Content(self.id, self.structure, self.texts)
-    
-    def check_for_ref_key_insight_reflogic(self):
-    # add next question references
-        for x, struct in enumerate(self.next_question_structure):
-            # check if structure has reference
-            if struct == 'REFERENCE':
-                # check if key insight reference
-                if self.next_question_texts[x].isupper():
-                    # add to question before
-                    self.reference_of_next_question = self.next_question_texts[x]
-                    self.next_logic_type = 'REF_KEY_INSIGHT'
+        self.RefLogic = RefLogic(self)
+        self.NextLogic = NextLogic(self)
+        self.button_one_text, self.button_two_text = self.prepare_for_content()
+        self.Content = Content(self)
+        self.AnswerOption = AnswerOption(self)
+
+        # JSON
+        self.comma_is_needed = self.check_if_comma_needed()
+
+    # --------- PREPARATIONS -----------
 
     def prepare_for_content(self):
         # arrow logics
@@ -89,20 +60,11 @@ class Question:
             button_two = button_texts[1].split('->')
             self.button_one_text = button_one[0].strip()
             self.button_two_text = button_two[0].strip()
+        else:
+            self.button_one_text = ''
+            self.button_two_text = ''
 
-
-    def calc_id_next_question(self):
-        id_next_question = '"'+self.id_base+self.version+"-"+self.etappe+"-"+str(int(self.screen)+1)+'"'
-        # weiter mit Screen id
-        if 'weiter mit Screen' in self.structure:
-            id_next_question = '"'+create_id(self, self.texts[np.where(self.structure == 'weiter mit Screen')][0])+'"'
-        # letzter screen id_next_question = null
-        elif 'letzter Screen' in self.structure:
-            id_next_question = 'null'
-        # next question neue etappe or last question in array: null
-        #if i == (len(questions_array)-1) or (i < (len(questions_array)-1) and questions_array[i+1].type == 'Neue Etappe'):
-        #    id_next_question = 'null'
-        return id_next_question
+        return self.button_one_text, self.button_two_text
 
     def create_etappe_screen_from_id(self):
         etappe = self.excel_id.split('.')[0]
@@ -160,9 +122,11 @@ class Question:
         if "ITEM(Single)" in self.structure and 'SEVERAL ANSWER OPTIONS' in self.structure:
             self.maxNumber = '1'
             self.structure = np.core.defchararray.replace(self.structure, 'ITEM(Single)', 'ITEM(Multiple)')
-        else:
+        else: 
             self.maxNumber = 'null'
-    
+            
+        return self.maxNumber
+        
     def prepare_optional(self):
         # OPTIONAL
         if 'OPTIONAL' in self.structure:
@@ -197,7 +161,6 @@ class Question:
             self.scala_min_text = None
             self.scala_max_text = None
         return self.scala_min, self.scala_max, self.scala_min_text, self.scala_max_text
-
     
     def prepare_keyInsight(self):
         # take care of optional/verpflichtende Schlüsselerkenntnisse
@@ -213,6 +176,19 @@ class Question:
             self.reviewable = 'false'
             self.worldObjectEntryKeyType = 'null'
             self.optional = 'true'
+
+        return self.reviewable, self.worldObjectEntryKeyType, self.optional
+    
+    # ------------ JSON ---------------
+    
+    def check_if_comma_needed(self):
+        if any(element == 'Neue Etappe' for element in self.next_question_structure):
+            comma_is_needed = False
+        elif all(element == 'None' for element in self.next_question_structure):
+            comma_is_needed = False
+        else:
+            comma_is_needed = True
+        return comma_is_needed
 
     def create_json(self):
         content_length = get_content_length(self.structure)+2 # fragen fangen nicht von 0 an und Subititel 
@@ -279,7 +255,7 @@ class Question:
                     }
                 ],
                 "answerOptions": []
-                }%s
+                },%s
             ],
             %s
             },''' % (question.id, question.reviewable, question.progress, question.worldObjectEntryKeyType, question.optional, "true" if count == 0 and self.write_beginning == True else "null", "true" if count == 0 and self.write_beginning == True else "null", question.id, question.id, self.texts[0], question.id, self.Content.json, self.NextLogic.json)
@@ -342,7 +318,7 @@ class Question:
                     }
                 ],
                 "answerOptions": []
-                }%s
+                },%s
                 ,{
                 "id": "%s-%s",
                 "type": "ANSWER_OPTION",
@@ -496,7 +472,7 @@ class Question:
                     }
                 ],
                 "answerOptions": []
-                }%s     
+                },%s     
                 ,{
                 "id": "%s-%s",
                 "type": "ANSWER_OPTION",
@@ -603,7 +579,7 @@ class Question:
                     }
                 ],
                 "answerOptions": []
-                }%s
+                },%s
                 ,{
                 "id": "%s-%s",
                 "type": "ANSWER_OPTION",
@@ -725,7 +701,7 @@ class Question:
                     }
                 ],
                 "answerOptions": []
-                }%s
+                },%s
                 ,{
                 "id": "%s-%s",
                 "type": "ANSWER_OPTION",
@@ -756,7 +732,7 @@ class Question:
                 }
             ],
             %s
-            },''' % (question.id, question.maxNumber, question.reviewable, question.progress, question.worldObjectEntryKeyType, question.optional, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", question.id,question.id, texts[0], question.id,self.Content.json, question.id, content_length, question.answer_required, content_length, create_answer_options(question, question.id, content_length, self.answer_option, texts), self.NextLogic.json)
+            },''' % (question.id, question.maxNumber, question.reviewable, question.progress, question.worldObjectEntryKeyType, question.optional, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", question.id,question.id, texts[0], question.id,self.Content.json, question.id, content_length, question.answer_required, content_length, self.AnswerOption.json, self.NextLogic.json)
         elif self.type == 'ITEM_LIST_SINGLE_CHOICE':
             json = '''
             {
@@ -816,7 +792,7 @@ class Question:
                     }
                 ],
                 "answerOptions": []
-                }%s
+                },%s
                 ,{
                 "id": "%s-%s",
                 "type": "ANSWER_OPTION",
@@ -843,7 +819,7 @@ class Question:
                 }
             ],
             %s
-            },'''%(question.id, question.reviewable, question.progress, question.worldObjectEntryKeyType, question.optional,"true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", question.id, question.id,texts[0], question.id, self.Content.json, question.id, content_length, content_length, create_answer_options(question, question.id, content_length, self.answer_option, texts), self.NextLogic.json    )
+            },'''%(question.id, question.reviewable, question.progress, question.worldObjectEntryKeyType, question.optional,"true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", question.id, question.id,texts[0], question.id, self.Content.json, question.id, content_length, content_length, self.AnswerOption.json, self.NextLogic.json)
         elif self.type == 'Neue Etappe':
             json = '''
             ],
@@ -870,6 +846,9 @@ class Question:
             '''%(self.id_base, self.version, self.etappe, self.etappe, int(texts[np.where(question.structure == 'Zeit min')][0]) if 'Zeit min' in question.structure else '', int(texts[np.where(question.structure == 'Zeit max')][0]) if 'Zeit max' in question.structure else '', self.id_base, self.version, self.etappe, texts[np.where(question.structure == 'Etappen-Titel')][0] if 'Zeit min' in question.structure else '',self.id_base, self.version, self.etappe)
         else:
             raise Exception ('unknown Type in create_question_json')
-        return json
+        if self.comma_is_needed:
+            return json
+        else:
+            return json[:-1]
         
         

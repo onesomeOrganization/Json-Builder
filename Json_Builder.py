@@ -2,7 +2,7 @@ import os
 import sys
 import pandas as pd
 import openpyxl
-from trip import Trip
+from trip_object import Trip
 # 
 #  ------ VARIABLES ------------------------------------
 # Auszufüllen

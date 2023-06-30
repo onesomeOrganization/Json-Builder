@@ -33,3 +33,8 @@ def get_content_length(structure):
       elif entry == 'MORE_INFORMATION':
         length+=1
     return length
+
+def increase_order_id(order, id, about = 1):
+  order += about
+  id = '-'.join(id.split('-')[:-1] + [str(order)])
+  return order, id

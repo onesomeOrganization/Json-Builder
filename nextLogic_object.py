@@ -1,48 +1,51 @@
-from refLogic_functions import *
+
 from helper import create_id, get_content_length
 import numpy as np
 
 class NextLogic():
-    def __init__(self, id, id_base, version, RefLogic, structure, texts, id_next_question, reference_of_next_question, type = 'NEXT', options = '', option_screen_refs = []): 
-        self.id = id
-        self.type = type
-        self.id_base = id_base
-        self.version = version
-        self.options_string = options
-        self.option_screen_refs = option_screen_refs
-        self.RefLogic = RefLogic
-        self.structure = structure
-        self.texts = texts
-        self.id_next_question = id_next_question
-        self.reference_of_next_question = reference_of_next_question
+    def __init__(self, question): 
+        # Attributes
+        self.question = question
+        self.id = question.id
+        self.version = question.version
+        self.id_base = question.id_base
+        self.type = 'NEXT'
+        self.options_string = ''
+        self.option_screen_refs = []
+        self.RefLogic = question.RefLogic
+        self.structure = question.structure
+        self.texts = question.texts
+        self.id_next_question = self.calc_id_next_question()
+        self.reference_of_next_question = question.reference_of_next_question
         self.content_length = get_content_length(self.structure)
+
+        # Preparations
         self.prepare_button()
         self.add_arrow_logics()
+        # Options
         self.NextLogicOptions = []
         self.create_options()
-        
+        # Json
         self.json = self.create_json()
-        '''
-        # if no logics just return empty
-        if len(self.options_string) == 0:
-            self.json = ''
-        else:
-            self.json = self.create_json()
-        '''
+        
+    # -------- PREPARATIONS ------------
 
-    def create_options(self):
-        # for key insights
-        if self.type == 'REF_KEY_INSIGHT': #wird in prepare_button überschrieben weil unklar ist, was mehr gilt
-            plus_one = int(self.id_next_question[-2])+1
-            id_base_skip_question = self.id_next_question[:-2] + str(plus_one) + '"'
-            self.NextLogicOptions.append(NextLogicRefkeyOption(self.id, self.reference_of_next_question, self.id_next_question, id_base_skip_question))
-        count = 1
-        for number in range(len(self.options_string)):
-            self.NextLogicOptions.append(NextLogicOption(self.id, count, self.content_length, self.option_screen_refs[number])) 
-            count+=1
-  
+    def calc_id_next_question(self):
+        self.id_next_question = '"'+self.id_base+self.question.version+"-"+self.question.etappe+"-"+str(int(self.question.screen)+1)+'"'
+        # weiter mit Screen id
+        if 'weiter mit Screen' in self.structure:
+            self.id_next_question = '"'+create_id(self, self.texts[np.where(self.structure == 'weiter mit Screen')][0])+'"'
+        # letzter screen id_next_question = null
+        elif 'letzter Screen' in self.structure:
+            self.id_next_question = 'null'
+        elif all(element == 'None' for element in self.question.next_question_structure):
+            self.id_next_question = 'null'
+        elif any(element == 'Neue Etappe' for element in self.question.next_question_structure):
+            self.id_next_question = 'null'
+        return self.id_next_question
+    
     def add_arrow_logics(self):
-        # NEXT OPTIONS ITEMS with ->
+        # next option items with ->
         for num, struc in enumerate(self.structure):
             if struc == 'ITEM(Single)' and '->' in self.texts[num]:
                 self.options_string += 'N'
@@ -50,8 +53,19 @@ class NextLogic():
                 self.option_screen_refs.append(create_id(self, self.texts[num].split('->')[1]))
                 self.id_next_question = 'null'
 
+    def check_for_ref_key_insight_reflogic(self):
+    # add next question references
+        for x, struct in enumerate(self.question.next_question_structure):
+            # check if structure has reference
+            if struct == 'REFERENCE':
+                # check if key insight reference
+                if self.question.next_question_texts[x].isupper():
+                    # add to question before
+                    self.reference_of_next_question = self.question.next_question_texts[x]
+                    self.type = 'REF_KEY_INSIGHT'
+
     def prepare_button(self):
-        # BUTTONS
+        # buttons
         if 'BUTTON' in self.structure:
             self.type = 'NEXT_OPTION'
             self.options_string = 'NN'
@@ -66,8 +80,23 @@ class NextLogic():
             self.option_screen_refs.append(create_id(self, button_two[1]))
             self.id_next_question = 'null'
 
+    # ----------- CREATE OPTIONS ---------------
+
+    def create_options(self):
+        # for key insights
+        if self.type == 'REF_KEY_INSIGHT': #wird in prepare_button überschrieben weil unklar ist, was mehr gilt
+            plus_one = int(self.id_next_question[-2])+1
+            id_base_skip_question = self.id_next_question[:-2] + str(plus_one) + '"'
+            self.NextLogicOptions.append(NextLogicRefkeyOption(self.id, self.reference_of_next_question, self.id_next_question, id_base_skip_question))
+        count = 1
+        for number in range(len(self.options_string)):
+            self.NextLogicOptions.append(NextLogicOption(self.id, count, self.content_length, self.option_screen_refs[number])) 
+            count+=1
+
+    # ----------- CREATE JSON ----------------
+
     def create_json(self):
-        if self.RefLogic.type == 'XY':
+        if self.RefLogic.type is None:
             questionRefLogicId = 'null'
         elif self.RefLogic.type == 'REF_OPTIONAL' or self.RefLogic.type == 'REF_AGGREGATION_ANSWER_OPTION_REF':
             questionRefLogicId = '"'+self.id+'"'
