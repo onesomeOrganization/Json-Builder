@@ -4,11 +4,11 @@ from refLogic_object import RefLogic
 from content_object import Content
 from answerOption_object import AnswerOption
 from nextLogic_object import NextLogic
-from helper import create_id, get_content_length
+from helper import create_id
 
 
 class Question:
-    def __init__(self, id_base, version, structure, texts, next_question_structure, next_question_texts, excel_id, write_beginning, write_ending):
+    def __init__(self, trip, id_base, version, structure, texts, next_question_structure, next_question_texts, excel_id, write_beginning, write_ending):
         # VARIABLES
         self.reference_of_next_question = None
         self.next_logic_type = 'NEXT'
@@ -23,48 +23,39 @@ class Question:
         self.structure = structure.values #array
         self.texts = texts.values #array
         self.id = create_id(self, self.excel_id)
+        self.trip = trip
+        self.maxNumber = 'null'
+        self.minNumber = 'null'
+        self.firstJourneyQuestion = "null" 
+        self.firstSessionQuestion = "null"
 
         # PREPARATIONS
         self.clear_of_nan()
-        self.maxNumber = self.solve_answer_problem()
+        self.maxNumber = self.prep_type_and_clean_structure() # must be before map structure to type
         self.type = self.map_structure_to_type() 
+        self.reviewable, self.worldObjectEntryKeyType, self.optional = self.prepare_keyInsight()
+        # Variables for Building Blocks
         self.answer_required = self.prepare_optional()
         self.scala_min, self.scala_max, self.scala_min_text, self.scala_max_text = self.prepare_scala()
-        self.reviewable, self.worldObjectEntryKeyType, self.optional = self.prepare_keyInsight()
-
+        self.adjust_min_max_number()
+        
         # BUILDING BLOCKS
         self.RefLogic = RefLogic(self)
         self.NextLogic = NextLogic(self)
-        self.button_one_text, self.button_two_text = self.prepare_for_content()
+        self.clear_of_arrows()
         self.Content = Content(self)
         self.AnswerOption = AnswerOption(self)
 
-        # JSON
+        # JSON PREP
         self.comma_is_needed = self.check_if_comma_needed()
 
     # --------- PREPARATIONS -----------
 
-    def prepare_for_content(self):
+    def clear_of_arrows(self):
         # arrow logics
         for num, struc in enumerate(self.structure):
             if struc == 'ITEM(Single)' and '->' in self.texts[num]:
                 self.texts[num] = self.texts[num].split('->')[0].strip()
-        # button logics
-        if 'BUTTON' in self.structure:
-            # Test -> for buttons
-            button_texts = self.texts[np.where(self.structure == 'BUTTON')]
-            for button_text in button_texts:
-                if not '->' in button_text:
-                    raise Exception ('"->" missing at one of the Buttons')
-            button_one = button_texts[0].split('->')
-            button_two = button_texts[1].split('->')
-            self.button_one_text = button_one[0].strip()
-            self.button_two_text = button_two[0].strip()
-        else:
-            self.button_one_text = ''
-            self.button_two_text = ''
-
-        return self.button_one_text, self.button_two_text
 
     def create_etappe_screen_from_id(self):
         etappe = self.excel_id.split('.')[0]
@@ -111,7 +102,7 @@ class Question:
         # make structure and text array of equal length
         self.texts = self.texts[:len(self.structure)]
 
-    def solve_answer_problem(self):
+    def prep_type_and_clean_structure(self):
         # SOLVE ANTWORT PROBLEM -> with item it is always a several answer options field
         if 'ITEM(Multiple)' in self.structure and 'ANSWER OPTION' in self.structure:
             self.structure[np.where(self.structure == 'ANSWER OPTION')] = 'SEVERAL ANSWER OPTIONS'
@@ -126,6 +117,14 @@ class Question:
             self.maxNumber = 'null'
             
         return self.maxNumber
+    
+    def adjust_min_max_number(self):
+        if self.type == 'SCALA_SLIDER':
+            self.minNumber = self.scala_min
+            self.maxNumber = self.scala_max
+
+        if self.type == 'ITEM_LIST_EXPANDABLE':
+            self.minNumber = 1
         
     def prepare_optional(self):
         # OPTIONAL
@@ -178,6 +177,7 @@ class Question:
             self.optional = 'true'
 
         return self.reviewable, self.worldObjectEntryKeyType, self.optional
+
     
     # ------------ JSON ---------------
     
@@ -191,340 +191,18 @@ class Question:
         return comma_is_needed
 
     def create_json(self):
-        content_length = get_content_length(self.structure)+2 # fragen fangen nicht von 0 an und Subititel 
-        question = self
-        count = self.screen
-        texts = question.texts
-        write_beginning = self.write_beginning
-        if self.type == 'CONTENT':
-            json = ''' 
+        # last prep (geht erst hier weil es etappenstartscreens davor nicht gibt)
+        if (self.screen == 0 and self.write_beginning == True) or self.excel_id in self.trip.etappen_start_screens:
+            self.firstJourneyQuestion = "true" 
+            self.firstSessionQuestion = "true"
+        
+        if self.type == 'Neue Etappe':
+            return self.create_neue_etappe()
+
+        json = '''
             {
             "id": "%s",
-            "type": "CONTENT",
-            "number": null,
-            "minNumber": null,
-            "maxNumber": null,
-            "screenDuration": null,
-            "reviewAble": %s,
-            "noAnswerPreselection": null,
-            "showHint": null,
-            "progress": %s,
-            "worldObjectEntryKeyType": %s,
-            "nonOptionalKeyInsightHint": false,
-            "optional": %s,
-            "firstJourneyQuestion": %s,
-            "firstSessionQuestion": %s,
-            "questionLoopId": null,
-            "translations": [],
-            "content": [
-                {
-                "id": "%s-1",
-                "type": "SUB_TITLE",
-                "required": null,
-                "showHidden": null,
-                "order": 1,
-                "imageName": null,
-                "audioName": null,
-                "style": null,
-                "refAdaptionType": null,
-                "refAdaptionNumber": null,
-                "refOrderType": null,
-                "refOrderColumn": null,
-                "refOffset": null,
-                "refLimit": null,
-                "downloadName": null,
-                "checkForSpecialTextReplacement": null,
-                "questionAnswerOptionId": null,
-                "language": null,
-                "contentShowType": null,
-                "worldObjectEntryKey": null,
-                "refQuestionId": null,
-                "refQuestionAnswerOptionId": null,
-                "translations": [
-                    {
-                    "id": "%s-1-DE",
-                    "language": "DE",
-                    "title": null,
-                    "text": "%s"
-                    },
-                    {
-                    "id": "%s-1-EN",
-                    "language": "EN",
-                    "title": null,
-                    "text": "Englisch"
-                    }
-                ],
-                "answerOptions": []
-                },%s
-            ],
-            %s
-            },''' % (question.id, question.reviewable, question.progress, question.worldObjectEntryKeyType, question.optional, "true" if count == 0 and self.write_beginning == True else "null", "true" if count == 0 and self.write_beginning == True else "null", question.id, question.id, self.texts[0], question.id, self.Content.json, self.NextLogic.json)
-        elif self.type == 'OPTION_QUESTION':
-            json = '''
-            {
-            "id": "%s",
-            "type": "OPTION_QUESTION",
-            "number": null,
-            "minNumber": null,
-            "maxNumber": null,
-            "screenDuration": null,
-            "reviewAble": %s,
-            "noAnswerPreselection": null,
-            "showHint": null,
-            "progress": %s,
-            "worldObjectEntryKeyType": %s,
-            "nonOptionalKeyInsightHint": false,
-            "optional": %s,
-            "firstJourneyQuestion": %s,
-            "firstSessionQuestion": %s,
-            "questionLoopId": null,
-            "translations": [],
-            "content": [
-                {
-                "id": "%s-1",
-                "type": "SUB_TITLE",
-                "required": null,
-                "showHidden": null,
-                "order": 1,
-                "imageName": null,
-                "audioName": null,
-                "style": null,
-                "refAdaptionType": null,
-                "refAdaptionNumber": null,
-                "refOrderType": null,
-                "refOrderColumn": null,
-                "refOffset": null,
-                "refLimit": null,
-                "downloadName": null,
-                "checkForSpecialTextReplacement": null,
-                "questionAnswerOptionId": null,
-                "language": null,
-                "contentShowType": null,
-                "worldObjectEntryKey": null,
-                "refQuestionId": null,
-                "refQuestionAnswerOptionId": null,
-                "translations": [
-                    {
-                    "id": "%s-1-DE",
-                    "language": "DE",
-                    "title": null,
-                    "text": "%s"
-                    },
-                    {
-                    "id": "%s-1-EN",
-                    "language": "EN",
-                    "title": "",
-                    "text": "Englisch"
-                    }
-                ],
-                "answerOptions": []
-                },%s
-                ,{
-                "id": "%s-%s",
-                "type": "ANSWER_OPTION",
-                "required": true,
-                "showHidden": null,
-                "order": %s,
-                "imageName": null,
-                "audioName": null,
-                "style": null,
-                "refAdaptionType": null,
-                "refAdaptionNumber": null,
-                "refOrderType": null,
-                "refOrderColumn": null,
-                "refOffset": null,
-                "refLimit": null,
-                "downloadName": null,
-                "checkForSpecialTextReplacement": null,
-                "questionAnswerOptionId": null,
-                "language": null,
-                "contentShowType": null,
-                "worldObjectEntryKey": null,
-                "refQuestionId": null,
-                "refQuestionAnswerOptionId": null,
-                "translations": [],
-                "answerOptions": [
-                    {
-                    "id": "%s-%s-1",
-                    "order": 1,
-                    "number": null,
-                    "type": "BUTTON",
-                    "imageName": null,
-                    "hidden": null,
-                    "escapeOption": null,
-                    "sliderType": null,
-                    "negative": null,
-                    "unselectOthers": null,
-                    "booleanHelper": null,
-                    "refQuestionAnswerOptionId": null,
-                    "secondRefQuestionAnswerOptionId": null,
-                    "questionLoopCycleId": null,
-                    "translations": [
-                        {
-                        "id": "%s-%s-1-DE",
-                        "language": "DE",
-                        "title": null,
-                        "text": "%s",
-                        "description": ""
-                        },
-                        {
-                        "id": "%s-%s-1-EN",
-                        "language": "EN",
-                        "title": "",
-                        "text": "Englisch",
-                        "description": ""
-                        }
-                    ]
-                    },
-                    {
-                    "id": "%s-%s-2",
-                    "order": 2,
-                    "number": null,
-                    "type": "BUTTON",
-                    "imageName": null,
-                    "hidden": null,
-                    "escapeOption": null,
-                    "sliderType": null,
-                    "negative": null,
-                    "unselectOthers": null,
-                    "booleanHelper": null,
-                    "refQuestionAnswerOptionId": null,
-                    "secondRefQuestionAnswerOptionId": null,
-                    "questionLoopCycleId": null,
-                    "translations": [
-                        {
-                        "id": "%s-%s-2-DE",
-                        "language": "DE",
-                        "title": null,
-                        "text": "%s",
-                        "description": ""
-                        },
-                        {
-                        "id": "%s-%s-2-EN",
-                        "language": "EN",
-                        "title": "",
-                        "text": "Englisch",
-                        "description": ""
-                        }
-                    ]
-                    }
-                ]
-                }
-            ],
-            %s
-            },'''% (question.id, question.reviewable, question.progress, question.worldObjectEntryKeyType, question.optional, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and self.write_beginning == True else "null", question.id, question.id, self.texts[0], question.id, self.Content.json,question.id, content_length, content_length, question.id, content_length, question.id, content_length, question.button_one_text, question.id, content_length, question.id, content_length, question.id, content_length, question.button_two_text, question.id, content_length, self.NextLogic.json)
-        elif self.type == 'OPEN_QUESTION':
-            json = '''
-            {
-            "id": "%s",
-            "type": "OPEN_QUESTION",
-            "number": null,
-            "minNumber": null,
-            "maxNumber": null,
-            "screenDuration": null,
-            "reviewAble": %s,
-            "noAnswerPreselection": null,
-            "showHint": null,
-            "progress": %s,
-            "worldObjectEntryKeyType": %s,
-            "nonOptionalKeyInsightHint": false,
-            "optional": %s,
-            "firstJourneyQuestion": %s,
-            "firstSessionQuestion": %s,
-            "questionLoopId": null,
-            "translations": [],
-            "content": [
-                {
-                "id": "%s-1",
-                "type": "SUB_TITLE",
-                "required": null,
-                "showHidden": null,
-                "order": 1,
-                "imageName": null,
-                "audioName": null,
-                "style": null,
-                "refAdaptionType": null,
-                "refAdaptionNumber": null,
-                "refOrderType": null,
-                "refOrderColumn": null,
-                "refOffset": null,
-                "refLimit": null,
-                "downloadName": null,
-                "checkForSpecialTextReplacement": null,
-                "questionAnswerOptionId": null,
-                "language": null,
-                "contentShowType": null,
-                "worldObjectEntryKey": null,
-                "refQuestionId": null,
-                "refQuestionAnswerOptionId": null,
-                "translations": [
-                    {
-                    "id": "%s-1-DE",
-                    "language": "DE",
-                    "title": null,
-                    "text": "%s"
-                    },
-                    {
-                    "id": "%s-1-EN",
-                    "language": "EN",
-                    "title": "",
-                    "text": "Englisch"
-                    }
-                ],
-                "answerOptions": []
-                },%s     
-                ,{
-                "id": "%s-%s",
-                "type": "ANSWER_OPTION",
-                "required": %s,
-                "showHidden": null,
-                "order": %s,
-                "imageName": null,
-                "audioName": null,
-                "style": null,
-                "refAdaptionType": null,
-                "refAdaptionNumber": null,
-                "refOrderType": null,
-                "refOrderColumn": null,
-                "refOffset": null,
-                "refLimit": null,
-                "downloadName": null,
-                "checkForSpecialTextReplacement": null,
-                "questionAnswerOptionId": null,
-                "language": null,
-                "contentShowType": null,
-                "worldObjectEntryKey": null,
-                "refQuestionId": null,
-                "refQuestionAnswerOptionId": null,
-                "translations": [],
-                "answerOptions": [
-                    {
-                    "id": "%s-%s-1",
-                    "order": 1,
-                    "number": null,
-                    "type": "TEXT_FIELD",
-                    "imageName": null,
-                    "hidden": null,
-                    "escapeOption": null,
-                    "sliderType": null,
-                    "negative": null,
-                    "unselectOthers": null,
-                    "booleanHelper": null,
-                    "refQuestionAnswerOptionId": null,
-                    "secondRefQuestionAnswerOptionId": null,
-                    "questionLoopCycleId": null,
-                    "translations": []
-                    }
-                ]
-                }
-            ],
-            %s
-            },''' % (question.id, question.reviewable, question.progress, question.worldObjectEntryKeyType, question.optional, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", question.id,question.id,texts[0], question.id,self.Content.json, question.id, content_length, question.answer_required, content_length, question.id, content_length, self.NextLogic.json)
-        elif self.type == 'SCALA_SLIDER':
-            json = '''
-            {
-            "id": "%s",
-            "type": "SCALA_SLIDER",
+            "type": "%s",
             "number": null,
             "minNumber": %s,
             "maxNumber": %s,
@@ -541,314 +219,49 @@ class Question:
             "questionLoopId": null,
             "translations": [],
             "content": [
-                {
-                "id": "%s-1",
-                "type": "SUB_TITLE",
-                "required": null,
-                "showHidden": null,
-                "order": 1,
-                "imageName": null,
-                "audioName": null,
-                "style": null,
-                "refAdaptionType": null,
-                "refAdaptionNumber": null,
-                "refOrderType": null,
-                "refOrderColumn": null,
-                "refOffset": null,
-                "refLimit": null,
-                "downloadName": null,
-                "checkForSpecialTextReplacement": null,
-                "questionAnswerOptionId": null,
-                "language": null,
-                "contentShowType": null,
-                "worldObjectEntryKey": null,
-                "refQuestionId": null,
-                "refQuestionAnswerOptionId": null,
-                "translations": [
-                    {
-                    "id": "%s-1-DE",
-                    "language": "DE",
-                    "title": null,
-                    "text": "%s"
-                    },
-                    {
-                    "id": "%s-1-EN",
-                    "language": "EN",
-                    "title": null,
-                    "text": "Englisch"
-                    }
-                ],
-                "answerOptions": []
-                },%s
-                ,{
-                "id": "%s-%s",
-                "type": "ANSWER_OPTION",
-                "required": true,
-                "showHidden": null,
-                "order": %s,
-                "imageName": null,
-                "audioName": null,
-                "style": null,
-                "refAdaptionType": null,
-                "refAdaptionNumber": null,
-                "refOrderType": null,
-                "refOrderColumn": null,
-                "refOffset": null,
-                "refLimit": null,
-                "downloadName": null,
-                "checkForSpecialTextReplacement": null,
-                "questionAnswerOptionId": null,
-                "language": null,
-                "contentShowType": null,
-                "worldObjectEntryKey": null,
-                "refQuestionId": null,
-                "refQuestionAnswerOptionId": null,
-                "translations": [],
-                "answerOptions": [
-                    {
-                    "id": "%s-%s-1",
-                    "order": 1,
-                    "number": null,
-                    "type": "SLIDER",
-                    "imageName": null,
-                    "hidden": null,
-                    "escapeOption": null,
-                    "sliderType": null,
-                    "negative": null,
-                    "unselectOthers": null,
-                    "booleanHelper": null,
-                    "refQuestionAnswerOptionId": null,
-                    "secondRefQuestionAnswerOptionId": null,
-                    "questionLoopCycleId": null,
-                    "translations": [
-                        {
-                        "id": "%s-%s-1-DE",
-                        "language": "DE",
-                        "title": null,
-                        "text": "%s, ,%s",
-                        "description": ""
-                        },
-                        {
-                        "id": "%s-%s-1-EN",
-                        "language": "EN",
-                        "title": null,
-                        "text": "Englisch",
-                        "description": ""
-                        }
-                    ]
-                    }
-                ]
-                }
+                %s
+                %s
             ],
             %s
-            },''' % (question.id,question.scala_min,question.scala_max, question.reviewable, question.progress, question.worldObjectEntryKeyType, question.optional, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", question.id, question.id,texts[0], question.id, self.Content.json ,question.id, content_length, content_length, question.id, content_length, question.id, content_length, question.scala_min_text, question.scala_max_text,question.id, content_length, self.NextLogic.json)
-        elif self.type == 'ITEM_LIST_EXPANDABLE':
-            json = '''
-            {
-            "id": "%s",
-            "type": "ITEM_LIST_EXPANDABLE",
-            "number": null,
-            "minNumber": 1,
-            "maxNumber": %s,
-            "screenDuration": null,
-            "reviewAble": %s,
-            "noAnswerPreselection": null,
-            "showHint": null,
-            "progress": %s,
-            "worldObjectEntryKeyType": %s,
-            "nonOptionalKeyInsightHint": false,
-            "optional": %s,
-            "firstJourneyQuestion": %s,
-            "firstSessionQuestion": %s,
-            "questionLoopId": null,
-            "translations": [],
-            "content": [
-                {
-                "id": "%s-1",
-                "type": "SUB_TITLE",
-                "required": null,
-                "showHidden": null,
-                "order": 1,
-                "imageName": null,
-                "audioName": null,
-                "style": null,
-                "refAdaptionType": null,
-                "refAdaptionNumber": null,
-                "refOrderType": null,
-                "refOrderColumn": null,
-                "refOffset": null,
-                "refLimit": null,
-                "downloadName": null,
-                "checkForSpecialTextReplacement": null,
-                "questionAnswerOptionId": null,
-                "language": null,
-                "contentShowType": null,
-                "worldObjectEntryKey": null,
-                "refQuestionId": null,
-                "refQuestionAnswerOptionId": null,
-                "translations": [
-                    {
-                    "id": "%s-1-DE",
-                    "language": "DE",
-                    "title": null,
-                    "text": "%s"
-                    },
-                    {
-                    "id": "%s-1-EN",
-                    "language": "EN",
-                    "title": "",
-                    "text": "Englisch"
-                    }
-                ],
-                "answerOptions": []
-                },%s
-                ,{
-                "id": "%s-%s",
-                "type": "ANSWER_OPTION",
-                "required": %s,
-                "showHidden": null,
-                "order": %s,
-                "imageName": null,
-                "audioName": null,
-                "style": null,
-                "refAdaptionType": null,
-                "refAdaptionNumber": null,
-                "refOrderType": null,
-                "refOrderColumn": null,
-                "refOffset": null,
-                "refLimit": null,
-                "downloadName": null,
-                "checkForSpecialTextReplacement": null,
-                "questionAnswerOptionId": null,
-                "language": null,
-                "contentShowType": null,
-                "worldObjectEntryKey": null,
-                "refQuestionId": null,
-                "refQuestionAnswerOptionId": null,
-                "translations": [],
-                "answerOptions": [
-                    %s
-                ]
-                }
-            ],
-            %s
-            },''' % (question.id, question.maxNumber, question.reviewable, question.progress, question.worldObjectEntryKeyType, question.optional, "true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", question.id,question.id, texts[0], question.id,self.Content.json, question.id, content_length, question.answer_required, content_length, self.AnswerOption.json, self.NextLogic.json)
-        elif self.type == 'ITEM_LIST_SINGLE_CHOICE':
-            json = '''
-            {
-            "id": "%s",
-            "type": "ITEM_LIST_SINGLE_CHOICE",
-            "number": null,
-            "minNumber": null,
-            "maxNumber": null,
-            "screenDuration": null,
-            "reviewAble": %s,
-            "noAnswerPreselection": null,
-            "showHint": null,
-            "progress": %s,
-            "worldObjectEntryKeyType": %s,
-            "nonOptionalKeyInsightHint": false,
-            "optional": %s,
-            "firstJourneyQuestion": %s,
-            "firstSessionQuestion": %s,
-            "questionLoopId": null,
-            "translations": [],
-            "content": [
-                {
-                "id": "%s-1",
-                "type": "SUB_TITLE",
-                "required": null,
-                "showHidden": null,
-                "order": 1,
-                "imageName": null,
-                "audioName": null,
-                "style": null,
-                "refAdaptionType": null,
-                "refAdaptionNumber": null,
-                "refOrderType": null,
-                "refOrderColumn": null,
-                "refOffset": null,
-                "refLimit": null,
-                "downloadName": null,
-                "checkForSpecialTextReplacement": null,
-                "questionAnswerOptionId": null,
-                "language": null,
-                "contentShowType": null,
-                "worldObjectEntryKey": null,
-                "refQuestionId": null,
-                "refQuestionAnswerOptionId": null,
-                "translations": [
-                    {
-                    "id": "%s-1-DE",
-                    "language": "DE",
-                    "title": null,
-                    "text": "%s"
-                    },
-                    {
-                    "id": "%s-1-EN",
-                    "language": "EN",
-                    "title": null,
-                    "text": "Englisch"
-                    }
-                ],
-                "answerOptions": []
-                },%s
-                ,{
-                "id": "%s-%s",
-                "type": "ANSWER_OPTION",
-                "required": true,
-                "showHidden": null,
-                "order": %s,
-                "imageName": null,
-                "audioName": null,
-                "style": null,
-                "refAdaptionType": null,
-                "refAdaptionNumber": null,
-                "refOrderType": null,
-                "refOrderColumn": null,
-                "refOffset": null,
-                "refLimit": null,
-                "checkForSpecialTextReplacement": null,
-                "questionAnswerOptionId": null,
-                "language": null,
-                "refQuestionId": null,
-                "translations": [],
-                "answerOptions": [
-                    %s
-                ]
-                }
-            ],
-            %s
-            },'''%(question.id, question.reviewable, question.progress, question.worldObjectEntryKeyType, question.optional,"true" if count == 0 and write_beginning == True else "null", "true" if count == 0 and write_beginning == True else "null", question.id, question.id,texts[0], question.id, self.Content.json, question.id, content_length, content_length, self.AnswerOption.json, self.NextLogic.json)
-        elif self.type == 'Neue Etappe':
-            json = '''
+            },''' %(self.id, self.type, self.minNumber, self.maxNumber, self.reviewable, self.progress, self.worldObjectEntryKeyType, self.optional, self.firstJourneyQuestion, self.firstSessionQuestion, self.Content.json, self.AnswerOption.json, self.NextLogic.json)
+        
+        if self.comma_is_needed:
+            return json
+        else:
+            return json[:-1]
+
+    
+    def create_neue_etappe(self):
+        # Preparations
+        order = self.etappe
+        id = self.id_base + 'v' + self.version + '-'+ self.etappe
+        durationMin =  int(self.texts[np.where(self.structure == 'Zeit min')][0]) if 'Zeit min' in self.structure else ''
+        durationMax = int(self.texts[np.where(self.structure == 'Zeit max')][0]) if 'Zeit max' in self.structure else ''
+        title = self.texts[np.where(self.structure == 'Etappen-Titel')][0] if 'Etappen-Titel' in self.structure else ''
+
+        # Json
+        json = '''
             ],
         "questionLoops": []
         },
         {
-        "id": "%s%s-%s",
+        "id": "%s",
         "order": %s,
         "durationMin": %s,
         "durationMax": %s,
         "translations": [
             {
-            "id": "%s%s-%s-DE",
+            "id": "%s-DE",
             "language": "DE",
             "title": "%s"
             },
             {
-            "id": "%s%s-%s-EN",
+            "id": "%s-EN",
             "language": "EN",
             "title": "Englisch"
             }
         ],
         "questions": [
-            '''%(self.id_base, self.version, self.etappe, self.etappe, int(texts[np.where(question.structure == 'Zeit min')][0]) if 'Zeit min' in question.structure else '', int(texts[np.where(question.structure == 'Zeit max')][0]) if 'Zeit max' in question.structure else '', self.id_base, self.version, self.etappe, texts[np.where(question.structure == 'Etappen-Titel')][0] if 'Zeit min' in question.structure else '',self.id_base, self.version, self.etappe)
-        else:
-            raise Exception ('unknown Type in create_question_json')
-        if self.comma_is_needed:
-            return json
-        else:
-            return json[:-1]
+            '''%(id, order, durationMin, durationMax, id, title, id)
         
-        
+        return json

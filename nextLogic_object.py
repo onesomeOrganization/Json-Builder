@@ -1,5 +1,5 @@
 
-from helper import create_id, get_content_length
+from helper import create_id, get_content_length, get_one_id_higher
 import numpy as np
 
 class NextLogic():
@@ -31,7 +31,7 @@ class NextLogic():
     # -------- PREPARATIONS ------------
 
     def calc_id_next_question(self):
-        self.id_next_question = '"'+self.id_base+self.question.version+"-"+self.question.etappe+"-"+str(int(self.question.screen)+1)+'"'
+        self.id_next_question = '"'+get_one_id_higher(self.id)+'"'
         # weiter mit Screen id
         if 'weiter mit Screen' in self.structure:
             self.id_next_question = '"'+create_id(self, self.texts[np.where(self.structure == 'weiter mit Screen')][0])+'"'

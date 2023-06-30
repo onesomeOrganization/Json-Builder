@@ -2,6 +2,29 @@ import re
 import numpy as np
 import pandas as pd
 
+def do_first_information_tests(information):
+    # Check if all information fields are there
+    for i,info in enumerate(information):
+        if i > 14:
+            break
+        if info == 'None':
+            raise Exception('There is some starting information missing')
+        
+    # Test Oase zuordnung
+    if information[1] == 'None':
+          raise Exception ('OASE Zuordnung missing')
+
+    # Test cardDisplayImageName
+    if information[15] == 'None':
+        raise Exception ('cardDisplayImageName Zuordnung missing')
+    
+def do_second_information_tests(information):
+    # Test Aufruf
+    if information[0] == 'WORLD' and information[4] == 'Beginne deinen Kurztrip':
+        raise Exception ('Aufruf passt nicht zur Reise')
+    elif information[0] == 'SHORT_TRIP' and information[4] == 'Etappenweise zum Ziel':
+        raise Exception ('Aufruf passt nicht zum Kurztrip')
+
 def do_tests(df, information, questions_array):
 
     # Flag declarations
@@ -28,12 +51,7 @@ def do_tests(df, information, questions_array):
         else:
             raise Exception ('Nummeration is wrong somwhere around position: ', i+1)
 
-    # Check if all information fields are there
-    for i,info in enumerate(information):
-        if i > 14:
-            break
-        if pd.isna(info):
-            raise Exception('There is some starting information missing')
+    
         
     
 

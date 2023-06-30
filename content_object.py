@@ -6,7 +6,7 @@ class Content:
     self.question = question
     self.structure = question.structure
     self.texts = question.texts
-    self.order = 2
+    self.order = 1
     self.id = question.id + '-' +str(self.order)
     # Contents
     self.contents = self.create_contents()
@@ -18,6 +18,9 @@ class Content:
     for text_count,entry in enumerate(self.structure):
         if entry == 'REFERENCE':
           self.contents.append(ContentComponent(self, 'ANSWER_OPTION_REF', self.texts[text_count]))
+          self.order, self.id = increase_order_id(self.order, self.id)
+        elif entry == 'SUB_TITEL':
+          self.contents.append(ContentComponent(self, 'SUB_TITEL', self.texts[text_count]))
           self.order, self.id = increase_order_id(self.order, self.id)
         elif entry == 'PARAGRAPH':
           self.contents.append(ContentComponent(self, 'PARAGRAPH', self.texts[text_count]))
@@ -40,7 +43,8 @@ class Content:
     json = ''
     for content in self.contents:
       json += content.json
-    json = json[:-1]
+    if self.question.type == 'CONTENT':
+      json = json[:-1]
     return json
 
 
@@ -76,7 +80,7 @@ class ContentComponent():
       if self.type == 'AUDIO':
         self.audioName = '"'+self.text+'"'
 
-      needs_translations = ['MORE_INFORMATION', 'MORE_INFORMATION_EXPANDED', 'PARAGRAPH']
+      needs_translations = ['MORE_INFORMATION', 'MORE_INFORMATION_EXPANDED', 'PARAGRAPH', 'SUB_TITEL']
       if self.type in needs_translations:
         self.translations = '''
                 {

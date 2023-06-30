@@ -1,16 +1,16 @@
 from question_object import Question
-from tests import do_tests
+from tests import do_tests, do_first_information_tests, do_second_information_tests
 from progress import create_progress
 import pandas as pd
 
 class Trip:
-    def __init__(self, df, id_base, version, write_beginning, write_ending, journey_key, information):
+    def __init__(self, df, id_base, version, write_beginning, write_ending, journey_key):
         # Attributes
         self.df = df
         self.id = id_base+version
         self.id_base = id_base
         self.key = journey_key
-        self.information = information
+        self.information = self.create_information()
         self.mainImageName = self.information[9]
         self.mainImageLongName = self.information[10]
         self.topicIconImageName = self.information[11]
@@ -32,15 +32,36 @@ class Trip:
 
         # Preparations
         self.all_questions_array = self.create_questions_array()
-        do_tests(self.df, self.information, self.all_questions_array)
-        self.format_text()
         self.etappen_count = self.get_etappen_count()
         self.etappen_end_screens = self.calc_etappen_end_screens()
+        self.etappen_start_screens = self.get_etappen_start_screens()
+        do_tests(self.df, self.information, self.all_questions_array)
+        self.format_text()
         create_progress(self, self.all_questions_array)
         # Json
         self.json = self.create_json()
 
     # ------ PREPARATIONS -----------
+
+    def create_information(self):
+        # get first informations and set defaults
+      information = self.df.iloc[:, 1]
+
+      do_first_information_tests(information)
+
+      if information[0] == 'Reise' or information[0] == 'reise':
+          information[0] = 'WORLD'
+          information[1] = '"'+information[1]+'"'
+          information[15] = '"'+information[15]+'"'
+          
+      if information[0] == 'Kurztrip' or information[0] == 'kurztrip':
+          information[0] = 'SHORT_TRIP'
+          information[1] = 'null'
+          information[15] = 'null'
+
+      do_second_information_tests(information)
+      return information
+
 
     def create_questions_array(self):
         questions_array = []
@@ -50,7 +71,7 @@ class Trip:
             # Check if all values in the column are None
             if mask.all():
                 break
-            questions_array.append(Question(self.id_base, self.version, self.df.iloc[:, i], self.df.iloc[:, i+1], self.df.iloc[:, i+2], self.df.iloc[:, i+3], self.df.columns[i], self.write_beginning, self.write_ending))
+            questions_array.append(Question(self, self.id_base, self.version, self.df.iloc[:, i], self.df.iloc[:, i+1], self.df.iloc[:, i+2], self.df.iloc[:, i+3], self.df.columns[i], self.write_beginning, self.write_ending))
         return questions_array         
 
     def format_text(self):
@@ -83,6 +104,13 @@ class Trip:
                         biggest = int(question.excel_id[2])
                         etappen_end_screens[question.excel_id[0]] = question.excel_id
         return etappen_end_screens
+    
+    def get_etappen_start_screens(self):
+        etappen_start_screens = []
+        for i in range(1,self.etappen_count+1):
+          etappen_start_screens.append(str(i)+'.1')
+        return etappen_start_screens
+            
 
   # -------- JSON ---------------
 

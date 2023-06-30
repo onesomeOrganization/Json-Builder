@@ -3,7 +3,7 @@ import re
 def create_id (object, reference_id_excel):
     reference_id_excel = reference_id_excel.strip()
     id_numbers = reference_id_excel.split('.')
-    new_id = object.id_base + object.version + '-'+ id_numbers[0]+'-'+ id_numbers[1]
+    new_id = object.id_base + 'v'+ object.version + '-'+ id_numbers[0]+'-'+ id_numbers[1]
     return new_id
 
 def get_one_id_higher(id):
