@@ -1,20 +1,20 @@
 import os
-import sys
 import pandas as pd
 import openpyxl
 from trip_object import Trip
 # 
 #  ------ VARIABLES ------------------------------------
-# Auszufüllen
-name_of_json_file = "Test"
-journey_key = "Test_Short_Trip_Flora"
-id_base = "flora-"
-version = "v"+str(25)
-write_beginning = True
-write_ending = True
-etappe = 1
-startnumber = 1 
-excel_path_or_name = "Jsons/Excels/01_Templates/Json_Excel_Template3.3.xlsx"
+# Fill in:
+name_of_json_file = "Test" # name with which you want to save the Json
+journey_key = "Test_Short_Trip_Flora" # test key or Key of Journey
+id_base = "flora-" # id base -> for testing e.g. your name, for the app the journey_key in small letters
+version = "v"+str(25) # version of the json
+write_beginning = True # False if you want to add to an existing json
+write_ending = True # False if you want to add to an existing json
+etappe = 1 # usually 1 except you want to add to an existing json in a different etappe
+startnumber = 1 # usually 1 except you want to add to an existing json at a different screen number
+excel_path_or_name = "Jsons/Excels/01_Templates/Json_Excel_Template3.3.xlsx" # path to the exel template
+save_directory = '/Users/FloraValentina/Library/Mobile Documents/com~apple~CloudDocs/Dokumente/Arbeit/Onesome/Coding/Jsons/Created' # path where you want to save the jsons
 
 # --------- EXCEL ---------
 
@@ -45,7 +45,7 @@ questions_array = trip.all_questions_array
 
 # -------- WRITE FILE -------------------------------------
 
-with open(os.path.join(sys.path[0], name_of_json_file+".json"), 'w+') as file:
+with open(os.path.join(save_directory, name_of_json_file+".json"), 'w+') as file:
     file.write(trip.json)
 
 

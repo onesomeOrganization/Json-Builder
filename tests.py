@@ -1,6 +1,5 @@
 import re
 import numpy as np
-import pandas as pd
 
 def do_first_information_tests(information):
     # Check if all information fields are there
