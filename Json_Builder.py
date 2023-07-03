@@ -21,7 +21,6 @@ save_directory = '/Users/FloraValentina/Library/Mobile Documents/com~apple~Cloud
 # Load the Excel file
 workbook = openpyxl.load_workbook(excel_path_or_name)
 sheet = workbook.active
-test = ''
 
 # Convert the sheet data to a list of lists
 data = sheet.values
