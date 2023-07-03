@@ -31,6 +31,9 @@ class Content:
         elif entry == 'IMAGE':
           self.contents.append(ContentComponent(self, 'IMAGE', self.texts[text_count]))
           self.order, self.id = increase_order_id(self.order, self.id, 2)
+        elif entry == 'SMALL_IMAGE':
+          self.contents.append(ContentComponent(self, 'SMALL_IMAGE', self.texts[text_count]))
+          self.order, self.id = increase_order_id(self.order, self.id, 2)
         elif entry == 'MORE_INFORMATION_EXPANDED':
           self.contents.append(ContentComponent(self, 'MORE_INFORMATION_EXPANDED', self.texts[text_count]))
           self.order, self.id = increase_order_id(self.order, self.id)
@@ -74,7 +77,7 @@ class ContentComponent():
         self.title = '"'+splitted_text[1]+'"'
         self.text = splitted_text[2]
 
-      if self.type == 'IMAGE':
+      if self.type == 'IMAGE' or self.type == 'SMALL_IMAGE':
         self.imageName = '"'+self.text+'"'
 
       if self.type == 'AUDIO':
