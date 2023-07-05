@@ -32,6 +32,8 @@ def get_content_length(structure):
         length+=1
       elif entry == 'MORE_INFORMATION':
         length+=1
+      elif entry == 'SMALL_IMAGE':
+        length += 2
     return length
 
 def increase_order_id(order, id, about = 1):

@@ -6,6 +6,7 @@ class AnswerOption():
         # Attributes
         self.structure = question.structure
         self.texts = question.texts
+        self.texts_en = question.texts_en
         self.question = question
         self.required = question.answer_required
         self.options_order = 1
@@ -14,7 +15,7 @@ class AnswerOption():
         self.id = question.id + '-' + str(self.content_length)
         self.options_id = question.id + '-' + str(self.content_length) + '-' +str(self.options_order)
         # Preparations
-        self.button_texts = self.prepare_button()
+        self.button_texts, self.button_texts_en = self.prepare_button()
         # Options
         self.options = self.create_options()
         # Json
@@ -26,17 +27,28 @@ class AnswerOption():
        # button logics
         if 'BUTTON' in self.structure:
             # Test -> for buttons
-            button_texts = self.texts[np.where(self.structure == 'BUTTON')]
-            for button_text in button_texts:
+            self.button_texts = self.texts[np.where(self.structure == 'BUTTON')]
+            for button_text in self.button_texts:
                 if not '->' in button_text:
                     raise Exception ('"->" missing at one of the Buttons')
-            button_one = button_texts[0].split('->')
-            button_two = button_texts[1].split('->')
-            self.button_texts = [button_one[0].strip(), button_two[0].strip()]
-        else:
-            self.button_texts = []
+            for i, button in enumerate(self.button_texts):
+              self.button_texts[i] = button.split('->')[0].strip()
 
-        return self.button_texts
+            # Englisch
+            if self.question.english_translation:
+              self.button_texts_en = self.texts_en[np.where(self.structure == 'BUTTON')]
+              for i, button in enumerate(self.button_texts_en):
+                self.button_texts_en[i] = button.split('->')[0].strip()
+            else:
+               self.button_texts_en = []
+               for i in range(len(self.button_texts)):
+                  self.button_texts_en.append('Englisch')
+
+        else:
+           self.button_texts = None
+           self.button_texts_en = None
+
+        return self.button_texts, self.button_texts_en
 
   # ------- OPTIONS ---------
 
@@ -54,10 +66,12 @@ class AnswerOption():
           self.options_order, self.options_id = increase_order_id(self.options_order, self.options_id)
 
       if self.question.type == 'OPTION_QUESTION':
-          self.options.append(AnswerOptionOption(self, 'BUTTON'))
-          self.options_order, self.options_id = increase_order_id(self.options_order, self.options_id)
-          self.options.append(AnswerOptionOption(self, 'BUTTON', 1))
-          self.options_order, self.options_id = increase_order_id(self.options_order, self.options_id)
+          i = 0
+          for struc in self.structure:
+             if struc == 'BUTTON':
+              self.options.append(AnswerOptionOption(self, 'BUTTON', i))
+              self.options_order, self.options_id = increase_order_id(self.options_order, self.options_id)
+              i += 1
       elif self.question.type == 'OPEN_QUESTION':
           self.options.append(AnswerOptionOption(self, 'TEXT_FIELD'))
           self.options_order, self.options_id = increase_order_id(self.options_order, self.options_id)
@@ -122,10 +136,16 @@ class AnswerOptionOption():
       needs_translation = ['RADIO_BUTTON', 'CHECKBOX', 'BUTTON', 'SLIDER']
       if self.type == 'BUTTON':
         self.text = self.answerOption.button_texts[button_number]
+        self.text_en = self.answerOption.button_texts_en[button_number]
       if self.type == 'SLIDER':
-         self.text = self.answerOption.question.scala_min_text+', ,'+self.answerOption.question.scala_max_text
+        self.text = self.answerOption.question.scala_min_text+', ,'+self.answerOption.question.scala_max_text
+        self.text_en = self.answerOption.question.scala_min_text_en+', ,'+self.answerOption.question.scala_max_text_en
       if self.type == 'RADIO_BUTTON' or self.type == 'CHECKBOX':
-         self.text = answerOption.question.texts[np.where((answerOption.question.structure == 'ITEM(Single)') | (answerOption.question.structure == 'ITEM(Multiple)'))[0][0]+self.order-1]
+        self.text = answerOption.question.texts[np.where((answerOption.question.structure == 'ITEM(Single)') | (answerOption.question.structure == 'ITEM(Multiple)'))[0][0]+self.order-1]
+        if self.answerOption.question.english_translation:
+          self.text_en = answerOption.question.texts_en[np.where((answerOption.question.structure == 'ITEM(Single)') | (answerOption.question.structure == 'ITEM(Multiple)'))[0][0]+self.order-1]
+        else:
+           self.text_en = 'Englisch'
       if self.type in needs_translation:
         self.translations = '''
                             {
@@ -133,15 +153,15 @@ class AnswerOptionOption():
                           "language": "DE",
                           "title": null,
                           "text": "%s",
-                          "description": ""
+                          "description": null
                         },
                         {
                           "id": "%s-EN",
                           "language": "EN",
                           "title": null,
-                          "text": "Englisch",
-                          "description": ""
-                        }''' %(self.id, self.text, self.id)
+                          "text": "%s",
+                          "description": null
+                        }''' %(self.id, self.text, self.id, self.text_en)
       else:
         self.translations = ''
         

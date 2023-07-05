@@ -1,10 +1,10 @@
 import re
 import numpy as np
 
-def do_first_information_tests(information):
+def are_all_information_there(information, information_en, english_translation):
     # Check if all information fields are there
     for i,info in enumerate(information):
-        if i > 14:
+        if i > 15:
             break
         if info == 'None':
             raise Exception('There is some starting information missing')
@@ -12,17 +12,42 @@ def do_first_information_tests(information):
     # Test Oase zuordnung
     if information[1] == 'None':
           raise Exception ('OASE Zuordnung missing')
-
-    # Test cardDisplayImageName
-    if information[15] == 'None':
-        raise Exception ('cardDisplayImageName Zuordnung missing')
     
-def do_second_information_tests(information):
+    if english_translation:
+        for i in range(2,5):
+            if information_en[i] == 'None':
+                raise Exception('Some englisch Information missing')
+    
+def test_aufruf(information, information_en, english_translation):
     # Test Aufruf
     if information[0] == 'WORLD' and information[4] == 'Beginne deinen Kurztrip':
         raise Exception ('Aufruf passt nicht zur Reise')
     elif information[0] == 'SHORT_TRIP' and information[4] == 'Etappenweise zum Ziel':
         raise Exception ('Aufruf passt nicht zum Kurztrip')
+    
+    if english_translation:
+        if information[0] == 'WORLD' and information_en[4] == 'Start your short trip':
+            raise Exception ('Englischer Aufruf passt nicht zur Reise')
+        elif information[0] == 'SHORT_TRIP' and information[4] == 'Step-by-step towards your goal':
+            raise Exception ('Englischer Aufruf passt nicht zum Kurztrip')
+        
+def do_scala_test(question):
+    # Define the regular expression pattern
+    pattern = r"(\d+)\s*\((\w+\s*\w+)\)\s*-\s*(\d+)\s*\((\w+\s*\w+)\)"
+    if 'SCALA' in question.structure and not re.match(pattern, question.texts[np.where(question.structure == 'SCALA')][0]):
+        raise Exception ('Scala Text is not correct: ', question.texts[np.where(question.structure == 'SCALA')][0])
+    if question.english_translation:
+        if 'SCALA' in question.structure and not re.match(pattern, question.texts_en[np.where(question.structure == 'SCALA')][0]):
+            raise Exception ('English Scala Text is not correct: ', question.texts_en[np.where(question.structure == 'SCALA')][0])
+
+def test_for_all_english_translations(trip):
+    english_translation_needed = ['SUB_TITEL','PARAGRAPH','AUDIO', 'IMAGE', 'SMALL_IMAGE', 'MORE_INFORMATION', 'MORE_INFORMATION_EXPANDED', 'ITEM(Single)', 'ITEM(Multiple)','SCALA', 'Etappen-Titel']
+    for q, question in enumerate(trip.all_questions_array):
+        for i, struc in enumerate(question.structure):
+            text = question.texts_en[i]
+            if struc in english_translation_needed and (not isinstance(text, str) or (isinstance(text, str) and text == 'None')):
+                raise Exception ('English translation missing at question: ', q+1)
+
 
 def do_tests(df, information, questions_array):
 
@@ -50,9 +75,6 @@ def do_tests(df, information, questions_array):
         else:
             raise Exception ('Nummeration is wrong somwhere around position: ', i+1)
 
-    
-        
-    
 
     for q_count, question in enumerate(questions_array):
         # Test: immer mit subtitle starten
@@ -76,7 +98,7 @@ def do_tests(df, information, questions_array):
         for i,text in enumerate(question.texts):
             # if nan
             # check if text is str
-            if not isinstance(text, str) or (isinstance(text, str) and text == 'nan'):
+            if not isinstance(text, str) or (isinstance(text, str) and text == 'None'):
                     # if it needs some text
                     if question.structure[i] in needs_text_array: #and not isinstance(question.structure[i], str):
                         raise Exception ('There is a text field missing at question: ', q_count+1)

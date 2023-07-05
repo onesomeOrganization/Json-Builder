@@ -5,10 +5,11 @@ from content_object import Content
 from answerOption_object import AnswerOption
 from nextLogic_object import NextLogic
 from helper import create_id
+from tests import do_scala_test
 
 
 class Question:
-    def __init__(self, trip, id_base, version, structure, texts, next_question_structure, next_question_texts, excel_id, write_beginning, write_ending):
+    def __init__(self, trip, id_base, version, structure, texts, texts_en, next_question_structure, next_question_texts, excel_id, write_beginning, write_ending, english_translation):
         # VARIABLES
         self.reference_of_next_question = None
         self.next_logic_type = 'NEXT'
@@ -22,6 +23,8 @@ class Question:
         self.version = version
         self.structure = structure.values #array
         self.texts = texts.values #array
+        self.texts_en = texts_en.values
+        self.english_translation = english_translation
         self.id = create_id(self, self.excel_id)
         self.trip = trip
         self.maxNumber = 'null'
@@ -36,7 +39,7 @@ class Question:
         self.reviewable, self.worldObjectEntryKeyType, self.optional = self.prepare_keyInsight()
         # Variables for Building Blocks
         self.answer_required = self.prepare_optional()
-        self.scala_min, self.scala_max, self.scala_min_text, self.scala_max_text = self.prepare_scala()
+        self.scala_min, self.scala_max, self.scala_min_text, self.scala_max_text, self.scala_max_text_en, self.scala_min_text_en = self.prepare_scala()
         self.adjust_min_max_number()
         
         # BUILDING BLOCKS
@@ -56,6 +59,8 @@ class Question:
         for num, struc in enumerate(self.structure):
             if struc == 'ITEM(Single)' and '->' in self.texts[num]:
                 self.texts[num] = self.texts[num].split('->')[0].strip()
+                if self.english_translation:
+                    self.texts_en[num] = self.texts_en[num].split('->')[0].strip()
 
     def create_etappe_screen_from_id(self):
         etappe = self.excel_id.split('.')[0]
@@ -101,6 +106,8 @@ class Question:
 
         # make structure and text array of equal length
         self.texts = self.texts[:len(self.structure)]
+        if self.english_translation:
+            self.texts_en = self.texts_en[:len(self.structure)]
 
     def prep_type_and_clean_structure(self):
         # SOLVE ANTWORT PROBLEM -> with item it is always a several answer options field
@@ -131,6 +138,7 @@ class Question:
         if 'OPTIONAL' in self.structure:
             self.answer_required = 'false'
             self.texts = np.delete(self.texts, np.where(self.structure == 'OPTIONAL'))
+            self.texts_en = np.delete(self.texts_en, np.where(self.structure == 'OPTIONAL'))
             self.structure = np.delete(self.structure, np.where(self.structure == 'OPTIONAL'))
 
         else:
@@ -140,12 +148,8 @@ class Question:
     def prepare_scala(self):
         # SCALA
         if 'SCALA' in self.structure:
-            # Test Scala Texts:
-            # Define the regular expression pattern
-            pattern = r"(\d+)\s*\((\w+\s*\w+)\)\s*-\s*(\d+)\s*\((\w+\s*\w+)\)"
-            if 'SCALA' in self.structure and not re.match(pattern, self.texts[np.where(self.structure == 'SCALA')][0]):
-                raise Exception ('Scala Text is not correct: ', self.texts[np.where(self.structure == 'SCALA')][0])
-
+            # Test Scala Texts
+            do_scala_test(self)
             # declare numbers and texts     
             # get digits
             digits = re.findall(r'\d', self.texts[np.where(self.structure == 'SCALA')][0])
@@ -154,12 +158,22 @@ class Question:
             texts = re.findall(r'\((.*?)\)', self.texts[np.where(self.structure == 'SCALA')][0])
             self.scala_min_text = texts[0]
             self.scala_max_text = texts[1]
+
+            if self.english_translation:
+                texts_en = re.findall(r'\((.*?)\)', self.texts_en[np.where(self.structure == 'SCALA')][0])
+                self.scala_min_text_en = texts_en[0]
+                self.scala_max_text_en = texts_en[1]
+            else:
+                self.scala_max_text_en = 'Englisch'
+                self.scala_min_text_en = 'Englisch'
         else:
             self.scala_min = None
             self.scala_max = None
             self.scala_min_text = None
             self.scala_max_text = None
-        return self.scala_min, self.scala_max, self.scala_min_text, self.scala_max_text
+            self.scala_max_text_en = None
+            self.scala_min_text_en = None
+        return self.scala_min, self.scala_max, self.scala_min_text, self.scala_max_text, self.scala_max_text_en, self.scala_min_text_en
     
     def prepare_keyInsight(self):
         # take care of optional/verpflichtende Schlüsselerkenntnisse
@@ -239,6 +253,11 @@ class Question:
         durationMax = int(self.texts[np.where(self.structure == 'Zeit max')][0]) if 'Zeit max' in self.structure else ''
         title = self.texts[np.where(self.structure == 'Etappen-Titel')][0] if 'Etappen-Titel' in self.structure else ''
 
+        if self.english_translation:
+            title_en = self.texts_en[np.where(self.structure == 'Etappen-Titel')][0] if 'Etappen-Titel' in self.structure else ''
+        else:
+            title_en = 'Englisch'
+
         # Json
         json = '''
             ],
@@ -258,10 +277,10 @@ class Question:
             {
             "id": "%s-EN",
             "language": "EN",
-            "title": "Englisch"
+            "title": "%s"
             }
         ],
         "questions": [
-            '''%(id, order, durationMin, durationMax, id, title, id)
+            '''%(id, order, durationMin, durationMax, id, title, id, title_en)
         
         return json

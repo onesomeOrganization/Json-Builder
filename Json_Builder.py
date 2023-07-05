@@ -13,15 +13,19 @@ write_beginning = True # False if you want to add to an existing json
 write_ending = True # False if you want to add to an existing json
 etappe = 1 # usually 1 except you want to add to an existing json in a different etappe
 startnumber = 1 # usually 1 except you want to add to an existing json at a different screen number
-excel_path_or_name = "Jsons/Excels/01_Templates/Json_Excel_Template3.4.xlsx" # path to the exel template
+excel_path_or_name = "Jsons/Excels/01_Templates/features/Json_Excel_Template_Englisch.xlsx" # path to the exel template
 save_directory = '/Users/FloraValentina/Library/Mobile Documents/com~apple~CloudDocs/Dokumente/Arbeit/Onesome/Coding/Jsons/Created' # path where you want to save the jsons
+english_translation = True
 
 # --------- EXCEL ---------
 
+# check if path exists
+if not os.path.exists(excel_path_or_name):
+    raise Exception ('Excel path does not exist')
+
 # Load the Excel file
 workbook = openpyxl.load_workbook(excel_path_or_name)
-sheet = workbook.active
-test = ''
+sheet = workbook.worksheets[0]
 
 # Convert the sheet data to a list of lists
 data = sheet.values
@@ -40,9 +44,7 @@ df = df.astype(str)
 
 # ---------- CREATE QUESTIONS -----------------
 
-trip = Trip(df, id_base, version, write_beginning, write_ending, journey_key)
-questions_array = trip.all_questions_array
-
+trip = Trip(df, id_base, version, write_beginning, write_ending, journey_key, english_translation)
 
 # -------- WRITE FILE -------------------------------------
 

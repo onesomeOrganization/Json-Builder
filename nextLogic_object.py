@@ -68,16 +68,11 @@ class NextLogic():
         # buttons
         if 'BUTTON' in self.structure:
             self.type = 'NEXT_OPTION'
-            self.options_string = 'NN'
-            # Test -> for buttons
+
             button_texts = self.texts[np.where(self.structure == 'BUTTON')]
-            for button_text in button_texts:
-                if not '->' in button_text:
-                    raise Exception ('"->" missing at one of the Buttons')
-            button_one = button_texts[0].split('->')
-            button_two = button_texts[1].split('->')
-            self.option_screen_refs.append(create_id(self, button_one[1]))
-            self.option_screen_refs.append(create_id(self, button_two[1]))
+            for button in button_texts:
+                self.option_screen_refs.append(create_id(self,button.split('->')[1]))
+                self.options_string += 'N'
             self.id_next_question = 'null'
 
     # ----------- CREATE OPTIONS ---------------
