@@ -4,7 +4,7 @@ import numpy as np
 def are_all_information_there(information, information_en, english_translation):
     # Check if all information fields are there
     for i,info in enumerate(information):
-        if i > 15:
+        if i > 14:
             break
         if info == 'None':
             raise Exception('There is some starting information missing')
@@ -30,6 +30,10 @@ def test_aufruf(information, information_en, english_translation):
             raise Exception ('Englischer Aufruf passt nicht zur Reise')
         elif information[0] == 'SHORT_TRIP' and information[4] == 'Step-by-step towards your goal':
             raise Exception ('Englischer Aufruf passt nicht zum Kurztrip')
+        
+    # Test cardDisplayImageName
+    if information[15] == 'None' and information[0] == 'WORLD':
+        raise Exception ('cardDisplayImageName Zuordnung missing')
         
 def do_scala_test(question):
     # Define the regular expression pattern
