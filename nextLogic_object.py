@@ -20,6 +20,7 @@ class NextLogic():
         self.content_length = get_content_length(self.structure)
 
         # Preparations
+        self.check_for_ref_key_insight_reflogic()
         self.prepare_button()
         self.add_arrow_logics()
         # Options
@@ -48,6 +49,12 @@ class NextLogic():
         # next option items with ->
         for num, struc in enumerate(self.structure):
             if struc == 'ITEM(Single)' and '->' in self.texts[num]:
+                if self.type == 'REF_KEY_INSIGHT':
+                    print('''
+                    ----------------------------------------------------------------------------------------
+                    |  !!!! WARNING !!!! -------- Schlüsselerkenntnisreferenz und Arrow Logic gemeinsam    |
+                    ----------------------------------------------------------------------------------------
+                    ''')
                 self.options_string += 'N'
                 self.type = 'NEXT_OPTION'
                 self.option_screen_refs.append(create_id(self, self.texts[num].split('->')[1]))
@@ -67,6 +74,12 @@ class NextLogic():
     def prepare_button(self):
         # buttons
         if 'BUTTON' in self.structure:
+            if self.type == 'REF_KEY_INSIGHT':
+                print('''
+                ----------------------------------------------------------------------------------------
+                |  !!!! WARNING !!!! -------- Schlüsselerkenntnisreferenz und Option Question gemeinsam |
+                ----------------------------------------------------------------------------------------
+                  ''')
             self.type = 'NEXT_OPTION'
 
             button_texts = self.texts[np.where(self.structure == 'BUTTON')]
@@ -93,7 +106,7 @@ class NextLogic():
     def create_json(self):
         if self.RefLogic.type is None:
             questionRefLogicId = 'null'
-        elif self.RefLogic.type == 'REF_OPTIONAL' or self.RefLogic.type == 'REF_AGGREGATION_ANSWER_OPTION_REF':
+        elif self.RefLogic.type == 'REF_OPTIONAL' or self.RefLogic.type == 'REF_OPTIONAL_WITH_CONTENT':
             questionRefLogicId = '"'+self.id+'"'
 
         options_json = ''

@@ -147,7 +147,7 @@ class Trip:
     {
       "id": "%s",
       "key": "%s",
-      "order": 10,
+      "order": 500,
       "mainImageName": "%s",
       "mainImageLongName": "%s",
       "topicIconImageName": "%s",

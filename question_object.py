@@ -37,10 +37,12 @@ class Question:
         self.maxNumber = self.prep_type_and_clean_structure() # must be before map structure to type
         self.type = self.map_structure_to_type() 
         self.reviewable, self.worldObjectEntryKeyType, self.optional = self.prepare_keyInsight()
+        self.prepare_multiple_references()
         # Variables for Building Blocks
         self.answer_required = self.prepare_optional()
         self.scala_min, self.scala_max, self.scala_min_text, self.scala_max_text, self.scala_max_text_en, self.scala_min_text_en = self.prepare_scala()
         self.adjust_min_max_number()
+    
         
         # BUILDING BLOCKS
         self.RefLogic = RefLogic(self)
@@ -53,6 +55,19 @@ class Question:
         self.comma_is_needed = self.check_if_comma_needed()
 
     # --------- PREPARATIONS -----------
+
+    def prepare_multiple_references(self):
+        for i, struc in enumerate(self.structure):
+            # find references with "und"
+            if struc == 'REFERENCE' and 'und' in self.texts[i]:
+                splits = self.texts[i].split('und')
+                self.texts[i] = splits[0].strip()
+                # insert another reference
+                for num in range(1, len(splits)):
+                    self.structure = np.insert(self.structure,i+1,'REFERENCE')
+                     # split text to the references
+                    self.texts = np.insert(self.texts,i+num,splits[num].strip())
+
 
     def clear_of_arrows(self):
         # arrow logics

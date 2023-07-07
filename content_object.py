@@ -20,8 +20,8 @@ class Content:
         if entry == 'REFERENCE':
           self.contents.append(ContentComponent(self, 'ANSWER_OPTION_REF', text_count))
           self.order, self.id = increase_order_id(self.order, self.id)
-        elif entry == 'SUB_TITEL':
-          self.contents.append(ContentComponent(self, 'SUB_TITEL', text_count))
+        elif entry == 'SUB_TITLE':
+          self.contents.append(ContentComponent(self, 'SUB_TITLE', text_count))
           self.order, self.id = increase_order_id(self.order, self.id)
         elif entry == 'PARAGRAPH':
           self.contents.append(ContentComponent(self, 'PARAGRAPH', text_count))
@@ -109,7 +109,7 @@ class ContentComponent():
         else:
           self.audioName_en = self.audioName
 
-      needs_translations = ['MORE_INFORMATION', 'MORE_INFORMATION_EXPANDED', 'PARAGRAPH', 'SUB_TITEL']
+      needs_translations = ['MORE_INFORMATION', 'MORE_INFORMATION_EXPANDED', 'PARAGRAPH', 'SUB_TITLE']
       if self.type in needs_translations:
         self.translations = '''
                 {

@@ -45,7 +45,7 @@ def do_scala_test(question):
             raise Exception ('English Scala Text is not correct: ', question.texts_en[np.where(question.structure == 'SCALA')][0])
 
 def test_for_all_english_translations(trip):
-    english_translation_needed = ['SUB_TITEL','PARAGRAPH','AUDIO', 'IMAGE', 'SMALL_IMAGE', 'MORE_INFORMATION', 'MORE_INFORMATION_EXPANDED', 'ITEM(Single)', 'ITEM(Multiple)','SCALA', 'Etappen-Titel']
+    english_translation_needed = ['SUB_TITLE','PARAGRAPH','AUDIO', 'IMAGE', 'SMALL_IMAGE', 'MORE_INFORMATION', 'MORE_INFORMATION_EXPANDED', 'ITEM(Single)', 'ITEM(Multiple)','SCALA', 'Etappen-Titel']
     for q, question in enumerate(trip.all_questions_array):
         for i, struc in enumerate(question.structure):
             text = question.texts_en[i]
@@ -82,8 +82,8 @@ def do_tests(df, information, questions_array):
 
     for q_count, question in enumerate(questions_array):
         # Test: immer mit subtitle starten
-        if not question.structure[0] == 'SUB_TITEL' and not question.structure[0] == 'Neue Etappe':
-            raise Exception ('SUB_TITEL is missing for question ',q_count+1)
+        if not question.structure[0] == 'SUB_TITLE' and not question.structure[0] == 'Neue Etappe':
+            raise Exception ('SUB_TITLE is missing for question ',q_count+1)
         # Test: kein item single und item multiple in einer frage 
         if 'ITEM(Multiple)' in question.structure and 'ITEM(Single)' in question.structure:
             raise Exception ('ITEM(Single) und ITEM(Multiple) gemischt in Frage: ', q_count+1)
@@ -98,7 +98,7 @@ def do_tests(df, information, questions_array):
                     is_formatted = True
         
         # Test empty Text
-        needs_text_array = ['SUB_TITEL','PARAGRAPH','AUDIO', 'IMAGE', 'SMALL_IMAGE', 'MORE_INFORMATION', 'MORE_INFORMATION_EXPANDED', 'ITEM(Single)', 'ITEM(Multiple)','SCALA', 'REFERENCE', 'Etappen-Titel','Zeit min','Zeit max', 'KEY INSIGHT (optional)','KEY INSIGHT (verpflichtend)']
+        needs_text_array = ['SUB_TITLE','PARAGRAPH','AUDIO', 'IMAGE', 'SMALL_IMAGE', 'MORE_INFORMATION', 'MORE_INFORMATION_EXPANDED', 'ITEM(Single)', 'ITEM(Multiple)','SCALA', 'REFERENCE', 'Etappen-Titel','Zeit min','Zeit max', 'KEY INSIGHT (optional)','KEY INSIGHT (verpflichtend)']
         for i,text in enumerate(question.texts):
             # if nan
             # check if text is str
