@@ -100,7 +100,6 @@ def progress_recursive(trip, progress_not_done, graph, progress_done, questions_
             start_progress = q.progress
     # end progress: 90 wenn letzte_id letzer screen oder ende vom question_array oder progress vom node wo sie zusammenführen
     last_id = longest_chain[-1]
-    last_q = next((q for q in questions_array if q.excel_id == last_id), None)
 
     if join_node_id != None:
         end_progress = next((q.progress for q in questions_array if q.excel_id == join_node_id), None)

@@ -38,9 +38,9 @@ def test_aufruf(information, information_en, english_translation):
         raise Exception ('cardDisplayImageName Zuordnung missing')
     
 
-def do_tests_for_question_array(questions_array):
-    test_formatting(questions_array)
-    test_nummeration(questions_array)
+def do_tests_for_question_array(trip):
+    test_formatting(trip.all_questions_array)
+    test_nummeration(trip.all_questions_array)
 
 def test_formatting(questions_array):
     # Flag declarations
@@ -56,7 +56,7 @@ def test_formatting(questions_array):
 
 def test_nummeration(questions_array):
     nummeration = []
-    pattern = '^\d+\.\d+$'
+    
     for question in questions_array:
         nummeration.append(question.excel_id)
 
@@ -71,6 +71,7 @@ def test_nummeration(questions_array):
             continue
         else:
             raise Exception ('Nummeration is wrong after: ', number)
+        
 
 # ----------- QUESTION TESTS -----------------      
     
@@ -84,6 +85,8 @@ def do_tests_on_questions(question):
     test_scala(question)
     test_english_translation(question)
     test_for_added_information_english(question)
+    test_if_ref_id_exists(question)
+
 
 def test_subtitle(question):
     if not question.structure[0] == 'SUB_TITLE' and not question.structure[0] == 'Neue Etappe':
@@ -148,3 +151,12 @@ def test_for_added_information_english(question):
         if struc == 'ITEM(Single)' or struc == 'ITEM(Multiple)':
             if ('i =' in question.texts[i] or 'i=' in question.texts[i]) and not ('i =' in question.texts_en[i] or 'i=' in question.texts_en[i]):
                 raise Exception ('"i=" information missing in english text at question: ', question.excel_id)
+            
+
+def test_if_ref_id_exists(question):
+    # next option items with ->
+    for num, struc in enumerate(question.structure):
+        if (struc == 'ITEM(Single)' and '->' in question.texts[num]) or (struc == 'ITEM(Multiple)' and '->' in question.texts[num] and question.maxNumber == '1'):
+            ref_id = question.texts[num].split('->')[1]
+            if not ref_id in question.trip.all_ids:
+                raise Exception ('Reference id does not exist in this excel from question: ', question.excel_id)

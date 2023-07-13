@@ -5,7 +5,7 @@ from trip_object import Trip
 # 
 #  ------ VARIABLES ------------------------------------
 # Fill in:
-name_of_json_file = "Test information 2" # name with which you want to save the Json
+name_of_json_file = "Test" # name with which you want to save the Json
 journey_key = "Test_Short_Trip_Flora" # test key or Key of Journey
 id_base = "flora-" # id base -> for testing e.g. your name, for the app the journey_key in small letters
 version = "v"+str(31) # version of the json

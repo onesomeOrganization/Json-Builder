@@ -2,6 +2,7 @@ from question_object import Question
 from tests import are_all_information_there, test_aufruf, do_tests_for_question_array
 from progress import create_progress
 import pandas as pd
+import re
 
 class Trip:
     def __init__(self, df, id_base, version, write_beginning, write_ending, journey_key, english_translation):
@@ -43,11 +44,12 @@ class Trip:
             self.etappen_titel_en = 'Englisch'
 
         # Preparations
+        self.all_ids = self.get_all_ids()
         self.all_questions_array = self.create_questions_array()
         self.etappen_count = self.get_etappen_count()
         self.etappen_end_screens = self.calc_etappen_end_screens()
         self.etappen_start_screens = self.get_etappen_start_screens()
-        do_tests_for_question_array(self.all_questions_array)
+        do_tests_for_question_array(self)
         self.format_text()
         create_progress(self, self.all_questions_array)
         # Json
@@ -107,6 +109,14 @@ class Trip:
               # find " and replace with \"
               # find breaks and delete them
                   question.texts_en[i] = text.replace('"', '\\"').replace('\n', '').replace("_x000B_", "")
+
+    def get_all_ids(self):
+        ids = []
+        pattern = '^\d+\.\d+$'
+        for id in self.df.columns:
+            if id is not None and re.match(pattern, id):
+              ids.append(id)
+        return ids
     
     def get_etappen_count(self):
         etappen_count = set()
