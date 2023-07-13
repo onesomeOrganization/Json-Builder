@@ -122,7 +122,7 @@ class Question:
         # CLEAN OF NAN
         clean_structure = np.empty((0,))
         for entry in self.structure:
-            if isinstance(entry, str):
+            if isinstance(entry, str) and entry != 'None':
                 clean_structure = np.append(clean_structure, entry)
         self.structure = clean_structure
 
