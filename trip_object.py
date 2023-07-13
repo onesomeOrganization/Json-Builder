@@ -1,5 +1,5 @@
 from question_object import Question
-from tests import do_tests, are_all_information_there, test_aufruf, test_for_all_english_translations
+from tests import are_all_information_there, test_aufruf, do_tests_for_question_array
 from progress import create_progress
 import pandas as pd
 
@@ -47,9 +47,7 @@ class Trip:
         self.etappen_count = self.get_etappen_count()
         self.etappen_end_screens = self.calc_etappen_end_screens()
         self.etappen_start_screens = self.get_etappen_start_screens()
-        if english_translation:
-            test_for_all_english_translations(self)
-        do_tests(self.df, self.information, self.all_questions_array)
+        do_tests_for_question_array(self.all_questions_array)
         self.format_text()
         create_progress(self, self.all_questions_array)
         # Json

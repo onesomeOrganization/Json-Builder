@@ -1,5 +1,5 @@
 import numpy as np
-from helper import get_content_length, increase_order_id
+from helper import get_content_length, increase_order_id, add_quotation_mark
 
 class AnswerOption():
     def __init__(self, question):
@@ -131,6 +131,8 @@ class AnswerOptionOption():
       self.type = type
       self.order = answerOption.options_order
       self.id = answerOption.options_id
+      self.description = 'null'
+      self.description_en = 'null'
 
       # Preparations
       needs_translation = ['RADIO_BUTTON', 'CHECKBOX', 'BUTTON', 'SLIDER']
@@ -140,12 +142,16 @@ class AnswerOptionOption():
       if self.type == 'SLIDER':
         self.text = self.answerOption.question.scala_min_text+', ,'+self.answerOption.question.scala_max_text
         self.text_en = self.answerOption.question.scala_min_text_en+', ,'+self.answerOption.question.scala_max_text_en
-      if self.type == 'RADIO_BUTTON' or self.type == 'CHECKBOX':
+      if self.type == 'RADIO_BUTTON':
         self.text = answerOption.question.texts[np.where((answerOption.question.structure == 'ITEM(Single)') | (answerOption.question.structure == 'ITEM(Multiple)'))[0][0]+self.order-1]
         if self.answerOption.question.english_translation:
           self.text_en = answerOption.question.texts_en[np.where((answerOption.question.structure == 'ITEM(Single)') | (answerOption.question.structure == 'ITEM(Multiple)'))[0][0]+self.order-1]
         else:
            self.text_en = 'Englisch'
+      if self.type == 'CHECKBOX':
+        self.prepare_checkbox()
+        
+
       if self.type in needs_translation:
         self.translations = '''
                             {
@@ -153,20 +159,46 @@ class AnswerOptionOption():
                           "language": "DE",
                           "title": null,
                           "text": "%s",
-                          "description": null
+                          "description": %s
                         },
                         {
                           "id": "%s-EN",
                           "language": "EN",
                           "title": null,
                           "text": "%s",
-                          "description": null
-                        }''' %(self.id, self.text, self.id, self.text_en)
+                          "description": %s
+                        }''' %(self.id, self.text, self.description, self.id, self.text_en, self.description_en)
       else:
         self.translations = ''
         
       # Json
       self.json = self.create_json()
+
+    # -------- PREPARATION -------------
+    def prepare_checkbox(self):
+      self.text = self.answerOption.question.texts[np.where((self.answerOption.question.structure == 'ITEM(Single)') | (self.answerOption.question.structure == 'ITEM(Multiple)'))[0][0]+self.order-1]
+      self.text, self.description = self.check_for_added_information(self.text, self.description)
+      if self.answerOption.question.english_translation:
+        self.text_en = self.answerOption.question.texts_en[np.where((self.answerOption.question.structure == 'ITEM(Single)') | (self.answerOption.question.structure == 'ITEM(Multiple)'))[0][0]+self.order-1]
+        self.text_en, self.description_en = self.check_for_added_information(self.text_en, self.description_en)
+      else:
+          self.text_en = 'Englisch'
+      if self.description != 'null' and not self.answerOption.question.english_translation:
+        self.description_en = add_quotation_mark('Englisch')
+
+    def check_for_added_information(self, text, description):
+       # check for added information with i= or i =
+        if 'i =' in text:
+           description = add_quotation_mark(text.split('i =')[1].strip())
+           text = text.split('i =')[0].strip()
+        elif 'i=' in text:
+           description = add_quotation_mark(text.split('i=')[1].strip())
+           text = text.split('i=')[0].strip()
+        
+        return text, description
+       
+
+    # ------- JSON ----------
 
     def create_json(self):
        json = '''

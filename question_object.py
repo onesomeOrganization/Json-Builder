@@ -5,7 +5,7 @@ from content_object import Content
 from answerOption_object import AnswerOption
 from nextLogic_object import NextLogic
 from helper import create_id
-from tests import do_scala_test
+from tests import do_tests_on_questions
 
 
 class Question:
@@ -32,7 +32,10 @@ class Question:
         self.firstJourneyQuestion = "null" 
         self.firstSessionQuestion = "null"
 
-        # PREPARATIONS
+        # TEST
+        do_tests_on_questions(self)
+
+        # PREPARATIONS    
         self.clear_of_nan()
         self.maxNumber = self.prep_type_and_clean_structure() # must be before map structure to type
         self.type = self.map_structure_to_type() 
@@ -62,17 +65,21 @@ class Question:
             if struc == 'REFERENCE' and 'und' in self.texts[i]:
                 splits = self.texts[i].split('und')
                 self.texts[i] = splits[0].strip()
+                if self.english_translation:
+                    self.texts_en[i] = splits[0].strip()
                 # insert another reference
                 for num in range(1, len(splits)):
                     self.structure = np.insert(self.structure,i+1,'REFERENCE')
                      # split text to the references
                     self.texts = np.insert(self.texts,i+num,splits[num].strip())
+                    if self.english_translation:
+                        self.texts_en = np.insert(self.texts_en,i+num,splits[num].strip())
 
 
     def clear_of_arrows(self):
         # arrow logics
         for num, struc in enumerate(self.structure):
-            if struc == 'ITEM(Single)' and '->' in self.texts[num]:
+            if (struc == 'ITEM(Single)' and '->' in self.texts[num]) or (struc == 'ITEM(Multiple)' and self.maxNumber == '1' and '->' in self.texts[num]):
                 self.texts[num] = self.texts[num].split('->')[0].strip()
                 if self.english_translation:
                     self.texts_en[num] = self.texts_en[num].split('->')[0].strip()
@@ -125,6 +132,7 @@ class Question:
             self.texts_en = self.texts_en[:len(self.structure)]
 
     def prep_type_and_clean_structure(self):
+        self.maxNumber = 'null'
         # SOLVE ANTWORT PROBLEM -> with item it is always a several answer options field
         if 'ITEM(Multiple)' in self.structure and 'ANSWER OPTION' in self.structure:
             self.structure[np.where(self.structure == 'ANSWER OPTION')] = 'SEVERAL ANSWER OPTIONS'
@@ -135,9 +143,20 @@ class Question:
         if "ITEM(Single)" in self.structure and 'SEVERAL ANSWER OPTIONS' in self.structure:
             self.maxNumber = '1'
             self.structure = np.core.defchararray.replace(self.structure, 'ITEM(Single)', 'ITEM(Multiple)')
-        else: 
-            self.maxNumber = 'null'
-            
+
+        # i= in answers
+        if "ITEM(Single)" in self.structure and not 'SEVERAL ANSWER OPTIONS' in self.structure:
+            for text in self.texts:
+                if 'i=' in text or 'i =' in text:
+                    self.maxNumber = '1'
+                    self.structure = np.core.defchararray.replace(self.structure, 'ITEM(Single)', 'ITEM(Multiple)')
+                    if not 'SEVERAL ANSWER OPTIONS' in self.structure:
+                        print('''
+                    ---------------------------------------------------------------------------------------------
+                    |  !!!! WARNING !!!! -------- Single Choice Item List with (i) and without text-field needed |
+                    ---------------------------------------------------------------------------------------------
+                    ''')
+    
         return self.maxNumber
     
     def adjust_min_max_number(self):
@@ -163,8 +182,6 @@ class Question:
     def prepare_scala(self):
         # SCALA
         if 'SCALA' in self.structure:
-            # Test Scala Texts
-            do_scala_test(self)
             # declare numbers and texts     
             # get digits
             digits = re.findall(r'\d', self.texts[np.where(self.structure == 'SCALA')][0])

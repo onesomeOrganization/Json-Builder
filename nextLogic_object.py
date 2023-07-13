@@ -48,7 +48,7 @@ class NextLogic():
     def add_arrow_logics(self):
         # next option items with ->
         for num, struc in enumerate(self.structure):
-            if struc == 'ITEM(Single)' and '->' in self.texts[num]:
+            if (struc == 'ITEM(Single)' and '->' in self.texts[num]) or (struc == 'ITEM(Multiple)' and '->' in self.texts[num] and self.question.maxNumber == '1'):
                 if self.type == 'REF_KEY_INSIGHT':
                     print('''
                     ----------------------------------------------------------------------------------------

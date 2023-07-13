@@ -40,3 +40,7 @@ def increase_order_id(order, id, about = 1):
   order += about
   id = '-'.join(id.split('-')[:-1] + [str(order)])
   return order, id
+
+def add_quotation_mark(text):
+  text = '"'+text+'"'
+  return text
