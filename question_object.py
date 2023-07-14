@@ -37,12 +37,11 @@ class Question:
 
         # PREPARATIONS    
         self.clear_of_nan()
-        self.maxNumber = self.prep_type_and_clean_structure() # must be before map structure to type
-        self.type = self.map_structure_to_type() 
+        self.answer_required = self.prepare_optional()
+        self.type, self.maxNumber = self.map_structure_to_type() 
         self.reviewable, self.worldObjectEntryKeyType, self.optional = self.prepare_keyInsight()
         self.prepare_multiple_references()
         # Variables for Building Blocks
-        self.answer_required = self.prepare_optional()
         self.scala_min, self.scala_max, self.scala_min_text, self.scala_max_text, self.scala_max_text_en, self.scala_min_text_en = self.prepare_scala()
         self.adjust_min_max_number()
     
@@ -90,25 +89,38 @@ class Question:
         return etappe, screen
     
     def map_structure_to_type(self):
-        # ITEM_LIST_SINGLE_CHOICE (R): Item
-        if "ITEM(Single)" in self.structure and not 'SEVERAL ANSWER OPTIONS' in self.structure:
+        # ITEM_LIST_SINGLE_CHOICE: nur wenn es single items sind und es keinerlei asnweroption gibt
+        if "ITEM(Single)" in self.structure and not ('SEVERAL ANSWER OPTIONS' in self.structure or 'ANSWER OPTON' in self.structure):
             question_type = 'ITEM_LIST_SINGLE_CHOICE'
-        # ITEM_LIST_EXPANDABLE (T OR C as answeroption): Item 
-        elif 'ITEM(Multiple)' in self.structure or 'SEVERAL ANSWER OPTIONS' in self.structure:
+            # single choice and i= in answers 
+            for text in self.texts:
+                if 'i=' in text or 'i =' in text:
+                    self.maxNumber = '1'
+                    self.structure = np.core.defchararray.replace(self.structure, 'ITEM(Single)', 'ITEM(Multiple)')
+                    question_type = 'ITEM_LIST_LIMIT'
+        elif 'ITEM(Multiple)' in self.structure and not ('SEVERAL ANSWER OPTIONS' in self.structure or 'ANSWER OPTON' in self.structure):
+            question_type = 'ITEM_LIST_LIMIT'
+            if self.answer_required:
+                self.minNumber = '1'
+        # ITEM_LIST_EXPANDABLE: A) entweder mehrere text felder ohne items oder B) item multiple mit text feldern oder C) item single mit text feldern und maxnumber
+            # A
+        elif not ('ITEM(Multiple)' in self.structure or "ITEM(Single)" in self.structure) and 'SEVERAL ANSWER OPTIONS' in self.structure:
             question_type = 'ITEM_LIST_EXPANDABLE'
-            # ITEM_LIST_EXPANDABLE as single version
-        elif "ITEM(Single)" in self.structure and 'SEVERAL ANSWER OPTIONS' in self.structure:
+            # B
+        elif 'ITEM(Multiple)' in self.structure and ('SEVERAL ANSWER OPTIONS' in self.structure or 'ANSWER OPTON' in self.structure):
             question_type = 'ITEM_LIST_EXPANDABLE'
-            # ITEM_LIST_EXPANDABLE without items but with textfield expandable
-        elif 'SEVERAL ANSWER OPTIONS' in self.structure:
+            # C
+        elif "ITEM(Single)" in self.structure and ('SEVERAL ANSWER OPTIONS' in self.structure or 'ANSWER OPTON' in self.structure):
+            self.maxNumber = '1'
+            self.structure = np.core.defchararray.replace(self.structure, 'ITEM(Single)', 'ITEM(Multiple)')
             question_type = 'ITEM_LIST_EXPANDABLE'
-            # OPTION_QUESTION: S P Button
+        # OPTION_QUESTION: S P Button
         elif 'BUTTON' in self.structure:
             question_type = 'OPTION_QUESTION'
-            # SCALA_SLIDER,
+         # SCALA_SLIDER,
         elif 'SCALA' in self.structure:
             question_type = 'SCALA_SLIDER'
-            # OPEN_QUESTION: S P Textfield
+        # OPEN_QUESTION: S P Textfield
         elif 'ANSWER OPTION' in self.structure and not ("ITEM(Single)" or "ITEM(Multiple)") in self.structure:
             question_type = 'OPEN_QUESTION'
         elif 'Neue Etappe' in self.structure:
@@ -116,7 +128,7 @@ class Question:
         else:
             question_type = 'CONTENT'
 
-        return question_type
+        return question_type, self.maxNumber
     
     def clear_of_nan(self):
         # CLEAN OF NAN
@@ -130,34 +142,6 @@ class Question:
         self.texts = self.texts[:len(self.structure)]
         if self.english_translation:
             self.texts_en = self.texts_en[:len(self.structure)]
-
-    def prep_type_and_clean_structure(self):
-        self.maxNumber = 'null'
-        # SOLVE ANTWORT PROBLEM -> with item it is always a several answer options field
-        if 'ITEM(Multiple)' in self.structure and 'ANSWER OPTION' in self.structure:
-            self.structure[np.where(self.structure == 'ANSWER OPTION')] = 'SEVERAL ANSWER OPTIONS'
-        if 'ITEM(Single)' in self.structure and 'ANSWER OPTION' in self.structure:
-            self.structure[np.where(self.structure == 'ANSWER OPTION')] = 'SEVERAL ANSWER OPTIONS'
-
-        # SINGLE CHOICE WITH ANTWORT
-        if "ITEM(Single)" in self.structure and 'SEVERAL ANSWER OPTIONS' in self.structure:
-            self.maxNumber = '1'
-            self.structure = np.core.defchararray.replace(self.structure, 'ITEM(Single)', 'ITEM(Multiple)')
-
-        # i= in answers
-        if "ITEM(Single)" in self.structure and not 'SEVERAL ANSWER OPTIONS' in self.structure:
-            for text in self.texts:
-                if 'i=' in text or 'i =' in text:
-                    self.maxNumber = '1'
-                    self.structure = np.core.defchararray.replace(self.structure, 'ITEM(Single)', 'ITEM(Multiple)')
-                    if not 'SEVERAL ANSWER OPTIONS' in self.structure:
-                        print('''
-                    ---------------------------------------------------------------------------------------------
-                    |  !!!! WARNING !!!! -------- Single Choice Item List with (i) and without text-field needed |
-                    ---------------------------------------------------------------------------------------------
-                    ''')
-    
-        return self.maxNumber
     
     def adjust_min_max_number(self):
         if self.type == 'SCALA_SLIDER':

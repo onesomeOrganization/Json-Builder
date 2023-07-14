@@ -64,6 +64,9 @@ class AnswerOption():
         elif self.question.type == 'ITEM_LIST_EXPANDABLE' and struc == 'SEVERAL ANSWER OPTIONS' and not ('ITEM(Multiple)' or 'ITEM(Single)') in self.structure:
           self.options.append(AnswerOptionOption(self, 'TEXT_FIELD_EXPANDABLE'))
           self.options_order, self.options_id = increase_order_id(self.options_order, self.options_id)
+        elif self.question.type == 'ITEM_LIST_LIMIT' and struc == 'ITEM(Multiple)':
+          self.options.append(AnswerOptionOption(self, 'CHECKBOX'))
+          self.options_order, self.options_id = increase_order_id(self.options_order, self.options_id)
 
       if self.question.type == 'OPTION_QUESTION':
           i = 0

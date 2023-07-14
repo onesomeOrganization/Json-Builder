@@ -147,16 +147,17 @@ def test_english_translation(question):
                 raise Exception ('English translation missing at question: ', question.excel_id)
         
 def test_for_added_information_english(question):
-    for i, struc in enumerate(question.structure):
-        if struc == 'ITEM(Single)' or struc == 'ITEM(Multiple)':
-            if ('i =' in question.texts[i] or 'i=' in question.texts[i]) and not ('i =' in question.texts_en[i] or 'i=' in question.texts_en[i]):
-                raise Exception ('"i=" information missing in english text at question: ', question.excel_id)
+    if question.english_translation:
+        for i, struc in enumerate(question.structure):
+            if struc == 'ITEM(Single)' or struc == 'ITEM(Multiple)':
+                if ('i =' in question.texts[i] or 'i=' in question.texts[i]) and not ('i =' in question.texts_en[i] or 'i=' in question.texts_en[i]):
+                    raise Exception ('"i=" information missing in english text at question: ', question.excel_id)
             
 
 def test_if_ref_id_exists(question):
     # next option items with ->
     for num, struc in enumerate(question.structure):
         if (struc == 'ITEM(Single)' and '->' in question.texts[num]) or (struc == 'ITEM(Multiple)' and '->' in question.texts[num] and question.maxNumber == '1'):
-            ref_id = question.texts[num].split('->')[1]
+            ref_id = question.texts[num].split('->')[1].strip()
             if not ref_id in question.trip.all_ids:
                 raise Exception ('Reference id does not exist in this excel from question: ', question.excel_id)
