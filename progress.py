@@ -92,12 +92,13 @@ def progress_recursive(trip, progress_not_done, graph, progress_done, questions_
     # longest_chain(start_node, graph, progress_done) -> bis ende oder bis rejoin with already done -> rejoin wiedergeben
     # start_progress: check progress from question before or if question does not exist it is 0
     first_id = longest_chain[0]
-    id_before = find_node_before(graph, first_id)
-    if id_before == None:
+    id_before = find_node_before(graph, first_id) # if it is not the first chain, then there might be a screen before it which already has a progress
+    if id_before == None or first_id == questions_array[0].excel_id: # or first id is the first id of the entire array you start from 0
         start_progress = 0
-    for q in questions_array:
-        if q.excel_id == id_before:
-            start_progress = q.progress
+    else:
+        for q in questions_array:
+            if q.excel_id == id_before:
+                start_progress = q.progress
     # end progress: 90 wenn letzte_id letzer screen oder ende vom question_array oder progress vom node wo sie zusammenführen
     last_id = longest_chain[-1]
 
@@ -120,11 +121,10 @@ def progress_recursive(trip, progress_not_done, graph, progress_done, questions_
 
 
 def create_progress(trip, questions_array):
-    graph = create_adjazenzliste(questions_array)
     # put all ids in not done
     progress_not_done = []
     progress_done = []
     for q in questions_array:
         if not 'Neue Etappe' in q.structure:
             progress_not_done.append(q.excel_id)
-    progress_recursive(trip, progress_not_done, graph, progress_done, questions_array)
+    progress_recursive(trip, progress_not_done, trip.graph, progress_done, questions_array)

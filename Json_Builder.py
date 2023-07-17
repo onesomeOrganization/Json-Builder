@@ -13,7 +13,9 @@ write_beginning = True # False if you want to add to an existing json
 write_ending = True # False if you want to add to an existing json
 etappe = 1 # usually 1 except you want to add to an existing json in a different etappe
 startnumber = 1 # usually 1 except you want to add to an existing json at a different screen number
-excel_path_or_name = "Jsons/Excels/01_Templates/features/Json_Excel_Template_i_for_items.xlsx" # path to the exel template
+#excel_path_or_name = "Jsons/Excels/01_Templates/features/Json_Excel_Template_questionloops.xlsx" # path to the exel template
+excel_path_or_name = "Jsons/Excels/01_Templates/Json_Excel_Template4.2.xlsx"
+#excel_path_or_name = "Jsons/Excels/02_Reisen&Kurztrips/Json_Excel_Buddy_Lebensrad_v2.xlsx"
 save_directory = '/Users/FloraValentina/Library/Mobile Documents/com~apple~CloudDocs/Dokumente/Arbeit/Onesome/Coding/Jsons/Created' # path where you want to save the jsons
 english_translation = False
 

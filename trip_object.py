@@ -1,8 +1,9 @@
 from question_object import Question
 from tests import are_all_information_there, test_aufruf, do_tests_for_question_array
-from progress import create_progress
+from progress import create_progress, create_adjazenzliste
 import pandas as pd
 import re
+from questionLoops import create_questionloops
 
 class Trip:
     def __init__(self, df, id_base, version, write_beginning, write_ending, journey_key, english_translation):
@@ -50,8 +51,10 @@ class Trip:
         self.etappen_end_screens = self.calc_etappen_end_screens()
         self.etappen_start_screens = self.get_etappen_start_screens()
         do_tests_for_question_array(self)
-        self.format_text()
+        #self.format_text()
+        self.graph = create_adjazenzliste(self.all_questions_array)
         create_progress(self, self.all_questions_array)
+        self.questionLoops = create_questionloops(self)
         # Json
         self.json = self.create_json()
 
@@ -265,11 +268,13 @@ class Trip:
           if self.write_ending:   
            json += '''
       ],
-      "questionLoops": []
+      "questionLoops": [
+      %s
+      ]
     }
   ]
 }
-        '''
+        '''%(self.questionLoops)
           return json
 
 

@@ -6,6 +6,7 @@ from answerOption_object import AnswerOption
 from nextLogic_object import NextLogic
 from helper import create_id
 from tests import do_tests_on_questions
+import pandas as pd
 
 
 class Question:
@@ -37,6 +38,7 @@ class Question:
 
         # PREPARATIONS    
         self.clear_of_nan()
+        self.format_text()
         self.answer_required = self.prepare_optional()
         self.type, self.maxNumber = self.map_structure_to_type() 
         self.reviewable, self.worldObjectEntryKeyType, self.optional = self.prepare_keyInsight()
@@ -57,6 +59,20 @@ class Question:
         self.comma_is_needed = self.check_if_comma_needed()
 
     # --------- PREPARATIONS -----------
+
+    def format_text(self):
+        for i, text in enumerate(self.texts):
+              if not pd.isnull(text):
+              # find " and replace with \"
+              # find breaks and delete them
+                  self.texts[i] = text.replace('"', '\\"').replace('\n', '').replace("_x000B_", "")
+
+        if self.english_translation:
+            for i, text in enumerate(self.texts_en):
+                if not pd.isnull(text):
+                # find " and replace with \"
+                # find breaks and delete them
+                    self.texts_en[i] = text.replace('"', '\\"').replace('\n', '').replace("_x000B_", "")
 
     def prepare_multiple_references(self):
         for i, struc in enumerate(self.structure):
@@ -246,14 +262,14 @@ class Question:
             "optional": %s,
             "firstJourneyQuestion": %s,
             "firstSessionQuestion": %s,
-            "questionLoopId": null,
+            "questionLoopId": %s,
             "translations": [],
             "content": [
                 %s
                 %s
             ],
             %s
-            },''' %(self.id, self.type, self.minNumber, self.maxNumber, self.reviewable, self.progress, self.worldObjectEntryKeyType, self.optional, self.firstJourneyQuestion, self.firstSessionQuestion, self.Content.json, self.AnswerOption.json, self.NextLogic.json)
+            },''' %(self.id, self.type, self.minNumber, self.maxNumber, self.reviewable, self.progress, self.worldObjectEntryKeyType, self.optional, self.firstJourneyQuestion, self.firstSessionQuestion, self.questionLoopId, self.Content.json, self.AnswerOption.json, self.NextLogic.json)
         
         if self.comma_is_needed:
             return json
