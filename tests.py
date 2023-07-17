@@ -158,5 +158,5 @@ def test_if_ref_id_exists(question):
     for num, struc in enumerate(question.structure):
         if (struc == 'ITEM(Single)' and '->' in question.texts[num]) or (struc == 'ITEM(Multiple)' and '->' in question.texts[num] and question.maxNumber == '1'):
             ref_id = question.texts[num].split('->')[1]
-            if not ref_id in question.trip.all_ids:
+            if not ref_id.strip() in question.trip.all_ids:
                 raise Exception ('Reference id does not exist in this excel from question: ', question.excel_id)
