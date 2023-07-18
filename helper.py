@@ -44,3 +44,10 @@ def increase_order_id(order, id, about = 1):
 def add_quotation_mark(text):
   text = '"'+text+'"'
   return text
+
+def find_nodes_before(graph, node):
+    befores = []
+    for n, neighbors in graph.items():
+        if node in neighbors:
+            befores.append(n)
+    return befores

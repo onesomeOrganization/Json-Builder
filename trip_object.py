@@ -53,12 +53,21 @@ class Trip:
         do_tests_for_question_array(self)
         #self.format_text()
         self.graph = create_adjazenzliste(self.all_questions_array)
-        create_progress(self, self.all_questions_array)
-        self.questionLoops = create_questionloops(self)
+        self.qloop_start_screens_ids = self.get_qloop_start_screens()
+        loop_chain_array, loop_dict = create_progress(self, self.all_questions_array)
+        self.questionLoops = create_questionloops(self, loop_chain_array, loop_dict)
         # Json
         self.json = self.create_json()
 
     # ------ PREPARATIONS -----------
+
+    def get_qloop_start_screens(self):
+        qloop_start_screens_ids = []
+        for q in self.all_questions_array:
+            if q.qloop_start:
+                qloop_start_screens_ids.append(q.excel_id)
+        return qloop_start_screens_ids
+        
 
     def create_information(self):
         # get first informations and set defaults

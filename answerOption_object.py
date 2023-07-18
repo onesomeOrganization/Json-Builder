@@ -55,7 +55,7 @@ class AnswerOption():
     def create_options(self):
       self.options = []
       for struc in self.structure:
-        if self.question.type == 'ITEM_LIST_SINGLE_CHOICE' and struc == 'ITEM(Single)':
+        if (self.question.type == 'ITEM_LIST_SINGLE_CHOICE' or self.question.type == 'ITEM_LIST_SINGLE_CHOICE_INTERRUPTIBLE_START') and struc == 'ITEM(Single)':
           self.options.append(AnswerOptionOption(self, 'RADIO_BUTTON'))
           self.options_order, self.options_id = increase_order_id(self.options_order, self.options_id)
         elif self.question.type == 'ITEM_LIST_EXPANDABLE' and struc == 'ITEM(Multiple)':

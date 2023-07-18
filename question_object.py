@@ -32,6 +32,9 @@ class Question:
         self.minNumber = 'null'
         self.firstJourneyQuestion = "null" 
         self.firstSessionQuestion = "null"
+        self.qloop_start = self.check_if_qloop_start()
+        self.progress = None
+        self.questionLoopId = 'null'
 
         # TEST
         do_tests_on_questions(self)
@@ -41,6 +44,7 @@ class Question:
         self.format_text()
         self.answer_required = self.prepare_optional()
         self.type, self.maxNumber = self.map_structure_to_type() 
+        self.adjust_type_to_questionloop()
         self.reviewable, self.worldObjectEntryKeyType, self.optional = self.prepare_keyInsight()
         self.prepare_multiple_references()
         # Variables for Building Blocks
@@ -51,7 +55,7 @@ class Question:
         # BUILDING BLOCKS
         self.RefLogic = RefLogic(self)
         self.NextLogic = NextLogic(self)
-        self.clear_of_arrows()
+        #self.clear_of_arrows()
         self.Content = Content(self)
         self.AnswerOption = AnswerOption(self)
 
@@ -59,6 +63,14 @@ class Question:
         self.comma_is_needed = self.check_if_comma_needed()
 
     # --------- PREPARATIONS -----------
+
+    def check_if_qloop_start(self):
+        qloop_start = False
+        for struc in self.structure:
+            if struc == 'Start Questionloop':
+                qloop_start = True
+        return qloop_start
+
 
     def format_text(self):
         for i, text in enumerate(self.texts):
@@ -90,7 +102,7 @@ class Question:
                     if self.english_translation:
                         self.texts_en = np.insert(self.texts_en,i+num,splits[num].strip())
 
-
+    '''
     def clear_of_arrows(self):
         # arrow logics
         for num, struc in enumerate(self.structure):
@@ -98,6 +110,7 @@ class Question:
                 self.texts[num] = self.texts[num].split('->')[0].strip()
                 if self.english_translation:
                     self.texts_en[num] = self.texts_en[num].split('->')[0].strip()
+    '''
 
     def create_etappe_screen_from_id(self):
         etappe = self.excel_id.split('.')[0]
@@ -145,6 +158,13 @@ class Question:
             question_type = 'CONTENT'
 
         return question_type, self.maxNumber
+
+    def adjust_type_to_questionloop(self):
+        if self.qloop_start:
+            if self.type == 'ITEM_LIST_SINGLE_CHOICE':
+                self.type = 'ITEM_LIST_SINGLE_CHOICE_INTERRUPTIBLE_START'
+            else:
+                raise Exception ('There is no question loop start screen type which is possible for the following type needed: ', self.type)
     
     def clear_of_nan(self):
         # CLEAN OF NAN
@@ -293,7 +313,7 @@ class Question:
         # Json
         json = '''
             ],
-        "questionLoops": []
+        "questionLoops": [%s]
         },
         {
         "id": "%s",
@@ -313,6 +333,6 @@ class Question:
             }
         ],
         "questions": [
-            '''%(id, order, durationMin, durationMax, id, title, id, title_en)
+            '''%(self.questionLoops, id, order, durationMin, durationMax, id, title, id, title_en)
         
         return json
