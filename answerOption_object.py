@@ -147,8 +147,12 @@ class AnswerOptionOption():
         self.text_en = self.answerOption.question.scala_min_text_en+', ,'+self.answerOption.question.scala_max_text_en
       if self.type == 'RADIO_BUTTON':
         self.text = answerOption.question.texts[np.where((answerOption.question.structure == 'ITEM(Single)') | (answerOption.question.structure == 'ITEM(Multiple)'))[0][0]+self.order-1]
+        if '->' in self.text:
+          self.text = self.text.split('->')[0].strip()
         if self.answerOption.question.english_translation:
           self.text_en = answerOption.question.texts_en[np.where((answerOption.question.structure == 'ITEM(Single)') | (answerOption.question.structure == 'ITEM(Multiple)'))[0][0]+self.order-1]
+          if '->' in self.text_en:
+            self.text_en = self.text_en.split('->')[0].strip()
         else:
            self.text_en = 'Englisch'
       if self.type == 'CHECKBOX':
@@ -181,9 +185,13 @@ class AnswerOptionOption():
     def prepare_checkbox(self):
       self.text = self.answerOption.question.texts[np.where((self.answerOption.question.structure == 'ITEM(Single)') | (self.answerOption.question.structure == 'ITEM(Multiple)'))[0][0]+self.order-1]
       self.text, self.description = self.check_for_added_information(self.text, self.description)
+      if '->' in self.text:
+         self.text = self.text.split('->')[0].strip()
       if self.answerOption.question.english_translation:
         self.text_en = self.answerOption.question.texts_en[np.where((self.answerOption.question.structure == 'ITEM(Single)') | (self.answerOption.question.structure == 'ITEM(Multiple)'))[0][0]+self.order-1]
         self.text_en, self.description_en = self.check_for_added_information(self.text_en, self.description_en)
+        if '->' in self.text_en:
+          self.text_en = self.text_en.split('->')[0].strip()
       else:
           self.text_en = 'Englisch'
       if self.description != 'null' and not self.answerOption.question.english_translation:

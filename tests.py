@@ -86,6 +86,7 @@ def do_tests_on_questions(question):
     test_english_translation(question)
     test_for_added_information_english(question)
     test_if_ref_id_exists(question)
+    test_arrow_missing(question)
 
 
 def test_subtitle(question):
@@ -161,3 +162,13 @@ def test_if_ref_id_exists(question):
             ref_id = question.texts[num].split('->')[1].strip()
             if not ref_id in question.trip.all_ids:
                 raise Exception ('Reference id does not exist in this excel from question: ', question.excel_id)
+            
+def test_arrow_missing(question):
+    # next option items with ->
+    should_have_arrows = False
+    for num, struc in enumerate(question.structure):
+        if (struc == 'ITEM(Single)' and '->' in question.texts[num]) or (struc == 'ITEM(Multiple)' and '->' in question.texts[num] and question.maxNumber == '1'):
+            should_have_arrows = True
+    for num, struc in enumerate(question.structure):
+        if (struc == 'ITEM(Single)' or struc == 'ITEM(Multiple)') and not '->' in question.texts[num] and should_have_arrows:
+            raise Exception('Arrow missing at question: ', question.excel_id)

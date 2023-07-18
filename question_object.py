@@ -102,16 +102,6 @@ class Question:
                     if self.english_translation:
                         self.texts_en = np.insert(self.texts_en,i+num,splits[num].strip())
 
-    '''
-    def clear_of_arrows(self):
-        # arrow logics
-        for num, struc in enumerate(self.structure):
-            if (struc == 'ITEM(Single)' and '->' in self.texts[num]) or (struc == 'ITEM(Multiple)' and self.maxNumber == '1' and '->' in self.texts[num]):
-                self.texts[num] = self.texts[num].split('->')[0].strip()
-                if self.english_translation:
-                    self.texts_en[num] = self.texts_en[num].split('->')[0].strip()
-    '''
-
     def create_etappe_screen_from_id(self):
         etappe = self.excel_id.split('.')[0]
         screen = self.excel_id.split('.')[1]
