@@ -30,6 +30,7 @@ def create_adjazenzliste(questions_array):
     return adjazenzliste
 
 def create_progress(trip, questions_array):
+    # PREPARATION
     normal_chain_array = []
     loop_chain_array = []
     # put all ids in not done
@@ -38,9 +39,48 @@ def create_progress(trip, questions_array):
     for q in questions_array:
         if not 'Neue Etappe' in q.structure:
             not_visited.append(q.excel_id)
+
     find_chains(not_visited, trip.graph, visited, normal_chain_array, loop_chain_array)
+    normal_chain_array, loop_dict, loop_chain_array = update_and_clean_chain_arrays(normal_chain_array, trip)
 
+    # PROGRESS
+    create_normal_chain_progress(normal_chain_array, questions_array, trip)
+    exit_nodes = get_loop_exit_nodes(loop_chain_array, trip, loop_dict)
+    create_progress_for_question_loop_screen(loop_chain_array, trip, exit_nodes)
 
+    return loop_dict
+
+def find_chains(not_visited, graph, visited, normal_chain_array, loop_chain_array):
+    # done when all progress is done
+    if len(not_visited) == 0:
+        return
+    start_node = not_visited[0]
+    # Längste Kette finden
+    longest_chain, join_node_id = find_longest_chain(graph, start_node, visited) 
+
+    # check if chain or loop chain:
+    chain_flag = False
+    for element in graph[longest_chain[-1]]:
+        if element in longest_chain:
+            chain_flag = True
+            index = longest_chain.index(element)
+            longest_chain = longest_chain[index:]
+            loop_chain_array.append(longest_chain)
+    
+    if not chain_flag:
+        normal_chain_array.append(longest_chain)
+
+    if len(not_visited) != 0:
+        # update progress done and not done
+        for id in longest_chain:
+            if len(not_visited) == 0:
+                return
+            not_visited.remove(id)
+            visited.append(id)
+        # start again with updated values
+        find_chains(not_visited, graph, visited, normal_chain_array, loop_chain_array)
+
+def update_and_clean_chain_arrays(normal_chain_array, trip):
     loop_dict = create_loop_dict(trip)
     loop_chain_array = []
     for value in loop_dict.values():
@@ -77,8 +117,9 @@ def create_progress(trip, questions_array):
                 normal_chain_array.remove(chain1)
                 normal_chain_array.remove(chain2)
                 normal_chain_array.append(chain2+chain1)
-    
+    return(normal_chain_array, loop_dict, loop_chain_array)
 
+def create_normal_chain_progress(normal_chain_array, questions_array, trip):
     # NORMAL CHAIN PROGRESS
     for chain in normal_chain_array:
         first_id = chain[0]
@@ -99,56 +140,93 @@ def create_progress(trip, questions_array):
             end_progress = next((q.progress for q in questions_array if q.excel_id == last_id), None)
         # create the progress
         create_progress_along_chain(chain_to_array(chain, questions_array), start_progress, end_progress)
-    # LOOP CHAIN PROGRESS IS DONE IN QUESTIONLOOPS
 
-    return loop_chain_array, loop_dict
-
-def find_chains(not_visited, graph, visited, normal_chain_array, loop_chain_array):
-    # done when all progress is done
-    if len(not_visited) == 0:
-        return
-    start_node = not_visited[0]
-    # Längste Kette finden
-    longest_chain, join_node_id = find_longest_chain(graph, start_node, visited) # TODO clean of join node?
-
-    # check if chain or loop chain:
-    chain_flag = False
-    for element in graph[longest_chain[-1]]:
-        if element in longest_chain:
-            chain_flag = True
-            index = longest_chain.index(element)
-            longest_chain = longest_chain[index:]
-            loop_chain_array.append(longest_chain)
+def get_loop_exit_nodes(loop_chain_array, trip, loop_dict):
+    exit_nodes = {}
+    # start_id: id_ausgang, index in loop_ausgang, next_id, min progress of next
+    for loop in loop_chain_array:
+        for node in loop:
+            nexts = trip.graph[node] 
+            for n in nexts:
+                if n not in loop: # only real exit nodes not nodes part of a loop
+                    if node in exit_nodes:
+                        exit_nodes[loop[0]][2].append(n)
+                    else:
+                        exit_nodes[loop[0]] = [[node], loop.index(node), [n]] 
+    # handle loops which originate from the same startscreen
+    for key in loop_dict:
+        number_loops = len(loop_dict[key])
+        for key2 in exit_nodes:
+            if key == key2:
+                if number_loops > 1:
+                    exit_nodes[key2][2] = delete_infrequent_entries(number_loops, exit_nodes[key2][2])
     
-    if not chain_flag:
-        normal_chain_array.append(longest_chain)
+    for value in exit_nodes.values():
+        progresses = []
+        for exit_node in value[2]:
+            for question in trip.all_questions_array:
+                if question.excel_id == exit_node:
+                    progresses.append(question.progress)
+        value.append(min(progresses))
+    return exit_nodes
 
-    if len(not_visited) != 0:
-        # update progress done and not done
-        for id in longest_chain:
-            if len(not_visited) == 0:
-                return
-            not_visited.remove(id)
-            visited.append(id)
-        # start again with updated values
-        find_chains(not_visited, graph, visited, normal_chain_array, loop_chain_array)
 
-def find_cycle(graph, start_node):
-    def dfs_cycle(node, path):
-        if node in path:
-            cycle_start = path.index(node)
-            return path[cycle_start:]
+def create_progress_for_question_loop_screen(loop_chain_array, trip, exit_nodes):
+    for chain in loop_chain_array:
+        # Startprogress definement
+        first_id = chain[0]
+        for q in trip.all_questions_array:
+            if q.excel_id == first_id:
+                start_progress = q.progress
+        befores = find_nodes_before(trip.graph, first_id) # if it is not the first chain, then there might be a screen before it which already has a progress
+        if len(befores) == 0 or first_id == trip.all_questions_array[0].excel_id or first_id in trip.etappen_start_screens:
+            if start_progress is None: # or first id is the first id of the entire array you start from 0
+                raise Exception('Fall ist eingetreten, wo first_id noch nicht vergeben ist, aber erster screen')
+        else:
+            for bef in befores:
+                if bef in chain:
+                    befores.remove(bef)
+            possible_start_progess = []
+            for q in trip.all_questions_array:
+                if q.excel_id in befores:
+                    possible_start_progess.append(q.progress)
+            start_progress = max(possible_start_progess)
+
+        # End progress definement
+        end_progress = exit_nodes[first_id][3]
+        index = exit_nodes[first_id][1]
+
+        step = round((end_progress-1)/(index+1))
+        min_step = 5
+
+        for i, node in enumerate(chain):
+            for q in trip.all_questions_array:
+                if q.excel_id == node and q.progress is None:
+                    if i <= index:
+                        q.progress = start_progress + (step*(i+1))
+                    else:
+                        q.progress = start_progress + (step*index) + min_step*(i+1-index)
         
-        if node in graph:
-            for neighbor in graph[node]:
-                cycle = dfs_cycle(neighbor, path + [node])
-                if cycle:
-                    return cycle
-        
-        return None
 
-    cycle = dfs_cycle(start_node, [])
-    return cycle
+# ------------- HELPER FUNCTIONS --------------------
+
+def delete_infrequent_entries(n, arr):
+    # Create a dictionary to count occurrences of each element
+    counts = {}
+    for elem in arr:
+        counts[elem] = counts.get(elem, 0) + 1
+    # Filter the array to keep only elements with frequency >= n
+    frequent_entries = [elem for elem in arr if counts[elem] >= n]
+    # Create a new set to keep track of already processed frequent entries
+    processed_entries = set()
+    # Remove additional occurrences of frequent entries
+    reduced_entries = []
+    for elem in frequent_entries:
+        if counts[elem] >= n and elem not in processed_entries:
+            reduced_entries.append(elem)
+            processed_entries.add(elem)
+
+    return reduced_entries
 
 def create_loop_dict(trip):
     loops = [[node]+path  for node in trip.graph for path in find_loops(trip.graph, node, node)]
@@ -183,7 +261,6 @@ def find_loops(graph, start, end):
             if next_state in path:
                 continue
             fringe.append((next_state, path+[next_state]))
-            #fringe.append((next_state, path))
 
 
 def find_longest_chain(graph, start_node, end_nodes):
@@ -233,28 +310,3 @@ def chain_to_array(chain, questions_array):
             if q.excel_id == chain_id:
                 chain_array.append(q)
     return chain_array
-
-
-
-
-'''
-
-def find_all_chains(all_nodes, graph):
-    chains = []
-    loop_chains = []
-    visited = {node: False for node in graph}
-
-    current_chain = []
-    node = all_nodes[0]
-
-    create_chain(node, current_chain, graph, loop_chains)
-    print('Done')
-
-def create_chain(node, current_chain, graph, loop_chains):
-    current_chain.append(node)
-    for neighbor in graph[node]:
-        if not neighbor in current_chain:
-            create_chain(neighbor, current_chain, graph, loop_chains)
-        else:
-            loop_chains.append(current_chain)
-'''

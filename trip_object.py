@@ -54,8 +54,8 @@ class Trip:
         #self.format_text()
         self.graph = create_adjazenzliste(self.all_questions_array)
         self.qloop_start_screens_ids = self.get_qloop_start_screens()
-        loop_chain_array, loop_dict = create_progress(self, self.all_questions_array)
-        self.questionLoops = create_questionloops(self, loop_chain_array, loop_dict)
+        loop_dict = create_progress(self, self.all_questions_array)
+        self.questionLoops = create_questionloops(self, loop_dict)
         # Json
         self.json = self.create_json()
 
