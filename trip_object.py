@@ -3,7 +3,7 @@ from tests import are_all_information_there, test_aufruf, do_tests_for_question_
 from progress import create_progress, create_adjazenzliste
 import pandas as pd
 import re
-from questionLoops import create_questionloops
+from questionLoops_object import create_questionloops
 
 class Trip:
     def __init__(self, df, id_base, version, write_beginning, write_ending, journey_key, english_translation):
