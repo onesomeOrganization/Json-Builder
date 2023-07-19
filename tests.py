@@ -60,6 +60,7 @@ def test_nummeration(questions_array):
     for question in questions_array:
         nummeration.append(question.excel_id)
 
+    
     for i, number in enumerate(nummeration):
         if i == len(nummeration)-1:
             break
@@ -71,7 +72,7 @@ def test_nummeration(questions_array):
             continue
         else:
             raise Exception ('Nummeration is wrong after: ', number)
-        
+    
 
 # ----------- QUESTION TESTS -----------------      
     

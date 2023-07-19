@@ -46,8 +46,14 @@ def create_progress(trip, questions_array):
     # PROGRESS
     create_normal_chain_progress(normal_chain_array, questions_array, trip)
     exit_nodes = get_loop_exit_nodes(loop_chain_array, trip, loop_dict)
-    create_progress_for_question_loop_screen(loop_chain_array, trip, exit_nodes)
-
+    for value in loop_dict.values():
+        if isinstance(value, list) and all(isinstance(sublist, list) for sublist in value):
+            loop_nodes = [node for loop in value for node in loop]
+            for chain in value:
+                create_progress_for_question_loop_screen(trip, exit_nodes, chain, loop_nodes)
+        else:
+            loop_nodes = [node for node in value]
+            create_progress_for_question_loop_screen(trip, exit_nodes, value, loop_nodes)
     return loop_dict
 
 def find_chains(not_visited, graph, visited, normal_chain_array, loop_chain_array):
@@ -171,41 +177,39 @@ def get_loop_exit_nodes(loop_chain_array, trip, loop_dict):
     return exit_nodes
 
 
-def create_progress_for_question_loop_screen(loop_chain_array, trip, exit_nodes):
-    for chain in loop_chain_array:
-        # Startprogress definement
-        first_id = chain[0]
+def create_progress_for_question_loop_screen(trip, exit_nodes, chain, loop_nodes):
+    
+    # Startprogress definement
+    first_id = chain[0]
+    for q in trip.all_questions_array:
+        if q.excel_id == first_id:
+            start_progress = q.progress
+    befores = find_nodes_before(trip.graph, first_id) # if it is not the first chain, then there might be a screen before it which already has a progress
+    if len(befores) == 0 or first_id == trip.all_questions_array[0].excel_id or first_id in trip.etappen_start_screens:
+        if start_progress is None: # or first id is the first id of the entire array you start from 0
+            raise Exception('Fall ist eingetreten, wo first_id noch nicht vergeben ist, aber erster screen')
+    else:
+        clean_befores = [bef for bef in befores if bef not in loop_nodes]
+        possible_start_progess = []
         for q in trip.all_questions_array:
-            if q.excel_id == first_id:
-                start_progress = q.progress
-        befores = find_nodes_before(trip.graph, first_id) # if it is not the first chain, then there might be a screen before it which already has a progress
-        if len(befores) == 0 or first_id == trip.all_questions_array[0].excel_id or first_id in trip.etappen_start_screens:
-            if start_progress is None: # or first id is the first id of the entire array you start from 0
-                raise Exception('Fall ist eingetreten, wo first_id noch nicht vergeben ist, aber erster screen')
-        else:
-            for bef in befores:
-                if bef in chain:
-                    befores.remove(bef)
-            possible_start_progess = []
-            for q in trip.all_questions_array:
-                if q.excel_id in befores:
-                    possible_start_progess.append(q.progress)
-            start_progress = max(possible_start_progess)
+            if q.excel_id in clean_befores:
+                possible_start_progess.append(q.progress)
+        start_progress = max(possible_start_progess)
 
-        # End progress definement
-        end_progress = exit_nodes[first_id][3]
-        index = exit_nodes[first_id][1]
+    # End progress definement
+    end_progress = exit_nodes[first_id][3]
+    index = exit_nodes[first_id][1]
 
-        step = round((end_progress-1)/(index+1))
-        min_step = 5
+    step = round((end_progress-1)/(index+1))
+    min_step = 5
 
-        for i, node in enumerate(chain):
-            for q in trip.all_questions_array:
-                if q.excel_id == node and q.progress is None:
-                    if i <= index:
-                        q.progress = start_progress + (step*(i+1))
-                    else:
-                        q.progress = start_progress + (step*index) + min_step*(i+1-index)
+    for i, node in enumerate(chain):
+        for q in trip.all_questions_array:
+            if q.excel_id == node and q.progress is None:
+                if i <= index:
+                    q.progress = start_progress + (step*(i+1))
+                else:
+                    q.progress = start_progress + (step*index) + min_step*(i+1-index)
         
 
 # ------------- HELPER FUNCTIONS --------------------

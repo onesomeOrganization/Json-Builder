@@ -42,6 +42,7 @@ class Question:
         # PREPARATIONS    
         self.clear_of_nan()
         self.format_text()
+        self.question_answer_option_ref()
         self.answer_required = self.prepare_optional()
         self.type, self.maxNumber = self.map_structure_to_type() 
         self.adjust_type_to_questionloop()
@@ -63,6 +64,11 @@ class Question:
         self.comma_is_needed = self.check_if_comma_needed()
 
     # --------- PREPARATIONS -----------
+
+    def question_answer_option_ref(self):
+        for i,text in enumerate(self.texts):
+            if '[Antwort Start Questionloop]' in text:
+                self.texts[i] = text.replace('[Antwort Start Questionloop]', '{QUESTION_ANSWER_OPTION_REF}')
 
     def check_if_qloop_start(self):
         qloop_start = False
