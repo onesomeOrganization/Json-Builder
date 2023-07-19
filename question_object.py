@@ -6,6 +6,7 @@ from answerOption_object import AnswerOption
 from nextLogic_object import NextLogic
 from helper import create_id
 from tests import do_tests_on_questions
+import pandas as pd
 
 
 class Question:
@@ -31,18 +32,23 @@ class Question:
         self.minNumber = 'null'
         self.firstJourneyQuestion = "null" 
         self.firstSessionQuestion = "null"
+        self.qloop_start = self.check_if_qloop_start()
+        self.progress = None
+        self.questionLoopId = 'null'
 
         # TEST
         do_tests_on_questions(self)
 
         # PREPARATIONS    
         self.clear_of_nan()
-        self.maxNumber = self.prep_type_and_clean_structure() # must be before map structure to type
-        self.type = self.map_structure_to_type() 
+        self.format_text()
+        self.question_answer_option_ref()
+        self.answer_required = self.prepare_optional()
+        self.type, self.maxNumber = self.map_structure_to_type() 
+        self.adjust_type_to_questionloop()
         self.reviewable, self.worldObjectEntryKeyType, self.optional = self.prepare_keyInsight()
         self.prepare_multiple_references()
         # Variables for Building Blocks
-        self.answer_required = self.prepare_optional()
         self.scala_min, self.scala_max, self.scala_min_text, self.scala_max_text, self.scala_max_text_en, self.scala_min_text_en = self.prepare_scala()
         self.adjust_min_max_number()
     
@@ -50,7 +56,7 @@ class Question:
         # BUILDING BLOCKS
         self.RefLogic = RefLogic(self)
         self.NextLogic = NextLogic(self)
-        self.clear_of_arrows()
+        #self.clear_of_arrows()
         self.Content = Content(self)
         self.AnswerOption = AnswerOption(self)
 
@@ -58,6 +64,33 @@ class Question:
         self.comma_is_needed = self.check_if_comma_needed()
 
     # --------- PREPARATIONS -----------
+
+    def question_answer_option_ref(self):
+        for i,text in enumerate(self.texts):
+            if '[Antwort Start Questionloop]' in text:
+                self.texts[i] = text.replace('[Antwort Start Questionloop]', '{QUESTION_ANSWER_OPTION_REF}')
+
+    def check_if_qloop_start(self):
+        qloop_start = False
+        for struc in self.structure:
+            if struc == 'Start Questionloop':
+                qloop_start = True
+        return qloop_start
+
+
+    def format_text(self):
+        for i, text in enumerate(self.texts):
+              if not pd.isnull(text):
+              # find " and replace with \"
+              # find breaks and delete them
+                  self.texts[i] = text.replace('"', '\\"').replace('\n', '').replace("_x000B_", "")
+
+        if self.english_translation:
+            for i, text in enumerate(self.texts_en):
+                if not pd.isnull(text):
+                # find " and replace with \"
+                # find breaks and delete them
+                    self.texts_en[i] = text.replace('"', '\\"').replace('\n', '').replace("_x000B_", "")
 
     def prepare_multiple_references(self):
         for i, struc in enumerate(self.structure):
@@ -75,40 +108,44 @@ class Question:
                     if self.english_translation:
                         self.texts_en = np.insert(self.texts_en,i+num,splits[num].strip())
 
-
-    def clear_of_arrows(self):
-        # arrow logics
-        for num, struc in enumerate(self.structure):
-            if (struc == 'ITEM(Single)' and '->' in self.texts[num]) or (struc == 'ITEM(Multiple)' and self.maxNumber == '1' and '->' in self.texts[num]):
-                self.texts[num] = self.texts[num].split('->')[0].strip()
-                if self.english_translation:
-                    self.texts_en[num] = self.texts_en[num].split('->')[0].strip()
-
     def create_etappe_screen_from_id(self):
         etappe = self.excel_id.split('.')[0]
         screen = self.excel_id.split('.')[1]
         return etappe, screen
     
     def map_structure_to_type(self):
-        # ITEM_LIST_SINGLE_CHOICE (R): Item
-        if "ITEM(Single)" in self.structure and not 'SEVERAL ANSWER OPTIONS' in self.structure:
+        # ITEM_LIST_SINGLE_CHOICE: nur wenn es single items sind und es keinerlei asnweroption gibt
+        if "ITEM(Single)" in self.structure and not ('SEVERAL ANSWER OPTIONS' in self.structure or 'ANSWER OPTON' in self.structure):
             question_type = 'ITEM_LIST_SINGLE_CHOICE'
-        # ITEM_LIST_EXPANDABLE (T OR C as answeroption): Item 
-        elif 'ITEM(Multiple)' in self.structure or 'SEVERAL ANSWER OPTIONS' in self.structure:
+            # single choice and i= in answers 
+            for text in self.texts:
+                if 'i=' in text or 'i =' in text:
+                    self.maxNumber = '1'
+                    self.structure = np.core.defchararray.replace(self.structure, 'ITEM(Single)', 'ITEM(Multiple)')
+                    question_type = 'ITEM_LIST_LIMIT'
+        elif 'ITEM(Multiple)' in self.structure and not ('SEVERAL ANSWER OPTIONS' in self.structure or 'ANSWER OPTON' in self.structure):
+            question_type = 'ITEM_LIST_LIMIT'
+            if self.answer_required:
+                self.minNumber = '1'
+        # ITEM_LIST_EXPANDABLE: A) entweder mehrere text felder ohne items oder B) item multiple mit text feldern oder C) item single mit text feldern und maxnumber
+            # A
+        elif not ('ITEM(Multiple)' in self.structure or "ITEM(Single)" in self.structure) and 'SEVERAL ANSWER OPTIONS' in self.structure:
             question_type = 'ITEM_LIST_EXPANDABLE'
-            # ITEM_LIST_EXPANDABLE as single version
-        elif "ITEM(Single)" in self.structure and 'SEVERAL ANSWER OPTIONS' in self.structure:
+            # B
+        elif 'ITEM(Multiple)' in self.structure and ('SEVERAL ANSWER OPTIONS' in self.structure or 'ANSWER OPTON' in self.structure):
             question_type = 'ITEM_LIST_EXPANDABLE'
-            # ITEM_LIST_EXPANDABLE without items but with textfield expandable
-        elif 'SEVERAL ANSWER OPTIONS' in self.structure:
+            # C
+        elif "ITEM(Single)" in self.structure and ('SEVERAL ANSWER OPTIONS' in self.structure or 'ANSWER OPTON' in self.structure):
+            self.maxNumber = '1'
+            self.structure = np.core.defchararray.replace(self.structure, 'ITEM(Single)', 'ITEM(Multiple)')
             question_type = 'ITEM_LIST_EXPANDABLE'
-            # OPTION_QUESTION: S P Button
+        # OPTION_QUESTION: S P Button
         elif 'BUTTON' in self.structure:
             question_type = 'OPTION_QUESTION'
-            # SCALA_SLIDER,
+         # SCALA_SLIDER,
         elif 'SCALA' in self.structure:
             question_type = 'SCALA_SLIDER'
-            # OPEN_QUESTION: S P Textfield
+        # OPEN_QUESTION: S P Textfield
         elif 'ANSWER OPTION' in self.structure and not ("ITEM(Single)" or "ITEM(Multiple)") in self.structure:
             question_type = 'OPEN_QUESTION'
         elif 'Neue Etappe' in self.structure:
@@ -116,7 +153,14 @@ class Question:
         else:
             question_type = 'CONTENT'
 
-        return question_type
+        return question_type, self.maxNumber
+
+    def adjust_type_to_questionloop(self):
+        if self.qloop_start:
+            if self.type == 'ITEM_LIST_SINGLE_CHOICE':
+                self.type = 'ITEM_LIST_SINGLE_CHOICE_INTERRUPTIBLE_START'
+            else:
+                raise Exception ('There is no question loop start screen type which is possible for the following type needed: ', self.type)
     
     def clear_of_nan(self):
         # CLEAN OF NAN
@@ -130,34 +174,6 @@ class Question:
         self.texts = self.texts[:len(self.structure)]
         if self.english_translation:
             self.texts_en = self.texts_en[:len(self.structure)]
-
-    def prep_type_and_clean_structure(self):
-        self.maxNumber = 'null'
-        # SOLVE ANTWORT PROBLEM -> with item it is always a several answer options field
-        if 'ITEM(Multiple)' in self.structure and 'ANSWER OPTION' in self.structure:
-            self.structure[np.where(self.structure == 'ANSWER OPTION')] = 'SEVERAL ANSWER OPTIONS'
-        if 'ITEM(Single)' in self.structure and 'ANSWER OPTION' in self.structure:
-            self.structure[np.where(self.structure == 'ANSWER OPTION')] = 'SEVERAL ANSWER OPTIONS'
-
-        # SINGLE CHOICE WITH ANTWORT
-        if "ITEM(Single)" in self.structure and 'SEVERAL ANSWER OPTIONS' in self.structure:
-            self.maxNumber = '1'
-            self.structure = np.core.defchararray.replace(self.structure, 'ITEM(Single)', 'ITEM(Multiple)')
-
-        # i= in answers
-        if "ITEM(Single)" in self.structure and not 'SEVERAL ANSWER OPTIONS' in self.structure:
-            for text in self.texts:
-                if 'i=' in text or 'i =' in text:
-                    self.maxNumber = '1'
-                    self.structure = np.core.defchararray.replace(self.structure, 'ITEM(Single)', 'ITEM(Multiple)')
-                    if not 'SEVERAL ANSWER OPTIONS' in self.structure:
-                        print('''
-                    ---------------------------------------------------------------------------------------------
-                    |  !!!! WARNING !!!! -------- Single Choice Item List with (i) and without text-field needed |
-                    ---------------------------------------------------------------------------------------------
-                    ''')
-    
-        return self.maxNumber
     
     def adjust_min_max_number(self):
         if self.type == 'SCALA_SLIDER':
@@ -262,14 +278,14 @@ class Question:
             "optional": %s,
             "firstJourneyQuestion": %s,
             "firstSessionQuestion": %s,
-            "questionLoopId": null,
+            "questionLoopId": %s,
             "translations": [],
             "content": [
                 %s
                 %s
             ],
             %s
-            },''' %(self.id, self.type, self.minNumber, self.maxNumber, self.reviewable, self.progress, self.worldObjectEntryKeyType, self.optional, self.firstJourneyQuestion, self.firstSessionQuestion, self.Content.json, self.AnswerOption.json, self.NextLogic.json)
+            },''' %(self.id, self.type, self.minNumber, self.maxNumber, self.reviewable, self.progress, self.worldObjectEntryKeyType, self.optional, self.firstJourneyQuestion, self.firstSessionQuestion, self.questionLoopId, self.Content.json, self.AnswerOption.json, self.NextLogic.json)
         
         if self.comma_is_needed:
             return json
@@ -293,7 +309,7 @@ class Question:
         # Json
         json = '''
             ],
-        "questionLoops": []
+        "questionLoops": [%s]
         },
         {
         "id": "%s",
@@ -313,6 +329,6 @@ class Question:
             }
         ],
         "questions": [
-            '''%(id, order, durationMin, durationMax, id, title, id, title_en)
+            '''%(self.questionLoops, id, order, durationMin, durationMax, id, title, id, title_en)
         
         return json

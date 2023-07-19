@@ -55,7 +55,7 @@ class AnswerOption():
     def create_options(self):
       self.options = []
       for struc in self.structure:
-        if self.question.type == 'ITEM_LIST_SINGLE_CHOICE' and struc == 'ITEM(Single)':
+        if (self.question.type == 'ITEM_LIST_SINGLE_CHOICE' or self.question.type == 'ITEM_LIST_SINGLE_CHOICE_INTERRUPTIBLE_START') and struc == 'ITEM(Single)':
           self.options.append(AnswerOptionOption(self, 'RADIO_BUTTON'))
           self.options_order, self.options_id = increase_order_id(self.options_order, self.options_id)
         elif self.question.type == 'ITEM_LIST_EXPANDABLE' and struc == 'ITEM(Multiple)':
@@ -63,6 +63,9 @@ class AnswerOption():
           self.options_order, self.options_id = increase_order_id(self.options_order, self.options_id)
         elif self.question.type == 'ITEM_LIST_EXPANDABLE' and struc == 'SEVERAL ANSWER OPTIONS' and not ('ITEM(Multiple)' or 'ITEM(Single)') in self.structure:
           self.options.append(AnswerOptionOption(self, 'TEXT_FIELD_EXPANDABLE'))
+          self.options_order, self.options_id = increase_order_id(self.options_order, self.options_id)
+        elif self.question.type == 'ITEM_LIST_LIMIT' and struc == 'ITEM(Multiple)':
+          self.options.append(AnswerOptionOption(self, 'CHECKBOX'))
           self.options_order, self.options_id = increase_order_id(self.options_order, self.options_id)
 
       if self.question.type == 'OPTION_QUESTION':
@@ -144,8 +147,12 @@ class AnswerOptionOption():
         self.text_en = self.answerOption.question.scala_min_text_en+', ,'+self.answerOption.question.scala_max_text_en
       if self.type == 'RADIO_BUTTON':
         self.text = answerOption.question.texts[np.where((answerOption.question.structure == 'ITEM(Single)') | (answerOption.question.structure == 'ITEM(Multiple)'))[0][0]+self.order-1]
+        if '->' in self.text:
+          self.text = self.text.split('->')[0].strip()
         if self.answerOption.question.english_translation:
           self.text_en = answerOption.question.texts_en[np.where((answerOption.question.structure == 'ITEM(Single)') | (answerOption.question.structure == 'ITEM(Multiple)'))[0][0]+self.order-1]
+          if '->' in self.text_en:
+            self.text_en = self.text_en.split('->')[0].strip()
         else:
            self.text_en = 'Englisch'
       if self.type == 'CHECKBOX':
@@ -178,9 +185,13 @@ class AnswerOptionOption():
     def prepare_checkbox(self):
       self.text = self.answerOption.question.texts[np.where((self.answerOption.question.structure == 'ITEM(Single)') | (self.answerOption.question.structure == 'ITEM(Multiple)'))[0][0]+self.order-1]
       self.text, self.description = self.check_for_added_information(self.text, self.description)
+      if '->' in self.text:
+         self.text = self.text.split('->')[0].strip()
       if self.answerOption.question.english_translation:
         self.text_en = self.answerOption.question.texts_en[np.where((self.answerOption.question.structure == 'ITEM(Single)') | (self.answerOption.question.structure == 'ITEM(Multiple)'))[0][0]+self.order-1]
         self.text_en, self.description_en = self.check_for_added_information(self.text_en, self.description_en)
+        if '->' in self.text_en:
+          self.text_en = self.text_en.split('->')[0].strip()
       else:
           self.text_en = 'Englisch'
       if self.description != 'null' and not self.answerOption.question.english_translation:
