@@ -1,5 +1,6 @@
 import numpy as np
 from helper import find_nodes_before
+import math
 
 def create_adjazenzliste(questions_array):
     adjazenzliste = {}
@@ -45,15 +46,8 @@ def create_progress(trip, questions_array):
 
     # PROGRESS
     create_normal_chain_progress(normal_chain_array, questions_array, trip)
-    exit_nodes = get_loop_exit_nodes(loop_chain_array, trip, loop_dict)
-    for value in loop_dict.values():
-        if isinstance(value, list) and all(isinstance(sublist, list) for sublist in value):
-            loop_nodes = [node for loop in value for node in loop]
-            for chain in value:
-                create_progress_for_question_loop_screen(trip, exit_nodes, chain, loop_nodes)
-        else:
-            loop_nodes = [node for node in value]
-            create_progress_for_question_loop_screen(trip, exit_nodes, value, loop_nodes)
+    #exit_nodes = get_loop_exit_nodes(loop_chain_array, trip, loop_dict)
+    create_progress_for_question_loop_screen(trip, loop_chain_array)
     return loop_dict
 
 def find_chains(not_visited, graph, visited, normal_chain_array, loop_chain_array):
@@ -177,39 +171,21 @@ def get_loop_exit_nodes(loop_chain_array, trip, loop_dict):
     return exit_nodes
 
 
-def create_progress_for_question_loop_screen(trip, exit_nodes, chain, loop_nodes):
-    
-    # Startprogress definement
-    first_id = chain[0]
-    for q in trip.all_questions_array:
-        if q.excel_id == first_id:
-            start_progress = q.progress
-    befores = find_nodes_before(trip.graph, first_id) # if it is not the first chain, then there might be a screen before it which already has a progress
-    if len(befores) == 0 or first_id == trip.all_questions_array[0].excel_id or first_id in trip.etappen_start_screens:
-        if start_progress is None: # or first id is the first id of the entire array you start from 0
-            raise Exception('Fall ist eingetreten, wo first_id noch nicht vergeben ist, aber erster screen')
-    else:
-        clean_befores = [bef for bef in befores if bef not in loop_nodes]
-        possible_start_progess = []
-        for q in trip.all_questions_array:
-            if q.excel_id in clean_befores:
-                possible_start_progess.append(q.progress)
-        start_progress = max(possible_start_progess)
-
-    # End progress definement
-    end_progress = exit_nodes[first_id][3]
-    index = exit_nodes[first_id][1]
-
-    step = round((end_progress-1)/(index+1))
-    min_step = 5
-
-    for i, node in enumerate(chain):
-        for q in trip.all_questions_array:
-            if q.excel_id == node and q.progress is None:
-                if i <= index:
-                    q.progress = start_progress + (step*(i+1))
-                else:
-                    q.progress = start_progress + (step*index) + min_step*(i+1-index)
+def create_progress_for_question_loop_screen(trip, loop_chain_array):
+    for chain in loop_chain_array:
+        for node in chain:
+            for i, q in enumerate(trip.all_questions_array):
+                if q.excel_id == node and q.progress is None:
+                    befores = find_nodes_before(trip.graph, node)
+                    if len(befores) == 0 or node == trip.all_questions_array[0].excel_id or node in trip.etappen_start_screens:
+                        start_progress = 0
+                    else:
+                        possible_start_progess = []
+                        for q in trip.all_questions_array:
+                            if q.excel_id in befores:
+                                possible_start_progess.append(q.progress)
+                        start_progress = max(possible_start_progess)
+                    trip.all_questions_array[i].progress = start_progress+5
         
 
 # ------------- HELPER FUNCTIONS --------------------
@@ -298,9 +274,12 @@ def dfs(graph, node, visited, current_chain, longest_chain, end_nodes, join_node
 
 def create_progress_along_chain(chain, start_progress, end_progress):
     # erste progress schon plus progresssteps
-    progress_steps = round((end_progress-start_progress)/(len(chain)+1))
+    progress_steps = math.floor((end_progress-start_progress)/(len(chain)))
     progress = start_progress + progress_steps
     for question in chain:
+        if question.progress != None:
+            print('WARNING: Check progress and function create_progess_along_chain')
+            continue
         question.progress = progress
         progress += progress_steps
         if 'letzter Screen' in question.structure:
