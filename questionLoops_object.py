@@ -14,7 +14,7 @@ def create_questionloops(trip, loop_dict):
             q.questionLoops = ''
             for loop in questionLoops:
                 if q.etappe == str(int(loop.etappe)+1):
-                    q.questionLoops += loop.json # TODO funkts nicht
+                    q.questionLoops += loop.json
             q.questionLoops = q.questionLoops[:-1]
 
     questionLoops_json = ''
