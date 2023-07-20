@@ -137,7 +137,15 @@ def create_normal_chain_progress(normal_chain_array, questions_array, trip):
         if questions_array[-1].excel_id == last_id or last_id in trip.etappen_end_screens.values():
             end_progress = 100
         else:
-            end_progress = next((q.progress for q in questions_array if q.excel_id == last_id), None)
+            nexts = trip.graph[last_id]
+            if len(nexts) == 0:
+                raise Exception ('Check end progress -> there is no next node with a progress already assigned')
+            progresses = []
+            for n in nexts:
+                for q in questions_array:
+                    if q.excel_id == n and q.progress != None:
+                        progresses.append(q.progress)
+            end_progress = min(progresses)-1
         # create the progress
         create_progress_along_chain(chain_to_array(chain, questions_array), start_progress, end_progress)
 
