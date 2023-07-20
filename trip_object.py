@@ -6,12 +6,13 @@ import re
 from questionLoops_object import create_questionloops
 
 class Trip:
-    def __init__(self, df, id_base, version, write_beginning, write_ending, journey_key, english_translation):
+    def __init__(self, df, id_base, version, write_beginning, write_ending, journey_key, english_translation, etappe):
         # Attributes
         self.df = df
         self.id = id_base+version
         self.id_base = id_base
         self.key = journey_key
+        self.etappe = etappe
         self.english_translation = english_translation
         self.information, self.information_en = self.create_information()
         self.mainImageName = self.information[9]
@@ -243,24 +244,24 @@ class Trip:
       ],
       "sessions": [
         {
-          "id": "%s-1",
-          "order": 1,
+          "id": "%s-%s",
+          "order": %s,
           "durationMin": %s,
           "durationMax": %s,
           "translations": [
             {
-              "id": "%s-1-DE",
+              "id": "%s-%s-DE",
               "language": "DE",
               "title": "%s"
             },
             {
-              "id": "%s-1-EN",
+              "id": "%s-%s-EN",
               "language": "EN",
               "title": "%s"
             }
           ],
           "questions": [
-            ''' % (self.id, self.key, self.mainImageName, self.mainImageLongName, self.topicIconImageName, self.mainImageLockedLongName, self.backgroundImageName, self.sessionImageName, self.cardDisplayImageName, self.version, self.type, self.topicId, self.id, self.title, self.id, self.title_en, self.id, self.id, self.beschreibung, self.id, self.beschreibung_en, self.id, self.id, self.aufruf, self.id, self.aufruf_en, self.id, self.durationMin, self.durationMax, self.id, self.etappen_titel, self.id, self.etappen_titel_en)
+            ''' % (self.id, self.key, self.mainImageName, self.mainImageLongName, self.topicIconImageName, self.mainImageLockedLongName, self.backgroundImageName, self.sessionImageName, self.cardDisplayImageName, self.version, self.type, self.topicId, self.id, self.title, self.id, self.title_en, self.id, self.id, self.beschreibung, self.id, self.beschreibung_en, self.id, self.id, self.aufruf, self.id, self.aufruf_en, self.id, self.etappe, self.etappe, self.durationMin, self.durationMax, self.id, self.etappe, self.etappen_titel, self.id, self.etappe, self.etappen_titel_en)
         return beginning
     
     def create_json(self):
