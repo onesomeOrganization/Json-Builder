@@ -105,7 +105,7 @@ class Trip:
             else:
                 next_question_structure = self.df.iloc[:, i+3]
                 next_question_texts = self.df.iloc[:, i+4]
-            questions_array.append(Question(self, self.id_base, self.version, self.df.iloc[:, i], self.df.iloc[:, i+1], self.df.iloc[:, i+2], next_question_structure, next_question_texts, self.df.columns[i], self.write_beginning, self.write_ending, self.english_translation))
+            questions_array.append(Question(self, self.id_base, self.version, self.df.iloc[:, i], self.df.iloc[:, i+1], self.df.iloc[:, i+2], next_question_structure, next_question_texts, self.df.columns[i], self.write_beginning, self.write_ending, self.english_translation, questions_array))
         return questions_array         
 
     def format_text(self):
@@ -156,8 +156,9 @@ class Trip:
     
     def get_etappen_start_screens(self):
         etappen_start_screens = []
-        for i in range(1,self.etappen_count+1):
-          etappen_start_screens.append(str(i)+'.1')
+        for id in self.all_ids:
+            if id.split('.')[1] == '1':
+                etappen_start_screens.append(id)
         return etappen_start_screens
             
 

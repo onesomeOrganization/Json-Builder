@@ -140,13 +140,13 @@ class AnswerOptionOption():
       # Preparations
       needs_translation = ['RADIO_BUTTON', 'CHECKBOX', 'BUTTON', 'SLIDER']
       if self.type == 'BUTTON':
-        self.text = self.answerOption.button_texts[button_number]
+        self.text = self.answerOption.button_texts[button_number].strip()
         self.text_en = self.answerOption.button_texts_en[button_number]
       if self.type == 'SLIDER':
         self.text = self.answerOption.question.scala_min_text+', ,'+self.answerOption.question.scala_max_text
         self.text_en = self.answerOption.question.scala_min_text_en+', ,'+self.answerOption.question.scala_max_text_en
       if self.type == 'RADIO_BUTTON':
-        self.text = answerOption.question.texts[np.where((answerOption.question.structure == 'ITEM(Single)') | (answerOption.question.structure == 'ITEM(Multiple)'))[0][0]+self.order-1]
+        self.text = answerOption.question.texts[np.where((answerOption.question.structure == 'ITEM(Single)') | (answerOption.question.structure == 'ITEM(Multiple)'))[0][0]+self.order-1].strip()
         if '->' in self.text:
           self.text = self.text.split('->')[0].strip()
         if self.answerOption.question.english_translation:
@@ -157,7 +157,7 @@ class AnswerOptionOption():
            self.text_en = 'Englisch'
       if self.type == 'CHECKBOX':
         self.prepare_checkbox()
-        
+      
 
       if self.type in needs_translation:
         self.translations = '''
@@ -196,6 +196,7 @@ class AnswerOptionOption():
           self.text_en = 'Englisch'
       if self.description != 'null' and not self.answerOption.question.english_translation:
         self.description_en = add_quotation_mark('Englisch')
+      self.text = self.text.strip()
 
     def check_for_added_information(self, text, description):
        # check for added information with i= or i =

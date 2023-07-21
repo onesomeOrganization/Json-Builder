@@ -51,3 +51,20 @@ def find_nodes_before(graph, node):
         if node in neighbors:
             befores.append(n)
     return befores
+
+def delete_last_number_from_id(id):
+  splits = id.split('-')
+  new_id = ('-').join(splits[:-1])
+  return new_id
+
+def extract_values_from_wenn_condition(text):
+      pattern = r'(\d+\.\d+)\s*\(wenn\s+(\d+\.\d+):\s+(.*?)\)'
+      matches = re.findall(pattern, text)
+
+      result_dict = {}
+      for item in matches:
+          main_key, sub_key, values = item
+          values_list = [value.strip() for value in values.split('oder')]
+          if main_key not in result_dict:
+              result_dict[main_key] = [sub_key, values_list]
+      return result_dict

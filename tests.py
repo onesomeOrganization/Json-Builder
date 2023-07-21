@@ -81,6 +81,7 @@ def do_tests_on_questions(question):
     test_kein_item_multiple_and_single(question)
     test_more_information_title(question)
     test_empty_text(question)
+    test_for_arrows_in_text(question)
     test_neue_etappe(question)
     test_sonst_und_in_ref(question)
     test_scala(question)
@@ -106,7 +107,7 @@ def test_more_information_title(question):
             raise Exception ('English more information field is missing a title or an underline in Question:', question.excel_id)
 
 def test_empty_text(question):
-    needs_text_array = ['SUB_TITLE','PARAGRAPH','AUDIO', 'IMAGE', 'SMALL_IMAGE', 'MORE_INFORMATION', 'MORE_INFORMATION_EXPANDED', 'ITEM(Single)', 'ITEM(Multiple)','SCALA', 'REFERENCE', 'KEY INSIGHT (optional)','KEY INSIGHT (verpflichtend)', 'Etappen-Titel', 'Zeit min', 'Zeit max']
+    needs_text_array = ['SUB_TITLE','PARAGRAPH','AUDIO', 'IMAGE', 'SMALL_IMAGE', 'MORE_INFORMATION', 'MORE_INFORMATION_EXPANDED', 'ITEM(Single)', 'ITEM(Multiple)','SCALA', 'REFERENCE', 'KEY INSIGHT (optional)','KEY INSIGHT (verpflichtend)', 'Etappen-Titel', 'Zeit min', 'Zeit max','BUTTON']
     for i,text in enumerate(question.texts):
         # if nan
         # check if text is str
@@ -114,6 +115,17 @@ def test_empty_text(question):
                 # if it needs some text
                 if question.structure[i] in needs_text_array: #and not isinstance(question.structure[i], str):
                     raise Exception ('There is a text field missing at question: ', question.excel_id)
+
+def test_for_arrows_in_text(question):
+    should_not_contain_arrows = ['SUB_TITLE','PARAGRAPH','AUDIO', 'IMAGE', 'SMALL_IMAGE', 'MORE_INFORMATION', 'MORE_INFORMATION_EXPANDED','SCALA', 'KEY INSIGHT (optional)','KEY INSIGHT (verpflichtend)', 'Etappen-Titel', 'Zeit min', 'Zeit max']
+    for i,text in enumerate(question.texts):
+        if '->' in text and question.structure[i] in should_not_contain_arrows:
+            print('''
+                    ------------------------------------------------------------------------------
+                    |  !!!! WARNING !!!! --- Arrow in textfield: might cause damage -> check!    |
+                    ------------------------------------------------------------------------------
+                    ''')
+            
 
 def test_neue_etappe(question):
     if 'Neue Etappe' in question.structure:

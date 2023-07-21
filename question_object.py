@@ -10,7 +10,7 @@ import pandas as pd
 
 
 class Question:
-    def __init__(self, trip, id_base, version, structure, texts, texts_en, next_question_structure, next_question_texts, excel_id, write_beginning, write_ending, english_translation):
+    def __init__(self, trip, id_base, version, structure, texts, texts_en, next_question_structure, next_question_texts, excel_id, write_beginning, write_ending, english_translation, questions_before):
         # VARIABLES
         self.reference_of_next_question = None
         self.next_logic_type = 'NEXT'
@@ -20,6 +20,7 @@ class Question:
         self.next_question_texts = next_question_texts
         self.write_beginning = write_beginning
         self.write_ending = write_ending
+        self.questions_before = questions_before
         self.etappe, self.screen = self.create_etappe_screen_from_id()
         self.version = version
         self.structure = structure.values #array
@@ -83,7 +84,7 @@ class Question:
               if not pd.isnull(text):
               # find " and replace with \"
               # find breaks and delete them
-                  self.texts[i] = text.replace('"', '\\"').replace('\n', '').replace("_x000B_", "")
+                  self.texts[i] = text.replace('"', '\\"').replace('\n', '').replace("_x000B_", "").replace('\u2028','')
 
         if self.english_translation:
             for i, text in enumerate(self.texts_en):
