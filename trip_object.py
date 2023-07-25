@@ -6,13 +6,15 @@ import re
 from questionLoops_object import create_questionloops
 
 class Trip:
-    def __init__(self, df, id_base, version, write_beginning, write_ending, journey_key, english_translation, etappe):
+    def __init__(self, df, id_base, version, write_beginning, write_ending, journey_key, english_translation, etappe, starts_in_the_middle_of_etappe, nummeration_is_not_correct):
         # Attributes
         self.df = df
         self.id = id_base+version
         self.id_base = id_base
         self.key = journey_key
         self.etappe = etappe
+        self.nummeration_is_not_correct = nummeration_is_not_correct
+        self.starts_in_the_middle_of_etappe = starts_in_the_middle_of_etappe
         self.english_translation = english_translation
         self.information, self.information_en = self.create_information()
         self.mainImageName = self.information[9]
@@ -141,21 +143,29 @@ class Trip:
         # which screens are the last screen in an etappe
         etappen_end_screens = {}
         for etappe in range(1, self.etappen_count+1):
+            etappe = self.etappe+etappe-1
             biggest = 0
             for question in self.all_questions_array:
                 if int(question.excel_id[0]) == etappe:
                     # letzter screen is alsways end screen
                     if 'letzter Screen' in question.structure:
-                        etappen_end_screens[question.excel_id[0]] = question.excel_id
-                        break
+                        if question.excel_id[0] in etappen_end_screens:
+                            array = etappen_end_screens[question.excel_id[0]]
+                            array.append(question.excel_id)
+                        else:
+                          etappen_end_screens[question.excel_id[0]] = [question.excel_id]
                     # highest number and no letzter screen 
                     elif int(question.excel_id[2]) > biggest:
                         biggest = int(question.excel_id[2])
-                        etappen_end_screens[question.excel_id[0]] = question.excel_id
+            if not question.excel_id[0] in etappen_end_screens:
+              etappen_end_screens[question.excel_id[0]] = [question.excel_id]
         return etappen_end_screens
     
     def get_etappen_start_screens(self):
         etappen_start_screens = []
+        if self.starts_in_the_middle_of_etappe:
+            etappen_start_screens.append(self.all_ids[0])
+            return etappen_start_screens
         for id in self.all_ids:
             if id.split('.')[1] == '1':
                 etappen_start_screens.append(id)

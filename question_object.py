@@ -5,7 +5,7 @@ from content_object import Content
 from answerOption_object import AnswerOption
 from nextLogic_object import NextLogic
 from helper import create_id
-from tests import do_tests_on_questions
+from tests import do_tests_on_questions, test_if_id_exists
 import pandas as pd
 
 
@@ -14,13 +14,14 @@ class Question:
         # VARIABLES
         self.reference_of_next_question = None
         self.next_logic_type = 'NEXT'
-        self.id_base = id_base
-        self.excel_id = excel_id
         self.next_question_structure = next_question_structure
         self.next_question_texts = next_question_texts
         self.write_beginning = write_beginning
         self.write_ending = write_ending
         self.questions_before = questions_before
+        self.id_base = id_base
+        self.excel_id = excel_id
+        test_if_id_exists(self)
         self.etappe, self.screen = self.create_etappe_screen_from_id()
         self.version = version
         self.structure = structure.values #array

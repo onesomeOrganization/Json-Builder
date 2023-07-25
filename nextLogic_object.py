@@ -1,7 +1,6 @@
 
-from helper import create_id, get_content_length, get_one_id_higher, delete_last_number_from_id, add_quotation_mark, extract_values_from_wenn_condition
+from helper import create_id, get_content_length, get_one_id_higher, add_quotation_mark, extract_values_from_wenn_condition, create_scala_condition_dict
 import numpy as np
-import re
 
 class NextLogic():
     def __init__(self, question): 
@@ -26,6 +25,7 @@ class NextLogic():
         self.prepare_ref_key_insight()
         self.prepare_next_option_button()
         self.prepare_next_option_item()
+        self.prepare_value()
         self.prepare_ref_option()
 
         # Json
@@ -79,7 +79,6 @@ class NextLogic():
                 self.NextLogicOptions.append(NextLogicOption(self.id, num, questionId, questionAnswerOptionId)) 
                 
     
-    
     def prepare_next_option_item(self):
         # next option items with ->
         count = 1
@@ -98,12 +97,75 @@ class NextLogic():
                 count +=1
                 self.NextLogicOptions.append(NextLogicOption(self.id, num, questionId, questionAnswerOptionId)) 
 
+    def prepare_value(self):
+        scala_texts = ['( wenn Scala', '(wenn Scala', '(wenn scala', '( wenn scala']
+        if 'SCALA' in self.structure:
+            contains_substring = any(scala_text in other_string for scala_text in scala_texts for other_string in self.texts)
+            if contains_substring:
+                if self.type == 'REF_KEY_INSIGHT':
+                    print('''
+                    -----------------------------------------------------------------------------------
+                    |  !!!! WARNING !!!! --- Schlüsselerkenntnisreferenz und Scala Value gemeinsam    |
+                    -----------------------------------------------------------------------------------
+                    ''')
+                elif self.type == 'NEXT_OPTION':
+                    print('''
+                    -------------------------------------------------------------------------
+                    |  !!!! WARNING !!!! -------- Scala Value und Option Question gemeinsam |
+                    -------------------------------------------------------------------------
+                    ''')
+                self.type = 'VALUE'
+                self.id_next_question = 'null'
+                text = self.texts[np.where(self.structure == 'weiter mit Screen')][0]
+                scala_condition_dict = create_scala_condition_dict(text)
+                # TEST
+                test_array = [x for x in range(int(self.question.scala_min), int(self.question.scala_max) + 1)]
+                for key in scala_condition_dict:
+                    if scala_condition_dict[key][0] == '=':
+                        test_array = [num for num in test_array if num not in scala_condition_dict[key][1]]
+                    if scala_condition_dict[key][0] == '>=':
+                        test_array = [num for num in test_array if num < scala_condition_dict[key][1][0]]
+                    if scala_condition_dict[key][0] == '<=':
+                        test_array = [num for num in test_array if num > scala_condition_dict[key][1][0]]
+                    if scala_condition_dict[key][0] == '>':
+                        test_array = [num for num in test_array if num <= scala_condition_dict[key][1][0]]
+                    if scala_condition_dict[key][0] == '<':
+                        test_array = [num for num in test_array if num >= scala_condition_dict[key][1][0]]
+                if len(test_array) != 0:
+                    raise Exception ('Scala is missing some conditions at question ', self.question.excel_id, '; for value: ', test_array)
+
+                # output: '3.10': ['=', [0]], '3.11': ['=', [1,2,3]], '3.12': ['>=', [4]] -> text hast to be stripped
+                for num, key in enumerate(scala_condition_dict):
+                    questionId = create_id(self,key)
+                    if scala_condition_dict[key][0] == '=' and str(scala_condition_dict[key][1][0]) == self.question.scala_min:
+                        number = max(scala_condition_dict[key][1])+1
+                        self.NextLogicOptions.append(NextLogicOption(self.id, num, questionId, type = 'VALUE_LT', number= number))
+                    elif scala_condition_dict[key][0] == '=' and str(scala_condition_dict[key][1][-1]) == self.question.scala_max:
+                        number = min(scala_condition_dict[key][1])
+                        self.NextLogicOptions.append(NextLogicOption(self.id, num, questionId, type = 'VALUE_GTE', number= number))
+                    elif scala_condition_dict[key][0] == '=':
+                        number = min(scala_condition_dict[key][1])-1 
+                        secondNumber = max(scala_condition_dict[key][1])+1
+                        self.NextLogicOptions.append(NextLogicOption(self.id, num, questionId, type = 'VALUE_BETWEEN', number= number, secondNumber=secondNumber))
+                    elif scala_condition_dict[key][0] == '>':
+                        number = scala_condition_dict[key][1][0]-1 
+                        self.NextLogicOptions.append(NextLogicOption(self.id, num, questionId, type = 'VALUE_GTE', number= number))
+                    elif scala_condition_dict[key][0] == '<':
+                        number = scala_condition_dict[key][1][0]
+                        self.NextLogicOptions.append(NextLogicOption(self.id, num, questionId, type = 'VALUE_LT', number= number))
+                    elif scala_condition_dict[key][0] == '<=':
+                        number = scala_condition_dict[key][1][0]+1
+                        self.NextLogicOptions.append(NextLogicOption(self.id, num, questionId, type = 'VALUE_LT', number= number))
+                    elif scala_condition_dict[key][0] == '>=':
+                        number = scala_condition_dict[key][1][0] 
+                        self.NextLogicOptions.append(NextLogicOption(self.id, num, questionId, type = 'VALUE_GTE', number= number))
+                    
     
     def prepare_ref_option(self):
         # WARNING: hier ist bereits alles implementiert dass die ref_option auch mit button und items geht (auch bei der adjazenzliste von progress)
         # button oder item + -> und (wenn
         for num, struc in enumerate(self.structure):
-            if (struc == 'ITEM(Single)' or (struc == 'ITEM(Multiple)' and self.question.maxNumber == '1') or struc == 'BUTTON' or struc == 'weiter mit Screen') and ('(wenn' in self.texts[num]):
+            if (struc == 'ITEM(Single)' or (struc == 'ITEM(Multiple)' and self.question.maxNumber == '1') or struc == 'BUTTON' or struc == 'weiter mit Screen') and ('(wenn' in self.texts[num] or '( wenn' in self.texts[num]) and not ('scala' in self.texts[num] or 'Scala' in self.texts[num]):
                 if self.type == 'REF_KEY_INSIGHT':
                     print('''
                     ---------------------------------------------------------------------------------------------------
@@ -118,17 +180,28 @@ class NextLogic():
                     raise Exception ('REF_OPTION und NEXT_OPTION gleichzeitig nötig, da wenn condition und button/item in frage ', self.question.excel_id)
                     condition = self.texts[num].split('->')[1]
                 condition_dict = extract_values_from_wenn_condition(condition)
+                
+                conditions_length = 0
+                for cond in condition_dict.values():
+                    conditions_length += len(cond[1])
                 for key in condition_dict:
                     questionId = create_id(self, key)
-                    self.refQuestionId =  add_quotation_mark((create_id(self, condition_dict[key][0])))
+                    refQuestionId =  add_quotation_mark((create_id(self, condition_dict[key][0])))
+                    if self.refQuestionId == 'null' or self.refQuestionId == refQuestionId:
+                        self.refQuestionId = refQuestionId
+                    else:
+                        raise Exception ('Different refquestionIds in the condition of question: ', self.question.excel_id)
+                    
                     for question in self.question.questions_before:
                         if question.excel_id == condition_dict[key][0]:
+                            if len(question.AnswerOption.options) != conditions_length:
+                                raise Exception('Conditions are incomplete at question: ', self.question.excel_id)
                             for option in question.AnswerOption.options:
                                 for possible_answer in condition_dict[key][1]:
                                     if option.text == possible_answer:
                                         questionAnswerOptionId = option.id
                                         self.NextLogicOptions.append(NextLogicOption(self.id, num, questionId, questionAnswerOptionId)) 
-                # TODO: test if all options are occupied with a screen
+
 
     # ----------- CREATE JSON ----------------
 
@@ -162,10 +235,13 @@ class NextLogic():
 
 
 class NextLogicOption():
-    def __init__(self, id, count, questionId, questionAnswerOptionId):
+    def __init__(self, id, count, questionId, questionAnswerOptionId = 'null', type = 'NEXT', number = 'null', secondNumber = 'null'):
         self.id = id+'-opt'+str(count)
         self.questionId = questionId
         self.questionAnswerOptionId = questionAnswerOptionId
+        self.type = add_quotation_mark(type)
+        self.number = number
+        self.secondNumber = secondNumber
 
         self.json = self.create_json()
         
@@ -174,16 +250,16 @@ class NextLogicOption():
                 {
                 "id": "%s",
                 "order": null,
-                "type": "NEXT",
-                "number": null,
+                "type": %s,
+                "number": %s,
                 "count": null,
-                "secondNumber": null,
+                "secondNumber": %s,
                 "secondCount": null,
                 "questionAnswerOptionId": "%s",
                 "secondQuestionAnswerOptionId": null,
                 "questionId": "%s",
                 "refQuestionId": null
-              },''' %(self.id, self.questionAnswerOptionId, self.questionId)
+              },''' %(self.id, self.type, self.number, self.secondNumber, self.questionAnswerOptionId, self.questionId)
         return json
     
 class NextLogicRefkeyOption():

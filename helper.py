@@ -8,7 +8,10 @@ def create_id (object, reference_id_excel):
 
 def get_one_id_higher(id):
   splits = id.split('-')
-  one_higher = '-'.join(splits[:-1] + [str(int(splits[-1]) + 1)])
+  if 'x' in id:
+     one_higher = '-'.join(splits[:-1] + [str(int(splits[-1][:-1]) + 1)])
+  else:
+    one_higher = '-'.join(splits[:-1] + [str(int(splits[-1]) + 1)])
   return one_higher
 
 # check if a reference is like 1.3
@@ -58,7 +61,7 @@ def delete_last_number_from_id(id):
   return new_id
 
 def extract_values_from_wenn_condition(text):
-      pattern = r'(\d+\.\d+)\s*\(wenn\s+(\d+\.\d+):\s+(.*?)\)'
+      pattern = r'(\d+\.\d+)\s*\(\s*wenn\s+(\d+\.\d+):\s+(.*?)\)'
       matches = re.findall(pattern, text)
 
       result_dict = {}
@@ -68,3 +71,29 @@ def extract_values_from_wenn_condition(text):
           if main_key not in result_dict:
               result_dict[main_key] = [sub_key, values_list]
       return result_dict
+
+
+def create_scala_condition_dict(text):
+    pattern = r'(\d+\.\d+)\s*\((.*?)\)'
+    matches = re.findall(pattern, text)
+    condition_dict = {}
+    
+    for match in matches:
+        key = match[0]
+        condition = match[1]
+        if '>=' in condition:
+            operator = '>='
+        elif '<=' in condition:
+            operator = '<='
+        elif '>' in condition:
+            operator = '>'
+        elif '<' in condition:
+            operator = '<'
+        elif '=' in condition:
+            operator = '='
+        values = condition.split(operator)[1].split(',')
+        for i, value in enumerate(values):
+          values[i] = int(value.strip())
+            
+        condition_dict[key] = [operator, values]
+    return condition_dict

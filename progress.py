@@ -1,5 +1,5 @@
 import numpy as np
-from helper import find_nodes_before, extract_values_from_wenn_condition
+from helper import find_nodes_before, extract_values_from_wenn_condition, create_scala_condition_dict
 import math
 
 def create_adjazenzliste(questions_array):
@@ -9,8 +9,19 @@ def create_adjazenzliste(questions_array):
         if not 'Neue Etappe' in q.structure: # check for neue etappe and skip entry
             adjazenzliste[q.excel_id] = []
         arrow_or_condition_flag = False
+        scala_texts = ['( wenn Scala', '(wenn Scala', '(wenn scala', '( wenn scala']
         for i, text in enumerate(q.texts):
-            if '(wenn' in text and (q.structure[i] == 'ITEM(Multiple)' or q.structure[i] == 'ITEM(Single)' or q.structure[i] == 'weiter mit Screen' or q.structure[i] == 'BUTTON'):
+            if any(substring in text for substring in scala_texts) and 'SCALA' in q.structure:
+                arrow_or_condition_flag = True
+                scala_condition_dict = create_scala_condition_dict(text)
+                # Retrieve the current value
+                current_value = adjazenzliste[q.excel_id]
+                for key in scala_condition_dict:
+                    # Update the value by appending the new value
+                    current_value.append(key)
+                # Assign the updated value back to the key
+                adjazenzliste[q.excel_id] = current_value
+            elif ('(wenn' in text or '( wenn' in text) and (q.structure[i] == 'ITEM(Multiple)' or q.structure[i] == 'ITEM(Single)' or q.structure[i] == 'weiter mit Screen' or q.structure[i] == 'BUTTON'):
                 arrow_or_condition_flag = True
                 if q.structure[i] == 'weiter mit Screen':
                     condition = text
@@ -24,7 +35,7 @@ def create_adjazenzliste(questions_array):
                     current_value.append(key)
                 # Assign the updated value back to the key
                 adjazenzliste[q.excel_id] = current_value
-            elif "->" in text and not '(wenn' in text and (q.structure[i] == 'ITEM(Multiple)' or q.structure[i] == 'ITEM(Single)' or q.structure[i] == 'weiter mit Screen' or q.structure[i] == 'BUTTON'):
+            elif "->" in text and not ('(wenn' in text or '( wenn' in text) and (q.structure[i] == 'ITEM(Multiple)' or q.structure[i] == 'ITEM(Single)' or q.structure[i] == 'weiter mit Screen' or q.structure[i] == 'BUTTON'):
                 arrow_or_condition_flag = True
                 # add ids after the -> as values
                 json_id = text.split('->')[1].strip()
@@ -150,7 +161,7 @@ def create_normal_chain_progress(normal_chain_array, questions_array, trip):
             start_progress = min(possible_start_progess)
         # end progress: 90 wenn letzte_id letzer screen oder ende vom question_array oder progress vom node wo sie zusammenführen
         last_id = chain[-1]
-        if questions_array[-1].excel_id == last_id or last_id in trip.etappen_end_screens.values():
+        if questions_array[-1].excel_id == last_id or any(last_id in value for value in trip.etappen_end_screens.values()):
             end_progress = 100
         else:
             nexts = trip.graph[last_id]

@@ -40,7 +40,8 @@ def test_aufruf(information, information_en, english_translation):
 
 def do_tests_for_question_array(trip):
     test_formatting(trip.all_questions_array)
-    test_nummeration(trip.all_questions_array)
+    if not trip.nummeration_is_not_correct:
+        test_nummeration(trip.all_questions_array)
 
 def test_formatting(questions_array):
     # Flag declarations
@@ -58,7 +59,10 @@ def test_nummeration(questions_array):
     nummeration = []
     
     for question in questions_array:
-        nummeration.append(question.excel_id)
+        if 'x' in question.excel_id:
+            continue
+        else:
+            nummeration.append(question.excel_id)
 
     
     for i, number in enumerate(nummeration):
@@ -74,7 +78,15 @@ def test_nummeration(questions_array):
             raise Exception ('Nummeration is wrong after: ', number)
     
 
-# ----------- QUESTION TESTS -----------------      
+# ----------- QUESTION TESTS -----------------    
+
+def test_if_id_exists(question):
+    if question.excel_id is None:
+        if len(question.questions_before) != 0:
+            raise Exception ('Id missing after question with id: ', question.questions_before[-1].excel_id)  
+        else:
+            raise Exception ('Id missing at the first question') 
+
     
 def do_tests_on_questions(question):
     test_subtitle(question)
@@ -85,6 +97,7 @@ def do_tests_on_questions(question):
     test_neue_etappe(question)
     test_sonst_und_in_ref(question)
     test_scala(question)
+    test_wenn_condition(question)
     test_english_translation(question)
     test_for_added_information_english(question)
     test_if_ref_id_exists(question)
@@ -105,9 +118,14 @@ def test_more_information_title(question):
     if question.english_translation:
         if 'MORE_INFORMATION' in question.structure and not question.texts_en[np.where(question.structure == 'MORE_INFORMATION')][0].count('_') == 2:
             raise Exception ('English more information field is missing a title or an underline in Question:', question.excel_id)
+    if 'MORE_INFORMATION_EXPANDED' in question.structure and not question.texts[np.where(question.structure == 'MORE_INFORMATION_EXPANDED')][0].count('_') >= 2:
+        raise Exception ('More information field is missing a title or an underline in Question:', question.excel_id)
+    if question.english_translation:
+        if 'MORE_INFORMATION_EXPANDED' in question.structure and not question.texts_en[np.where(question.structure == 'MORE_INFORMATION_EXPANDED')][0].count('_') == 2:
+            raise Exception ('English more information field is missing a title or an underline in Question:', question.excel_id)
 
 def test_empty_text(question):
-    needs_text_array = ['SUB_TITLE','PARAGRAPH','AUDIO', 'IMAGE', 'SMALL_IMAGE', 'MORE_INFORMATION', 'MORE_INFORMATION_EXPANDED', 'ITEM(Single)', 'ITEM(Multiple)','SCALA', 'REFERENCE', 'KEY INSIGHT (optional)','KEY INSIGHT (verpflichtend)', 'Etappen-Titel', 'Zeit min', 'Zeit max','BUTTON']
+    needs_text_array = ['SUB_TITLE','PARAGRAPH','AUDIO', 'IMAGE', 'SMALL_IMAGE', 'MORE_INFORMATION', 'MORE_INFORMATION_EXPANDED', 'ITEM(Single)', 'ITEM(Multiple)','SCALA', 'REFERENCE', 'KEY INSIGHT (optional)','KEY INSIGHT (verpflichtend)', 'Etappen-Titel', 'Zeit min', 'Zeit max','BUTTON', 'weiter mit Screen']
     for i,text in enumerate(question.texts):
         # if nan
         # check if text is str
@@ -117,14 +135,15 @@ def test_empty_text(question):
                     raise Exception ('There is a text field missing at question: ', question.excel_id)
 
 def test_for_arrows_in_text(question):
-    should_not_contain_arrows = ['SUB_TITLE','PARAGRAPH','AUDIO', 'IMAGE', 'SMALL_IMAGE', 'MORE_INFORMATION', 'MORE_INFORMATION_EXPANDED','SCALA', 'KEY INSIGHT (optional)','KEY INSIGHT (verpflichtend)', 'Etappen-Titel', 'Zeit min', 'Zeit max']
+    should_not_contain_arrows = ['SUB_TITLE','PARAGRAPH','AUDIO', 'IMAGE', 'SMALL_IMAGE', 'MORE_INFORMATION', 'MORE_INFORMATION_EXPANDED','SCALA', 'KEY INSIGHT (optional)','KEY INSIGHT (verpflichtend)', 'Etappen-Titel', 'Zeit min', 'Zeit max', 'weiter mit Screen']
     for i,text in enumerate(question.texts):
         if '->' in text and question.structure[i] in should_not_contain_arrows:
             print('''
-                    ------------------------------------------------------------------------------
-                    |  !!!! WARNING !!!! --- Arrow in textfield: might cause damage -> check!    |
-                    ------------------------------------------------------------------------------
+                    ----------------------------------------------------------------------------------
+                    |  !!!! WARNING !!!! --- Arrow in textfield: might cause damage -> check question |
+                    ----------------------------------------------------------------------------------
                     ''')
+            print('question id :', question.excel_id)
             
 
 def test_neue_etappe(question):
@@ -145,12 +164,21 @@ def test_sonst_und_in_ref(question):
         
 def test_scala(question):
     # Define the regular expression pattern
-    pattern = r"(\d+)\s*\((\w+\s*\w+)\)\s*-\s*(\d+)\s*\((\w+\s*\w+)\)"
+    pattern = r"(\d+)\s*\((\s*\w+(\s+\w+)*)\)\s*-\s*(\d+)\s*\((\s*\w+(\s+\w+)*)\)"
+
     if 'SCALA' in question.structure and not re.match(pattern, question.texts[np.where(question.structure == 'SCALA')][0]):
         raise Exception ('Scala Text is not correct at question ', question.excel_id)
     if question.english_translation:
         if 'SCALA' in question.structure and not re.match(pattern, question.texts_en[np.where(question.structure == 'SCALA')][0]):
             raise Exception ('English Scala Text is not correct at question: ', question.excel_id)
+        
+def test_wenn_condition(question):
+    wenn_condition_pattern = r'(\d+\.\d+)\s*\(\s*wenn\s+(\d+\.\d+):\s+(.*?)\)'
+    scala_condition_pattern = r'(\d+\.\d+)\s*\((.*?)\)'
+    for text in question.texts:
+        if '(wenn' in text or '( wenn' in text:
+            if not re.match(wenn_condition_pattern, text) and not re.match(scala_condition_pattern, text):
+                raise Exception ('Wenn condition is incorrect at question: ', question.excel_id)
         
 def test_english_translation(question):
     if question.english_translation:
