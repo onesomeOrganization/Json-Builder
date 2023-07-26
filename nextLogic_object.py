@@ -199,9 +199,12 @@ class NextLogic():
                             for option in question.AnswerOption.options:
                                 for possible_answer in condition_dict[key][1]:
                                     if option.text == possible_answer:
+                                        found = True
                                         questionAnswerOptionId = option.id
                                         self.NextLogicOptions.append(NextLogicOption(self.id, count, questionId, questionAnswerOptionId))
                                         count += 1
+                            if not found:
+                                raise Exception ('missspelling in condition of question: ', self.question.excel_id)
 
 
     # ----------- CREATE JSON ----------------
