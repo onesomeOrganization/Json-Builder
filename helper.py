@@ -61,7 +61,7 @@ def delete_last_number_from_id(id):
   return new_id
 
 def extract_values_from_wenn_condition(text):
-      pattern = r'(\d+\.\d+)\s*\(\s*wenn\s+(\d+\.\d+):\s+(.*?)\)'
+      pattern = r'(\d+\.\d+)\s*\(\s*wenn\s+(\d+\.\d+)\s*=\s*(.*?)\)'
       matches = re.findall(pattern, text)
 
       result_dict = {}

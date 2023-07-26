@@ -173,7 +173,7 @@ def test_scala(question):
             raise Exception ('English Scala Text is not correct at question: ', question.excel_id)
         
 def test_wenn_condition(question):
-    wenn_condition_pattern = r'(\d+\.\d+)\s*\(\s*wenn\s+(\d+\.\d+):\s+(.*?)\)'
+    wenn_condition_pattern = r'(\d+\.\d+)\s*\(\s*wenn\s+(\d+\.\d+)\s*=\s*(.*?)\)'
     scala_condition_pattern = r'(\d+\.\d+)\s*\((.*?)\)'
     for text in question.texts:
         if '(wenn' in text or '( wenn' in text:

@@ -184,6 +184,7 @@ class NextLogic():
                 conditions_length = 0
                 for cond in condition_dict.values():
                     conditions_length += len(cond[1])
+                count = 1
                 for key in condition_dict:
                     questionId = create_id(self, key)
                     refQuestionId =  add_quotation_mark((create_id(self, condition_dict[key][0])))
@@ -191,16 +192,16 @@ class NextLogic():
                         self.refQuestionId = refQuestionId
                     else:
                         raise Exception ('Different refquestionIds in the condition of question: ', self.question.excel_id)
-                    
                     for question in self.question.questions_before:
                         if question.excel_id == condition_dict[key][0]:
-                            if len(question.AnswerOption.options) != conditions_length:
-                                raise Exception('Conditions are incomplete at question: ', self.question.excel_id)
+                            #if len(question.AnswerOption.options) != conditions_length:
+                                #raise Exception('Conditions are incomplete at question: ', self.question.excel_id)
                             for option in question.AnswerOption.options:
                                 for possible_answer in condition_dict[key][1]:
                                     if option.text == possible_answer:
                                         questionAnswerOptionId = option.id
-                                        self.NextLogicOptions.append(NextLogicOption(self.id, num, questionId, questionAnswerOptionId)) 
+                                        self.NextLogicOptions.append(NextLogicOption(self.id, count, questionId, questionAnswerOptionId))
+                                        count += 1
 
 
     # ----------- CREATE JSON ----------------
