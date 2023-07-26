@@ -83,7 +83,7 @@ def find_chains(not_visited, graph, visited, normal_chain_array, loop_chain_arra
         return
     start_node = not_visited[0]
     # Längste Kette finden
-    longest_chain, join_node_id = find_longest_chain(graph, start_node, visited) 
+    longest_chain, join_node = find_longest_chain(graph, start_node, visited) 
 
     # check if chain or loop chain:
     chain_flag = False
@@ -102,8 +102,10 @@ def find_chains(not_visited, graph, visited, normal_chain_array, loop_chain_arra
         for id in longest_chain:
             if len(not_visited) == 0:
                 return
-            not_visited.remove(id)
-            visited.append(id)
+            if id in not_visited:
+                not_visited.remove(id)
+            if not id in visited:
+                visited.append(id)
         # start again with updated values
         find_chains(not_visited, graph, visited, normal_chain_array, loop_chain_array)
 
@@ -293,6 +295,7 @@ def dfs(graph, node, visited, current_chain, longest_chain, end_nodes, join_node
     current_chain.append(node)
 
     if node in end_nodes and len(current_chain) > len(longest_chain):
+        longest_chain[:] = current_chain
         join_node_id = node
         return join_node_id
     elif len(current_chain) > len(longest_chain) and node not in end_nodes:
@@ -300,7 +303,7 @@ def dfs(graph, node, visited, current_chain, longest_chain, end_nodes, join_node
         join_node_id = None
 
     for neighbor in graph[node]:
-        if not visited[neighbor]:
+        if not visited[neighbor] and not neighbor in end_nodes:
             join_node_id = dfs(graph, neighbor, visited, current_chain, longest_chain, end_nodes, join_node_id)
     current_chain.pop()
     visited[node] = False
