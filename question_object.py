@@ -85,14 +85,15 @@ class Question:
               if not pd.isnull(text):
               # find " and replace with \"
               # find breaks and delete them
-                  self.texts[i] = text.replace('"', '\\"').replace('\n', '').replace("_x000B_", "").replace('\u2028','')
+                #self.texts[i] = re.sub(r'(?<!\\)"', r'\\"', text)
+                self.texts[i] = text.replace('\n', '').replace("_x000B_", "").replace('\u2028','').replace('"', '\\"').replace('\\\\"', '\\"')
 
         if self.english_translation:
             for i, text in enumerate(self.texts_en):
                 if not pd.isnull(text):
                 # find " and replace with \"
                 # find breaks and delete them
-                    self.texts_en[i] = text.replace('"', '\\"').replace('\n', '').replace("_x000B_", "")
+                    self.texts_en[i] = text.replace('"', '\\"').replace('\n', '').replace("_x000B_", "").replace('\u2028','').replace('\\\\"', '\\"')
 
     def prepare_multiple_references(self):
         for i, struc in enumerate(self.structure):
