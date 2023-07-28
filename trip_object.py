@@ -54,7 +54,6 @@ class Trip:
         self.etappen_end_screens = self.calc_etappen_end_screens()
         self.etappen_start_screens = self.get_etappen_start_screens()
         do_tests_for_question_array(self)
-        #self.format_text()
         self.graph = create_adjazenzliste(self.all_questions_array)
         self.qloop_start_screens_ids = self.get_qloop_start_screens()
         loop_dict = create_progress(self, self.all_questions_array)

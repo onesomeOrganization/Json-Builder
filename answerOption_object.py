@@ -43,12 +43,12 @@ class AnswerOption():
                self.button_texts_en = []
                for i in range(len(self.button_texts)):
                   self.button_texts_en.append('Englisch')
-
         else:
            self.button_texts = None
            self.button_texts_en = None
 
         return self.button_texts, self.button_texts_en
+        
 
   # ------- OPTIONS ---------
 

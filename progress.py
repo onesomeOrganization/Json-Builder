@@ -122,10 +122,12 @@ def update_and_clean_chain_arrays(normal_chain_array, trip):
     
     # Update normal chains with q loop chain parts
     # A) check if normal cain is entirely contained in loop chain
+    clean_normal_chain_array = normal_chain_array[:]
     for sub_chain in normal_chain_array:
         for main_chain in loop_chain_array:
             if all(item in main_chain for item in sub_chain):
-                normal_chain_array.remove(sub_chain)
+                clean_normal_chain_array.remove(sub_chain)
+    normal_chain_array = clean_normal_chain_array
     # B) enlongate at the beginning
     for i, chain in enumerate(normal_chain_array):
         befores = find_nodes_before(trip.graph, chain[0])
@@ -262,7 +264,8 @@ def create_loop_dict(trip):
     loop_dict = {}
     for loop in loops:
         if loop[0] in loop_dict:
-            loop_dict[loop[0]].append(loop)
+            if not loop in loop_dict[loop[0]]:
+                loop_dict[loop[0]].append(loop)
         else:
             loop_dict[loop[0]] = [loop]
     return loop_dict
@@ -312,13 +315,13 @@ def dfs(graph, node, visited, current_chain, longest_chain, end_nodes, join_node
 
 def create_progress_along_chain(chain, start_progress, end_progress):
     # erste progress schon plus progresssteps
-    progress_steps = math.floor((end_progress-start_progress)/(len(chain)))
+    progress_steps = (end_progress-start_progress)/(len(chain))
     progress = start_progress + progress_steps
     for question in chain:
         if question.progress != None:
-            print('WARNING: Check progress and function create_progess_along_chain')
+            print('WARNING: Check progress, chains and function create_progess_along_chain')
             continue
-        question.progress = progress
+        question.progress =  math.floor(progress)
         progress += progress_steps
         if 'letzter Screen' in question.structure:
             question.progress = 99

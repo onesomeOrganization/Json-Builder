@@ -1,5 +1,5 @@
 
-from helper import create_id, get_content_length, get_one_id_higher, add_quotation_mark, extract_values_from_wenn_condition, create_scala_condition_dict
+from helper import create_id, get_content_length, add_quotation_mark, extract_values_from_wenn_condition, create_scala_condition_dict, get_one_id_higher, create_excel_id
 import numpy as np
 
 class NextLogic():
@@ -16,11 +16,12 @@ class NextLogic():
         self.RefLogic = question.RefLogic
         self.structure = question.structure
         self.texts = question.texts
-        self.id_next_question = self.calc_id_next_question()
         self.reference_of_next_question = question.reference_of_next_question
         self.content_length = get_content_length(self.structure)
+        self.id_next_question = self.calc_id_next_question()
 
         # Preparations
+        self.check_for_arrows_everywhere()
         self.NextLogicOptions = []
         self.prepare_ref_key_insight()
         self.prepare_next_option_button()
@@ -32,6 +33,7 @@ class NextLogic():
         self.json = self.create_json()
         
     # -------- PREPARATIONS ------------
+
     def calc_id_next_question(self):
         self.id_next_question = add_quotation_mark(get_one_id_higher(self.id))
         # weiter mit Screen id
@@ -45,6 +47,20 @@ class NextLogic():
         elif any(element == 'Neue Etappe' for element in self.question.next_question_structure):
             self.id_next_question = 'null'
         return self.id_next_question
+
+    def check_for_arrows_everywhere(self):
+       # infer arrows with the next screen if there are no
+      exist_arrows = []
+      for num, struc in enumerate(self.structure):
+          if (self.question.type == 'ITEM_LIST_SINGLE_CHOICE' or self.question.type == 'ITEM_LIST_SINGLE_CHOICE_INTERRUPTIBLE_START') and struc == 'ITEM(Single)':
+            if '->' in self.texts[num]:
+              exist_arrows.append([True,num])
+            else:
+              exist_arrows.append([False, num])
+      if any(item[0] for item in exist_arrows):
+          for tuple in exist_arrows:
+               if tuple[0] == False:
+                self.texts[tuple[1]] = self.texts[tuple[1]] + '->' + create_excel_id(self.id_next_question)
 
     def prepare_ref_key_insight(self):
     # add next question references
@@ -196,15 +212,16 @@ class NextLogic():
                         if question.excel_id == condition_dict[key][0]:
                             #if len(question.AnswerOption.options) != conditions_length:
                                 #raise Exception('Conditions are incomplete at question: ', self.question.excel_id)
-                            for option in question.AnswerOption.options:
-                                for possible_answer in condition_dict[key][1]:
+                            for possible_answer in condition_dict[key][1]:
+                                found = False
+                                for option in question.AnswerOption.options:
                                     if option.text == possible_answer:
                                         found = True
                                         questionAnswerOptionId = option.id
                                         self.NextLogicOptions.append(NextLogicOption(self.id, count, questionId, questionAnswerOptionId))
                                         count += 1
-                            if not found:
-                                raise Exception ('missspelling in condition of question: ', self.question.excel_id)
+                                if not found:
+                                    raise Exception ('missspelling in condition of question: ', self.question.excel_id, ' for option: ', option.text, ' and condition text: ', possible_answer)
 
 
     # ----------- CREATE JSON ----------------

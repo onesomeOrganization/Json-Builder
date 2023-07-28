@@ -61,7 +61,7 @@ def delete_last_number_from_id(id):
   return new_id
 
 def extract_values_from_wenn_condition(text):
-      pattern = r'(\d+\.\d+)\s*\(\s*wenn\s+(\d+\.\d+)\s*=\s*(.*?)\)'
+      pattern = r'(\d+\.\d+)\s*\(wenn\s+(\d+\.\d+)\s*=\s*([^\d+\.\d+]*)\)'
       matches = re.findall(pattern, text)
 
       result_dict = {}
@@ -97,3 +97,8 @@ def create_scala_condition_dict(text):
             
         condition_dict[key] = [operator, values]
     return condition_dict
+
+def create_excel_id(id_string):
+   splits = id_string.split('-')
+   excel_id = splits[-2]+'.'+splits[-1][:-1]
+   return excel_id

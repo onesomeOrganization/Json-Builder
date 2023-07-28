@@ -19,7 +19,8 @@ def create_questionloops(trip, loop_dict):
 
     questionLoops_json = ''
     for loop in questionLoops:
-        if loop.etappe == str(trip.etappen_count):
+        #if loop.etappe == str(trip.etappen_count):
+        if loop.etappe == max(trip.etappen_end_screens, key=lambda k: int(k)):
             questionLoops_json += loop.json
     return questionLoops_json[:-1]
                 

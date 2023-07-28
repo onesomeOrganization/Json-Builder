@@ -101,7 +101,7 @@ def do_tests_on_questions(question):
     test_english_translation(question)
     test_for_added_information_english(question)
     test_if_ref_id_exists(question)
-    test_arrow_missing(question)
+    #test_arrow_missing(question)
 
 
 def test_subtitle(question):
