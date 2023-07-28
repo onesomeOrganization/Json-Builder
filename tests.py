@@ -101,6 +101,7 @@ def do_tests_on_questions(question):
     test_english_translation(question)
     test_for_added_information_english(question)
     test_if_ref_id_exists(question)
+    test_for_text_without_structure(question)
     #test_arrow_missing(question)
 
 
@@ -213,3 +214,33 @@ def test_arrow_missing(question):
     for num, struc in enumerate(question.structure):
         if (struc == 'ITEM(Single)' or struc == 'ITEM(Multiple)') and not '->' in question.texts[num] and should_have_arrows:
             raise Exception('Arrow missing at question: ', question.excel_id)
+        
+def test_for_text_without_structure(question):
+    for i, text in enumerate(question.texts):
+        if text != 'None':
+            if question.structure[i] == 'None':
+                raise Exception ('There is a structure field missing at question: ', question.excel_id)
+            
+# ------------ SONSTIGE TESTS ----------------
+
+def test_if_any_scala_condition_is_missing(self, scala_condition_dict):
+    test_array = [x for x in range(int(self.question.scala_min), int(self.question.scala_max) + 1)]
+    for key in scala_condition_dict:
+        if scala_condition_dict[key][0] == '=':
+            test_array = [num for num in test_array if num not in scala_condition_dict[key][1]]
+        if scala_condition_dict[key][0] == '>=':
+            test_array = [num for num in test_array if num < scala_condition_dict[key][1][0]]
+        if scala_condition_dict[key][0] == '<=':
+            test_array = [num for num in test_array if num > scala_condition_dict[key][1][0]]
+        if scala_condition_dict[key][0] == '>':
+            test_array = [num for num in test_array if num <= scala_condition_dict[key][1][0]]
+        if scala_condition_dict[key][0] == '<':
+            test_array = [num for num in test_array if num >= scala_condition_dict[key][1][0]]
+    if len(test_array) != 0:
+        raise Exception ('Scala is missing some conditions at question ', self.question.excel_id, '; for value: ', test_array)
+    
+
+def test_for_escape_option_at_question_loop(exist_arrows, self):
+    if not any(item[0] for item in exist_arrows) and 'Start Questionloop' in self.structure:
+        raise Exception ('Escape option missing at question loop at question: ', self.question.excel_id)
+

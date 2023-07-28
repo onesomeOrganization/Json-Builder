@@ -1,6 +1,7 @@
 
 from helper import create_id, get_content_length, add_quotation_mark, extract_values_from_wenn_condition, create_scala_condition_dict, get_one_id_higher, create_excel_id
 import numpy as np
+from tests import test_if_any_scala_condition_is_missing, test_for_escape_option_at_question_loop
 
 class NextLogic():
     def __init__(self, question): 
@@ -50,17 +51,18 @@ class NextLogic():
 
     def check_for_arrows_everywhere(self):
        # infer arrows with the next screen if there are no
-      exist_arrows = []
-      for num, struc in enumerate(self.structure):
+        exist_arrows = []
+        for num, struc in enumerate(self.structure):
           if (self.question.type == 'ITEM_LIST_SINGLE_CHOICE' or self.question.type == 'ITEM_LIST_SINGLE_CHOICE_INTERRUPTIBLE_START') and struc == 'ITEM(Single)':
             if '->' in self.texts[num]:
               exist_arrows.append([True,num])
             else:
               exist_arrows.append([False, num])
-      if any(item[0] for item in exist_arrows):
+        if any(item[0] for item in exist_arrows):
           for tuple in exist_arrows:
                if tuple[0] == False:
                 self.texts[tuple[1]] = self.texts[tuple[1]] + '->' + create_excel_id(self.id_next_question)
+        test_for_escape_option_at_question_loop(exist_arrows, self)
 
     def prepare_ref_key_insight(self):
     # add next question references
@@ -135,20 +137,8 @@ class NextLogic():
                 text = self.texts[np.where(self.structure == 'weiter mit Screen')][0]
                 scala_condition_dict = create_scala_condition_dict(text)
                 # TEST
-                test_array = [x for x in range(int(self.question.scala_min), int(self.question.scala_max) + 1)]
-                for key in scala_condition_dict:
-                    if scala_condition_dict[key][0] == '=':
-                        test_array = [num for num in test_array if num not in scala_condition_dict[key][1]]
-                    if scala_condition_dict[key][0] == '>=':
-                        test_array = [num for num in test_array if num < scala_condition_dict[key][1][0]]
-                    if scala_condition_dict[key][0] == '<=':
-                        test_array = [num for num in test_array if num > scala_condition_dict[key][1][0]]
-                    if scala_condition_dict[key][0] == '>':
-                        test_array = [num for num in test_array if num <= scala_condition_dict[key][1][0]]
-                    if scala_condition_dict[key][0] == '<':
-                        test_array = [num for num in test_array if num >= scala_condition_dict[key][1][0]]
-                if len(test_array) != 0:
-                    raise Exception ('Scala is missing some conditions at question ', self.question.excel_id, '; for value: ', test_array)
+                test_if_any_scala_condition_is_missing(self, scala_condition_dict)
+                
 
                 # output: '3.10': ['=', [0]], '3.11': ['=', [1,2,3]], '3.12': ['>=', [4]] -> text hast to be stripped
                 for num, key in enumerate(scala_condition_dict):
