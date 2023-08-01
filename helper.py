@@ -1,5 +1,7 @@
 import re
 
+content_length_dict = {'REFERENCE': 1, 'PARAGRAPH': 1, 'AUDIO': 2, 'IMAGE': 2, 'SMALL_IMAGE': 2, 'MORE_INFORMATION_EXPANDED': 1, 'MORE_INFORMATION': 1, 'SUB_TITLE': 1, 'REFERENCE': 1}
+
 def create_id (object, reference_id_excel):
     reference_id_excel = reference_id_excel.strip()
     id_numbers = reference_id_excel.split('.')
@@ -22,21 +24,13 @@ def normal_screen_reference(text):
 
 def get_content_length(structure):
     length = 0
+    answer_option_length_is_considered = False
     for entry in structure:
-      if entry == 'REFERENCE':
-        length+=1
-      elif entry == 'PARAGRAPH':
-        length+=1
-      elif entry == 'AUDIO':
-        length+=2
-      elif entry == 'IMAGE':
-        length+=2
-      elif entry == 'MORE_INFORMATION_EXPANDED':
-        length+=1
-      elif entry == 'MORE_INFORMATION':
-        length+=1
-      elif entry == 'SMALL_IMAGE':
-        length += 2
+      if entry in content_length_dict:
+        length+=content_length_dict[entry]
+      if (entry == 'ITEM(Single)' or entry == 'ITEM(Multiple)' or entry == 'ANSWER OPTION' or entry == 'SEVERAL ANSWER OPTIONS') and not answer_option_length_is_considered:
+         length+=1
+         answer_option_length_is_considered = True
     return length
 
 def increase_order_id(order, id, about = 1):

@@ -10,7 +10,7 @@ class AnswerOption():
         self.question = question
         self.required = question.answer_required
         self.options_order = 1
-        self.content_length = get_content_length(self.structure) +2 # 0 & answeroption
+        self.content_length = get_content_length(self.structure) # 0 & answeroption
         self.order = self.content_length
         self.id = question.id + '-' + str(self.content_length)
         self.options_id = question.id + '-' + str(self.content_length) + '-' +str(self.options_order)

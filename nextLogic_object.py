@@ -92,7 +92,7 @@ class NextLogic():
                 self.type = 'NEXT_OPTION'
                 self.id_next_question = 'null'
                 questionId = create_id(self, self.texts[num].split('->')[1])
-                questionAnswerOptionId = self.id+'-'+str(self.content_length+2)+'-'+str(count)
+                questionAnswerOptionId = self.id+'-'+str(self.content_length)+'-'+str(count)
                 count += 1
                 self.NextLogicOptions.append(NextLogicOption(self.id, num, questionId, questionAnswerOptionId)) 
                 
@@ -111,7 +111,7 @@ class NextLogic():
                 self.type = 'NEXT_OPTION'
                 self.id_next_question = 'null'
                 questionId = create_id(self, self.texts[num].split('->')[1])
-                questionAnswerOptionId = self.id+'-'+str(self.content_length+2)+'-'+str(count)
+                questionAnswerOptionId = self.id+'-'+str(self.content_length)+'-'+str(count)
                 count +=1
                 self.NextLogicOptions.append(NextLogicOption(self.id, num, questionId, questionAnswerOptionId)) 
 

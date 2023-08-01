@@ -1,4 +1,4 @@
-from helper import create_id
+from helper import create_id, content_length_dict
 
 class RefLogic:
     def __init__(self, question):
@@ -27,25 +27,28 @@ class RefLogic:
             if struc == 'REFERENCE' and 'sonst' in self.texts[enum]:
                 count_sonst_refs += 1
         # set reflogic option type
-        for ref_number, struc in enumerate(self.structure):
+        ref_number = 1
+        for num, struc in enumerate(self.structure):
             if struc == 'REFERENCE':
-                ref_text = self.texts[ref_number]
+                ref_text = self.texts[num]
                 if 'sonst' in ref_text:
                     splits = ref_text.split('sonst')
                     count_sonst = len(splits)-1
                     if count_sonst > 1 and count_sonst_refs == 1:
                         self.type = 'REF_OPTIONAL'
                         for split in splits:
-                            self.options.append(RefLogicOption(type = 'OPTION', questionId=create_id(self, split), questionContentId=ref_number+1))
+                            self.options.append(RefLogicOption(type = 'OPTION', questionId=create_id(self, split), questionContentId=ref_number))
                         # set text to 'null' else it will appear in worldobjectentry
-                        self.texts[ref_number] = 'null'
+                        self.texts[num] = 'null'
                     elif count_sonst == 1:
                         self.type = 'REF_OPTIONAL_WITH_CONTENT'
-                        self.options.append(RefLogicOption(type = 'OPTION_WITH_CONTENT_ID', questionContentId=ref_number+1, questionId=create_id(self, splits[0])))
-                        self.options.append(RefLogicOption(type = 'OPTION_WITH_CONTENT_ID_SKIP', questionContentId=ref_number+1, questionId=create_id(self, splits[1])))
-                        self.texts[ref_number] = 'null'
+                        self.options.append(RefLogicOption(type = 'OPTION_WITH_CONTENT_ID', questionContentId=ref_number, questionId=create_id(self, splits[0])))
+                        self.options.append(RefLogicOption(type = 'OPTION_WITH_CONTENT_ID_SKIP', questionContentId=ref_number, questionId=create_id(self, splits[1])))
+                        self.texts[num] = 'null'
                     elif count_sonst > 1 and count_sonst_refs > 1:
                         raise Exception ('Too many "sonst" References in one question at question ',self.question.excel_id )
+            if struc in content_length_dict:
+                ref_number += content_length_dict[struc]
 
                 
                 
