@@ -204,6 +204,14 @@ def test_if_ref_id_exists(question):
             ref_id = question.texts[num].split('->')[1].strip()
             if not ref_id in question.trip.all_ids:
                 raise Exception ('Reference id does not exist in this excel from question: ', question.excel_id)
+        if struc == 'REFERENCE' and not ('sonst' in question.texts[num] or 'und' in question.texts[num]):
+            ref_id = question.texts[num]
+            if not ref_id in question.trip.all_ids:
+                raise Exception ('Reference id does not exist in this excel from question: ', question.excel_id)
+        if struc == 'weiter mit Screen' and not 'wenn' in question.texts[num]:
+            ref_id = question.texts[num]
+            if not ref_id in question.trip.all_ids:
+                raise Exception ('Reference id does not exist in this excel from question: ', question.excel_id)
             
 def test_arrow_missing(question):
     # next option items with ->

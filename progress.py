@@ -126,7 +126,8 @@ def update_and_clean_chain_arrays(normal_chain_array, trip):
     for sub_chain in normal_chain_array:
         for main_chain in loop_chain_array:
             if all(item in main_chain for item in sub_chain):
-                clean_normal_chain_array.remove(sub_chain)
+                if sub_chain in clean_normal_chain_array:
+                    clean_normal_chain_array.remove(sub_chain)
     normal_chain_array = clean_normal_chain_array
     # B) enlongate at the beginning
     for i, chain in enumerate(normal_chain_array):
@@ -161,7 +162,8 @@ def create_normal_chain_progress(normal_chain_array, questions_array, trip):
             possible_start_progess = []
             for q in questions_array:
                 if q.excel_id in befores:
-                    possible_start_progess.append(q.progress)
+                    if q.progress != None:
+                        possible_start_progess.append(q.progress)
             start_progress = min(possible_start_progess)
         # end progress: 90 wenn letzte_id letzer screen oder ende vom question_array oder progress vom node wo sie zusammenführen
         last_id = chain[-1]

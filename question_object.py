@@ -163,7 +163,7 @@ class Question:
             if self.type == 'ITEM_LIST_SINGLE_CHOICE':
                 self.type = 'ITEM_LIST_SINGLE_CHOICE_INTERRUPTIBLE_START'
             else:
-                raise Exception ('There is no question loop start screen type which is possible for the following type needed: ', self.type)
+                raise Exception ('There is no question loop start screen type which is possible for the following type needed: ', self.type, ' at question: ', self.excel_id)
     
     def clear_of_nan(self):
         # CLEAN OF NAN
