@@ -224,7 +224,8 @@ def create_progress_for_question_loop_screen(trip, loop_chain_array):
                         possible_start_progess = []
                         for q in trip.all_questions_array:
                             if q.excel_id in befores:
-                                possible_start_progess.append(q.progress)
+                                if q.progress != None:
+                                    possible_start_progess.append(q.progress)
                         start_progress = max(possible_start_progess)
                     trip.all_questions_array[i].progress = start_progress+5
         

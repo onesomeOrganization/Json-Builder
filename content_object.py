@@ -1,4 +1,4 @@
-from helper import normal_screen_reference, increase_order_id, create_id
+from helper import normal_screen_reference, increase_order_id, create_id, content_length_dict
 
 class Content:
   def __init__(self, question):
@@ -19,28 +19,28 @@ class Content:
     for text_count,entry in enumerate(self.structure):
         if entry == 'REFERENCE':
           self.contents.append(ContentComponent(self, 'ANSWER_OPTION_REF', text_count))
-          self.order, self.id = increase_order_id(self.order, self.id)
+          self.order, self.id = increase_order_id(self.order, self.id, content_length_dict[entry])
         elif entry == 'SUB_TITLE':
           self.contents.append(ContentComponent(self, 'SUB_TITLE', text_count))
-          self.order, self.id = increase_order_id(self.order, self.id)
+          self.order, self.id = increase_order_id(self.order, self.id, content_length_dict[entry])
         elif entry == 'PARAGRAPH':
           self.contents.append(ContentComponent(self, 'PARAGRAPH', text_count))
-          self.order, self.id = increase_order_id(self.order, self.id)
+          self.order, self.id = increase_order_id(self.order, self.id, content_length_dict[entry])
         elif entry == 'AUDIO':
           self.contents.append(ContentComponent(self, 'AUDIO', text_count))
-          self.order, self.id = increase_order_id(self.order, self.id, 2)
+          self.order, self.id = increase_order_id(self.order, self.id, content_length_dict[entry])
         elif entry == 'IMAGE':
           self.contents.append(ContentComponent(self, 'IMAGE', text_count))
-          self.order, self.id = increase_order_id(self.order, self.id, 2)
+          self.order, self.id = increase_order_id(self.order, self.id, content_length_dict[entry])
         elif entry == 'SMALL_IMAGE':
           self.contents.append(ContentComponent(self, 'SMALL_IMAGE', text_count))
-          self.order, self.id = increase_order_id(self.order, self.id, 2)
+          self.order, self.id = increase_order_id(self.order, self.id, content_length_dict[entry])
         elif entry == 'MORE_INFORMATION_EXPANDED':
           self.contents.append(ContentComponent(self, 'MORE_INFORMATION_EXPANDED', text_count))
-          self.order, self.id = increase_order_id(self.order, self.id)
+          self.order, self.id = increase_order_id(self.order, self.id, content_length_dict[entry])
         elif entry == 'MORE_INFORMATION':
           self.contents.append(ContentComponent(self, 'MORE_INFORMATION', text_count))
-          self.order, self.id = increase_order_id(self.order, self.id)
+          self.order, self.id = increase_order_id(self.order, self.id, content_length_dict[entry])
     return self.contents
 
   def create_json(self):

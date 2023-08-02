@@ -1,6 +1,7 @@
 import re
 
 content_length_dict = {'REFERENCE': 1, 'PARAGRAPH': 1, 'AUDIO': 2, 'IMAGE': 2, 'SMALL_IMAGE': 2, 'MORE_INFORMATION_EXPANDED': 1, 'MORE_INFORMATION': 1, 'SUB_TITLE': 1, 'REFERENCE': 1}
+need_answer_option = ('BUTTON', 'ITEM(Single)', 'ITEM(Multiple)', 'ANSWER OPTION', 'SEVERAL ANSWER OPTIONS')
 
 def create_id (object, reference_id_excel):
     reference_id_excel = reference_id_excel.strip()
@@ -28,7 +29,7 @@ def get_content_length(structure):
     for entry in structure:
       if entry in content_length_dict:
         length+=content_length_dict[entry]
-      if (entry == 'ITEM(Single)' or entry == 'ITEM(Multiple)' or entry == 'ANSWER OPTION' or entry == 'SEVERAL ANSWER OPTIONS') and not answer_option_length_is_considered:
+      if entry in need_answer_option and not answer_option_length_is_considered:
          length+=1
          answer_option_length_is_considered = True
     return length

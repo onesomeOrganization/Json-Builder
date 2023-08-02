@@ -8,7 +8,7 @@ from trip_object import Trip
 name_of_json_file = "Akute Hilfe" # name with which you want to save the Json
 journey_key = "Test_Short_Trip_Flora" # test key or Key of Journey
 id_base = "flora-" # id base -> for testing e.g. your name, for the app the journey_key in small letters
-version = "v"+str(47) # version of the json
+version = "v"+str(49) # version of the json #47
 write_beginning = True # False if you want to add to an existing json
 write_ending = True # False if you want to add to an existi ng json
 etappe = 1 # usually 1 except you want to add to an existing json in a different etappe
