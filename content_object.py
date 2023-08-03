@@ -41,6 +41,9 @@ class Content:
         elif entry == 'MORE_INFORMATION':
           self.contents.append(ContentComponent(self, 'MORE_INFORMATION', text_count))
           self.order, self.id = increase_order_id(self.order, self.id, content_length_dict[entry])
+        elif entry == 'PDF_DOWNLOAD':
+          self.contents.append(ContentComponent(self, 'PDF_DOWNLOAD', text_count))
+          self.order, self.id = increase_order_id(self.order, self.id, content_length_dict[entry])
     return self.contents
 
   def create_json(self):
@@ -69,11 +72,15 @@ class ContentComponent():
       self.audioName = 'null'
       self.imageName_en = 'null'
       self.audioName_en = 'null'
+      self.downloadName = 'null'
+      self.downloadName_en = 'null'
       self.translations = ''
       self.title = 'null'
       self.title_en = 'null'
       self.language = 'null'
       
+      needs_translations = ['MORE_INFORMATION', 'MORE_INFORMATION_EXPANDED', 'PARAGRAPH', 'SUB_TITLE']
+      self.needs_english_copy = ['AUDIO', 'IMAGE', 'SMALL_IMAGE', 'PDF_DOWNLOAD']
 
       # Preparations
       if self.type == 'ANSWER_OPTION_REF':
@@ -109,7 +116,14 @@ class ContentComponent():
         else:
           self.audioName_en = self.audioName
 
-      needs_translations = ['MORE_INFORMATION', 'MORE_INFORMATION_EXPANDED', 'PARAGRAPH', 'SUB_TITLE']
+      if self.type == 'PDF_DOWNLOAD':
+        self.downloadName = '"'+self.text+'"'
+        self.language = '"'+'DE'+'"'
+        if Content.question.english_translation:
+          self.downloadName_en = '"'+self.text_en+'"'
+        else:
+          self.downloadName_en = self.downloadName
+
       if self.type in needs_translations:
         self.translations = '''
                 {
@@ -145,7 +159,7 @@ class ContentComponent():
               "refOrderColumn": null,
               "refOffset": null,
               "refLimit": null,
-              "downloadName": null,
+              "downloadName": %s,
               "checkForSpecialTextReplacement": null,
               "questionAnswerOptionId": null,
               "language": %s,
@@ -155,9 +169,9 @@ class ContentComponent():
               "refQuestionAnswerOptionId": null,
               "translations": [%s],
               "answerOptions": []
-            },'''%(self.id, self.type, self.order, self.imageName, self.audioName, self.language, self.worldObjectEntryKey, self.refQuestionId, self.translations)
+            },'''%(self.id, self.type, self.order, self.imageName, self.audioName, self.downloadName, self.language, self.worldObjectEntryKey, self.refQuestionId, self.translations)
       
-      if self.type == 'AUDIO' or self.type == 'IMAGE' or self.type == 'SMALL_IMAGE':
+      if self.type in self.needs_english_copy:
           self.order, self.id = increase_order_id(self.order,self.id)
           self.language = '"'+'EN'+'"'
           json += '''  
