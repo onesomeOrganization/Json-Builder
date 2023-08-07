@@ -1,4 +1,5 @@
 from helper import normal_screen_reference, increase_order_id, create_id, content_length_dict
+from tests import test_if_ref_question_is_optional
 
 class Content:
   def __init__(self, question):
@@ -66,6 +67,7 @@ class ContentComponent():
         self.text_en = 'Englisch'
       self.id = Content.id
       self.order = Content.order
+      self.content = Content
       self.worldObjectEntryKey = 'null'
       self.refQuestionId = 'null'
       self.imageName = 'null'
@@ -86,6 +88,7 @@ class ContentComponent():
       if self.type == 'ANSWER_OPTION_REF':
         if normal_screen_reference(self.text):
           self.refQuestionId = '"'+create_id(Content.question, self.text)+'"'
+          test_if_ref_question_is_optional(self)
         else:
           self.worldObjectEntryKey = self.text if self.text == 'null' else '"'+self.text +'"'  
       

@@ -126,10 +126,12 @@ class Trip:
 
     def get_all_ids(self):
         ids = []
-        pattern = '^\d+\.\d+$'
+        pattern = '^\d+\.\d+(x?)$'
         for id in self.df.columns:
             if id is not None and re.match(pattern, id):
               ids.append(id)
+            if id is not None and not re.match(pattern, id) and id != 'Informationen' and id != 'Informationen Text':
+                raise Exception ('Id is not correct at question: ', id, ' (ids with x have to look like e.g 3.5x not 3.x)')
         return ids
     
     def get_etappen_count(self):

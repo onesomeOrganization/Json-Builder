@@ -156,6 +156,14 @@ class Question:
         else:
             question_type = 'CONTENT'
 
+        # Warning
+        if (question_type == 'ITEM_LIST_EXPANDABLE' or question_type == 'ITEM_LIST_SINGLE_CHOICE') and self.answer_required == 'false':
+            print('''
+                    -----------------------------------------------------------------------------------------
+                    |  !!!! WARNING !!!! --- Item_list does not work with optional answer yet at question %s |
+                    -----------------------------------------------------------------------------------------
+                    '''%(self.excel_id))
+
         return question_type, self.maxNumber
 
     def adjust_type_to_questionloop(self):

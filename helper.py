@@ -1,7 +1,7 @@
 import re
 
 content_length_dict = {'REFERENCE': 1, 'PARAGRAPH': 1, 'AUDIO': 2, 'IMAGE': 2, 'SMALL_IMAGE': 2, 'MORE_INFORMATION_EXPANDED': 1, 'MORE_INFORMATION': 1, 'SUB_TITLE': 1, 'REFERENCE': 1, 'PDF_DOWNLOAD': 2}
-need_answer_option = ('BUTTON', 'ITEM(Single)', 'ITEM(Multiple)', 'ANSWER OPTION', 'SEVERAL ANSWER OPTIONS')
+need_answer_option = ('BUTTON', 'ITEM(Single)', 'ITEM(Multiple)', 'ANSWER OPTION', 'SEVERAL ANSWER OPTIONS', 'SCALA')
 
 def create_id (object, reference_id_excel):
     reference_id_excel = reference_id_excel.strip()
@@ -15,6 +15,14 @@ def get_one_id_higher(id):
      one_higher = '-'.join(splits[:-1] + [str(int(splits[-1][:-1]) + 1)])
   else:
     one_higher = '-'.join(splits[:-1] + [str(int(splits[-1]) + 1)])
+  return one_higher
+
+def get_one_excel_id_higher(excel_id):
+  splits = excel_id.split('.')
+  if 'x' in excel_id:
+     one_higher = splits[0] + '.' + str(int(splits[-1][:-1]) + 1)
+  else:
+    one_higher = splits[0] + '.' + str(int(splits[-1]) + 1)
   return one_higher
 
 # check if a reference is like 1.3
@@ -97,3 +105,18 @@ def create_excel_id(id_string):
    splits = id_string.split('-')
    excel_id = splits[-2]+'.'+splits[-1][:-1]
    return excel_id
+
+def create_count_condition_dict(text):
+  # Condition: "1.2 (wenn 1.1 < 1 Antworten) 1.3 (wenn 1.1 >= 1 Antworten)"
+  # Output: '1.2': ['1.1, '<', 1], '1.3': ['1.1, '>=', 1]
+  
+  pattern = r'(\d+\.\d+)\s*\(wenn\s*(\d+\.\d+)\s*([=><]=?|!=)\s*(\d+)\s*(Antwort(en)?|antwort(en)?)\)'
+  matches = re.findall(pattern, text, re.IGNORECASE)
+  
+  condition_dict = {}
+  for match in matches:
+      main_key, sub_key, operator, value, _, _, _ = match
+      condition_dict[main_key] = [sub_key, operator, int(value)]
+
+  return condition_dict
+   

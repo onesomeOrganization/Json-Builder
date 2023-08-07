@@ -1,5 +1,6 @@
 import re
 import numpy as np
+from helper import add_quotation_mark
 
 # ------- TRIP TESTS ----------------
 
@@ -60,7 +61,11 @@ def test_nummeration(questions_array):
     
     for question in questions_array:
         if 'x' in question.excel_id:
-            continue
+            print('''
+-----------------------------------------------------------------------------------------------------------------------
+|  !!!! WARNING !!!! - x in Nummeration: Wurde auf korrekte Verknüpfung davor und danach geachtet (weiter mit Screen)? |
+-----------------------------------------------------------------------------------------------------------------------
+                    ''')    
         else:
             nummeration.append(question.excel_id)
 
@@ -102,6 +107,8 @@ def do_tests_on_questions(question):
     test_for_added_information_english(question)
     test_if_ref_id_exists(question)
     test_for_text_without_structure(question)
+    test_for_correct_structure_type(question)
+    test_for_key_insight_and_optional(question)
     #test_arrow_missing(question)
 
 
@@ -200,7 +207,7 @@ def test_for_added_information_english(question):
 def test_if_ref_id_exists(question):
     # next option items with ->
     for num, struc in enumerate(question.structure):
-        if (struc == 'ITEM(Single)' and '->' in question.texts[num]) or (struc == 'ITEM(Multiple)' and '->' in question.texts[num] and question.maxNumber == '1'):
+        if (struc == 'ITEM(Single)' and '->' in question.texts[num]) or (struc == 'ITEM(Multiple)' and '->' in question.texts[num] and question.maxNumber == '1') or (struc == 'BUTTON' and '->' in question.texts[num]):
             ref_id = question.texts[num].split('->')[1].strip()
             if not ref_id in question.trip.all_ids:
                 raise Exception ('Reference id does not exist in this excel from question: ', question.excel_id)
@@ -229,6 +236,29 @@ def test_for_text_without_structure(question):
             if question.structure[i] == 'None':
                 raise Exception ('There is a structure field missing at question: ', question.excel_id)
             
+def test_for_correct_structure_type(question):
+    for num, struc in enumerate(question.structure):
+        if struc == 'PARAGRAPH' and re.match(r'(\d+\.\d+)', question.texts[num]):
+            print('''
+                    --------------------------------------------------------------------------------------------------
+                    |  !!!! WARNING !!!! --- Should this really be a Paragraph at question %s containing a Reference? |
+                    --------------------------------------------------------------------------------------------------
+                    '''%(question.excel_id))
+        if (struc == 'IMAGE' or struc == 'SMALL_IMAGE' or struc == 'AUDIO' or struc == 'PDF_DOWNLOAD') and len(question.texts[num].split(' '))>1:
+            print('''
+                    ---------------------------------------------------------------------------
+                    |  !!!! WARNING !!!! --- Structure might be missplaced at question   %s |
+                    ---------------------------------------------------------------------------
+                    ''')%(question.excel_id)
+            
+    if np.count_nonzero(question.structure == 'SUB_TITLE') > 1:
+        raise Exception ('Two Subtitles at question: ', question.excel_id)
+    
+def test_for_key_insight_and_optional(question):
+    if 'OPTIONAL' in question.structure and 'KEY INSIGHT (verpflichtend)' in question.structure:
+        raise Exception ('A KEY INSIGHT (verpflichtend) should not be optional at question: ', question.excel_id)
+    
+            
 # ------------ SONSTIGE TESTS ----------------
 
 def test_if_any_scala_condition_is_missing(self, scala_condition_dict):
@@ -251,4 +281,11 @@ def test_if_any_scala_condition_is_missing(self, scala_condition_dict):
 def test_for_escape_option_at_question_loop(exist_arrows, self):
     if not any(item[0] for item in exist_arrows) and 'Start Questionloop' in self.structure:
         raise Exception ('Escape option missing at question loop at question: ', self.question.excel_id)
+    
+def test_if_ref_question_is_optional(contentComponent):
+    ref_id = contentComponent.refQuestionId
+    questions_before = contentComponent.content.question.questions_before
+    for q in questions_before:
+        if add_quotation_mark(q.id) == ref_id and q.answer_required == 'false':
+            raise Exception ('Referenz of an optional screen at question: ', contentComponent.content.question.excel_id)
 

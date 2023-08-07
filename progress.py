@@ -1,5 +1,5 @@
 import numpy as np
-from helper import find_nodes_before, extract_values_from_wenn_condition, create_scala_condition_dict
+from helper import find_nodes_before, extract_values_from_wenn_condition, create_scala_condition_dict, create_count_condition_dict, get_one_excel_id_higher
 import math
 
 def create_adjazenzliste(questions_array):
@@ -11,23 +11,18 @@ def create_adjazenzliste(questions_array):
         arrow_or_condition_flag = False
         scala_texts = ['( wenn Scala', '(wenn Scala', '(wenn scala', '( wenn scala']
         for i, text in enumerate(q.texts):
-            if any(substring in text for substring in scala_texts) and 'SCALA' in q.structure:
-                arrow_or_condition_flag = True
-                scala_condition_dict = create_scala_condition_dict(text)
-                # Retrieve the current value
-                current_value = adjazenzliste[q.excel_id]
-                for key in scala_condition_dict:
-                    # Update the value by appending the new value
-                    current_value.append(key)
-                # Assign the updated value back to the key
-                adjazenzliste[q.excel_id] = current_value
-            elif ('(wenn' in text or '( wenn' in text) and (q.structure[i] == 'ITEM(Multiple)' or q.structure[i] == 'ITEM(Single)' or q.structure[i] == 'weiter mit Screen' or q.structure[i] == 'BUTTON'):
+            if ('(wenn' in text or '( wenn' in text) and (q.structure[i] == 'ITEM(Multiple)' or q.structure[i] == 'ITEM(Single)' or q.structure[i] == 'weiter mit Screen' or q.structure[i] == 'BUTTON'):
                 arrow_or_condition_flag = True
                 if q.structure[i] == 'weiter mit Screen':
                     condition = text
                 else:
                     condition = text.split('->')[1]
-                condition_dict = extract_values_from_wenn_condition(condition)
+                if any(word in text.lower() for word in ['antwort', 'antworten']):
+                    condition_dict = create_count_condition_dict(condition)
+                elif any(substring in text for substring in scala_texts) and 'SCALA' in q.structure:
+                    condition_dict = create_scala_condition_dict(text)
+                else:
+                    condition_dict = extract_values_from_wenn_condition(condition)
                 # Retrieve the current value
                 current_value = adjazenzliste[q.excel_id]
                 for key in condition_dict:
@@ -49,7 +44,8 @@ def create_adjazenzliste(questions_array):
         # normal Case
         if not 'weiter mit Screen' in q.structure and not 'letzter Screen' in q.structure and not num == len(questions_array)-1 and not 'Neue Etappe' in questions_array[num+1].structure and not 'Neue Etappe' in q.structure and not arrow_or_condition_flag:
             # add id+1 as value, e.g. id = flora-v13-1-3 -> flora-v13-1-4
-            adjazenzliste[q.excel_id] = [q.excel_id.split('.')[0]+'.'+str(int(q.excel_id.split('.')[1])+1)]
+            #adjazenzliste[q.excel_id] = [q.excel_id.split('.')[0]+'.'+str(int(q.excel_id.split('.')[1])+1)]
+            adjazenzliste[q.excel_id] = [get_one_excel_id_higher(q.excel_id)]
         # weiter mit Screen case ohne ->
         elif 'weiter mit Screen' in q.structure and not arrow_or_condition_flag:
             # add weiter mit screen id

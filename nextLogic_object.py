@@ -1,5 +1,5 @@
 
-from helper import create_id, get_content_length, add_quotation_mark, extract_values_from_wenn_condition, create_scala_condition_dict, get_one_id_higher, create_excel_id
+from helper import create_id, get_content_length, add_quotation_mark, extract_values_from_wenn_condition, create_scala_condition_dict, get_one_id_higher, create_excel_id, create_count_condition_dict
 import numpy as np
 from tests import test_if_any_scala_condition_is_missing, test_for_escape_option_at_question_loop
 
@@ -22,18 +22,22 @@ class NextLogic():
         self.id_next_question = self.calc_id_next_question()
 
         # Preparations
+        self.antwort_texte = ['Antwort', 'antwort', 'Antworten', 'antworten']
         self.check_for_arrows_everywhere()
         self.NextLogicOptions = []
+        # different Nextlogic types:
         self.prepare_ref_key_insight()
         self.prepare_next_option_button()
         self.prepare_next_option_item()
         self.prepare_value()
         self.prepare_ref_option()
+        self.prepare_ref_count()
 
         # Json
         self.json = self.create_json()
         
     # -------- PREPARATIONS ------------
+
 
     def calc_id_next_question(self):
         self.id_next_question = add_quotation_mark(get_one_id_higher(self.id))
@@ -94,7 +98,7 @@ class NextLogic():
                 questionId = create_id(self, self.texts[num].split('->')[1])
                 questionAnswerOptionId = self.id+'-'+str(self.content_length)+'-'+str(count)
                 count += 1
-                self.NextLogicOptions.append(NextLogicOption(self.id, num, questionId, questionAnswerOptionId)) 
+                self.NextLogicOptions.append(NextLogicOption(self.id, num, questionId, add_quotation_mark(questionAnswerOptionId))) 
                 
     
     def prepare_next_option_item(self):
@@ -113,7 +117,7 @@ class NextLogic():
                 questionId = create_id(self, self.texts[num].split('->')[1])
                 questionAnswerOptionId = self.id+'-'+str(self.content_length)+'-'+str(count)
                 count +=1
-                self.NextLogicOptions.append(NextLogicOption(self.id, num, questionId, questionAnswerOptionId)) 
+                self.NextLogicOptions.append(NextLogicOption(self.id, num, questionId, add_quotation_mark(questionAnswerOptionId))) 
 
     def prepare_value(self):
         scala_texts = ['( wenn Scala', '(wenn Scala', '(wenn scala', '( wenn scala']
@@ -171,7 +175,7 @@ class NextLogic():
         # WARNING: hier ist bereits alles implementiert dass die ref_option auch mit button und items geht (auch bei der adjazenzliste von progress)
         # button oder item + -> und (wenn
         for num, struc in enumerate(self.structure):
-            if (struc == 'ITEM(Single)' or (struc == 'ITEM(Multiple)' and self.question.maxNumber == '1') or struc == 'BUTTON' or struc == 'weiter mit Screen') and ('(wenn' in self.texts[num] or '( wenn' in self.texts[num]) and not ('scala' in self.texts[num] or 'Scala' in self.texts[num]):
+            if (struc == 'ITEM(Single)' or (struc == 'ITEM(Multiple)' and self.question.maxNumber == '1') or struc == 'BUTTON' or struc == 'weiter mit Screen') and ('(wenn' in self.texts[num] or '( wenn' in self.texts[num]) and not ('scala' in self.texts[num] or 'Scala' in self.texts[num]) and not any(antwort_text in self.texts[num] for antwort_text in self.antwort_texte):
                 if self.type == 'REF_KEY_INSIGHT':
                     print('''
                     ---------------------------------------------------------------------------------------------------
@@ -208,11 +212,52 @@ class NextLogic():
                                     if option.text == possible_answer:
                                         found = True
                                         questionAnswerOptionId = option.id
-                                        self.NextLogicOptions.append(NextLogicOption(self.id, count, questionId, questionAnswerOptionId))
+                                        self.NextLogicOptions.append(NextLogicOption(self.id, count, questionId, add_quotation_mark(questionAnswerOptionId)))
                                         count += 1
                                 if not found:
                                     raise Exception ('missspelling in condition of question: ', self.question.excel_id, ' for option: ', option.text, ' and condition text: ', possible_answer)
 
+    def prepare_ref_count(self):
+        
+        for num, struc in enumerate(self.structure):
+            if struc == 'weiter mit Screen' and ('(wenn' in self.texts[num] or '( wenn' in self.texts[num]) and any(antwort_text in self.texts[num] for antwort_text in self.antwort_texte):
+                if self.type == 'REF_KEY_INSIGHT':
+                    print('''
+                    -------------------------------------------------------------------------------------------------------------
+                    |  !!!! WARNING !!!! --- Schlüsselerkenntnisreferenz und weiter mit screen mit ref_count in einer question   |
+                    -------------------------------------------------------------------------------------------------------------
+                    ''')
+                if not any('SEVERAL ANSWER OPTIONS' in s for s in self.structure) or self.type != 'NEXT':
+                    raise Exception ('Check ref count for question: ', self.question.excel_id)
+                self.type = 'REF_COUNT'
+                self.id_next_question = 'null'
+                condition = self.texts[num]
+                # Condition: "1.2 (wenn 1.1 < 1 Antworten) 1.3 (wenn 1.1 >= 1 Antworten)"
+                # Output: '1.2': ['1.1, '<', 1], '1.3': ['1.1, '>=', 1]
+                count_condition_dict = create_count_condition_dict(condition)
+                count = 1
+                for key in count_condition_dict:
+                    self.refQuestionId = add_quotation_mark(create_id(self, count_condition_dict[key][0]))
+                    questionId = create_id(self, key)
+                    sign = count_condition_dict[key][1]
+                    number = count_condition_dict[key][2]
+                    if sign == '<':
+                        type = 'COUNT_LT'
+                    elif sign == '>=':
+                        type = 'COUNT_GTE'
+                    elif sign == '=' or sign == '>' or sign == '<=':
+                        raise Exception ('Count condition has a sign ("%s") which is not allowed. Question: %s (Only < and >= are possible here)' %(sign, self.question.excel_id)) 
+                    
+                    if sign == '<' and number == 1:
+                        print('''
+                    ----------------------------------------------------------------------
+                    |  !!!! WARNING !!!! --- Not sure if < 1 is possible with ref_count   |
+                    ----------------------------------------------------------------------
+                    ''')
+                    self.NextLogicOptions.append(NextLogicOption(self.id, count, questionId, type = type, number= number))
+                    count += 1
+
+                
 
     # ----------- CREATE JSON ----------------
 
@@ -266,7 +311,7 @@ class NextLogicOption():
                 "count": null,
                 "secondNumber": %s,
                 "secondCount": null,
-                "questionAnswerOptionId": "%s",
+                "questionAnswerOptionId": %s,
                 "secondQuestionAnswerOptionId": null,
                 "questionId": "%s",
                 "refQuestionId": null
