@@ -1,6 +1,7 @@
 import numpy as np
-from helper import find_nodes_before, extract_values_from_wenn_condition, create_scala_condition_dict, create_count_condition_dict, get_one_excel_id_higher
+from helper import find_nodes_before, get_one_excel_id_higher, create_ref_value_condition_dict, create_ref_count_condition_dict, create_ref_option_condition_dict, create_value_condition_dict
 import math
+import re
 
 def create_adjazenzliste(questions_array):
     adjazenzliste = {}
@@ -9,20 +10,23 @@ def create_adjazenzliste(questions_array):
         if not 'Neue Etappe' in q.structure: # check for neue etappe and skip entry
             adjazenzliste[q.excel_id] = []
         arrow_or_condition_flag = False
-        scala_texts = ['( wenn Scala', '(wenn Scala', '(wenn scala', '( wenn scala']
+        ref_value_pattern = r'(\d+\.\d+)\s*\(\s*wenn\s+(\w+)\s*([><=]=?)\s*(\d+\.\d+)\)'
+        ref_count_pattern = r'(\d+\.\d+)\s*\(wenn\s*(\d+\.\d+)\s*([=><]=?|!=)\s*(\d+)\s*(Antwort(en)?|antwort(en)?)\)'
+        ref_option_pattern = r'(\d+\.\d+)\s*\(wenn\s+(\d+\.\d+)\s*=\s*([^\d+\.\d+]*)\)'
+        value_pattern = r'(\d+\.\d+)\s*\((.*?)\)'
         for i, text in enumerate(q.texts):
-            if ('(wenn' in text or '( wenn' in text) and (q.structure[i] == 'ITEM(Multiple)' or q.structure[i] == 'ITEM(Single)' or q.structure[i] == 'weiter mit Screen' or q.structure[i] == 'BUTTON'):
+            if ('(wenn' in text or '( wenn' in text) and q.structure[i] == 'weiter mit Screen' :
                 arrow_or_condition_flag = True
-                if q.structure[i] == 'weiter mit Screen':
-                    condition = text
+                if re.match(ref_value_pattern, text):
+                    condition_dict = create_ref_value_condition_dict(text)
+                elif re.match(ref_count_pattern, text):
+                    condition_dict = create_ref_count_condition_dict(text)
+                elif re.match(ref_option_pattern, text):
+                    condition_dict = create_ref_option_condition_dict(text)
+                elif re.match(value_pattern, text):
+                    condition_dict = create_value_condition_dict(text)
                 else:
-                    condition = text.split('->')[1]
-                if any(word in text.lower() for word in ['antwort', 'antworten']):
-                    condition_dict = create_count_condition_dict(condition)
-                elif any(substring in text for substring in scala_texts) and 'SCALA' in q.structure:
-                    condition_dict = create_scala_condition_dict(text)
-                else:
-                    condition_dict = extract_values_from_wenn_condition(condition)
+                    raise Exception ('check adjazenzliste')
                 # Retrieve the current value
                 current_value = adjazenzliste[q.excel_id]
                 for key in condition_dict:
@@ -39,8 +43,7 @@ def create_adjazenzliste(questions_array):
                 # Update the value by appending the new value
                 current_value.append(json_id)
                 # Assign the updated value back to the key
-                adjazenzliste[q.excel_id] = current_value
-            
+                adjazenzliste[q.excel_id] = current_value    
         # normal Case
         if not 'weiter mit Screen' in q.structure and not 'letzter Screen' in q.structure and not num == len(questions_array)-1 and not 'Neue Etappe' in questions_array[num+1].structure and not 'Neue Etappe' in q.structure and not arrow_or_condition_flag:
             # add id+1 as value, e.g. id = flora-v13-1-3 -> flora-v13-1-4

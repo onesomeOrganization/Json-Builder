@@ -54,7 +54,7 @@ def test_formatting(questions_array):
                     if '<br>' in text or '<strong>' in text:
                         is_formatted = True
     if not is_formatted:
-        raise Exception('WARNING: The questions have no formating at all - is this correct?')
+        print('WARNING: The questions have no formating at all - is this correct?')
 
 def test_nummeration(questions_array):
     nummeration = []

@@ -3,6 +3,7 @@ import re
 content_length_dict = {'REFERENCE': 1, 'PARAGRAPH': 1, 'AUDIO': 2, 'IMAGE': 2, 'SMALL_IMAGE': 2, 'MORE_INFORMATION_EXPANDED': 1, 'MORE_INFORMATION': 1, 'SUB_TITLE': 1, 'REFERENCE': 1, 'PDF_DOWNLOAD': 2}
 need_answer_option = ('BUTTON', 'ITEM(Single)', 'ITEM(Multiple)', 'ANSWER OPTION', 'SEVERAL ANSWER OPTIONS', 'SCALA')
 
+
 def create_id (object, reference_id_excel):
     reference_id_excel = reference_id_excel.strip()
     id_numbers = reference_id_excel.split('.')
@@ -63,10 +64,9 @@ def delete_last_number_from_id(id):
   new_id = ('-').join(splits[:-1])
   return new_id
 
-def extract_values_from_wenn_condition(text):
+def create_ref_option_condition_dict(text):
       pattern = r'(\d+\.\d+)\s*\(wenn\s+(\d+\.\d+)\s*=\s*([^\d+\.\d+]*)\)'
       matches = re.findall(pattern, text)
-
       result_dict = {}
       for item in matches:
           main_key, sub_key, values = item
@@ -76,11 +76,10 @@ def extract_values_from_wenn_condition(text):
       return result_dict
 
 
-def create_scala_condition_dict(text):
+def create_value_condition_dict(text):
     pattern = r'(\d+\.\d+)\s*\((.*?)\)'
     matches = re.findall(pattern, text)
     condition_dict = {}
-    
     for match in matches:
         key = match[0]
         condition = match[1]
@@ -97,7 +96,6 @@ def create_scala_condition_dict(text):
         values = condition.split(operator)[1].split(',')
         for i, value in enumerate(values):
           values[i] = int(value.strip())
-            
         condition_dict[key] = [operator, values]
     return condition_dict
 
@@ -106,17 +104,23 @@ def create_excel_id(id_string):
    excel_id = splits[-2]+'.'+splits[-1][:-1]
    return excel_id
 
-def create_count_condition_dict(text):
+def create_ref_count_condition_dict(text):
   # Condition: "1.2 (wenn 1.1 < 1 Antworten) 1.3 (wenn 1.1 >= 1 Antworten)"
   # Output: '1.2': ['1.1, '<', 1], '1.3': ['1.1, '>=', 1]
-  
   pattern = r'(\d+\.\d+)\s*\(wenn\s*(\d+\.\d+)\s*([=><]=?|!=)\s*(\d+)\s*(Antwort(en)?|antwort(en)?)\)'
   matches = re.findall(pattern, text, re.IGNORECASE)
-  
   condition_dict = {}
   for match in matches:
       main_key, sub_key, operator, value, _, _, _ = match
       condition_dict[main_key] = [sub_key, operator, int(value)]
-
   return condition_dict
+
+def create_ref_value_condition_dict(text):
+    pattern = r'(\d+\.\d+)\s*\(\s*wenn\s+(\w+)\s*([><=]=?)\s*(\d+\.\d+)\)'
+    matches = re.findall(pattern, text)
+    result_dict = {}
+    for item in matches:
+        key, variable, operator, value = item
+        result_dict[key] = [operator, value]
+    return result_dict
    
