@@ -112,19 +112,6 @@ class Question:
 
         self.texts = new_texts
         self.structure = new_structure
-        '''
-                splits = self.texts[i].split('und')
-                self.texts[i] = splits[0].strip()
-                if self.english_translation:
-                    self.texts_en[i] = splits[0].strip()
-                # insert another reference
-                for num in range(1, len(splits)):
-                    self.structure = np.insert(self.structure,i+1,'REFERENCE')
-                     # split text to the references
-                    self.texts = np.insert(self.texts,i+num,splits[num].strip())
-                    if self.english_translation:
-                        self.texts_en = np.insert(self.texts_en,i+num,splits[num].strip())
-            '''
 
     def create_etappe_screen_from_id(self):
         etappe = self.excel_id.split('.')[0]
@@ -141,6 +128,8 @@ class Question:
                     self.maxNumber = '1'
                     self.structure = np.core.defchararray.replace(self.structure, 'ITEM(Single)', 'ITEM(Multiple)')
                     question_type = 'ITEM_LIST_LIMIT'
+                    if self.answer_required:
+                        self.minNumber = '1'
         elif 'ITEM(Multiple)' in self.structure and not ('SEVERAL ANSWER OPTIONS' in self.structure or 'ANSWER OPTON' in self.structure):
             question_type = 'ITEM_LIST_LIMIT'
             if self.answer_required:
