@@ -145,8 +145,7 @@ class Trip:
         etappen_end_screens = {}
         for etappe in range(1, self.etappen_count+1):
             etappe = self.etappe+etappe-1
-            biggest = 0
-            for question in self.all_questions_array:
+            for num, question in enumerate(self.all_questions_array):
                 if int(question.excel_id[0]) == etappe:
                     # letzter screen is alsways end screen
                     if 'letzter Screen' in question.structure:
@@ -155,11 +154,20 @@ class Trip:
                             array.append(question.excel_id)
                         else:
                           etappen_end_screens[question.excel_id[0]] = [question.excel_id]
-                    # highest number and no letzter screen 
-                    elif int(question.excel_id[2]) > biggest:
-                        biggest = int(question.excel_id[2])
-            if not question.excel_id[0] in etappen_end_screens:
-              etappen_end_screens[question.excel_id[0]] = [question.excel_id]
+                    # letzte Frage im Array
+                    elif num+1 == len(self.all_questions_array) and not 'weiter mit Screen' in question.structure:
+                            if question.excel_id[0] in etappen_end_screens:
+                              array = etappen_end_screens[question.excel_id[0]]
+                              array.append(question.excel_id)
+                            else:
+                              etappen_end_screens[question.excel_id[0]] = [question.excel_id]
+                    # Ende von Etappe
+                    elif 'Neue Etappe' in self.all_questions_array[num+1].structure and not 'weiter mit Screen' in question.structure:
+                        if question.excel_id[0] in etappen_end_screens:
+                              array = etappen_end_screens[question.excel_id[0]]
+                              array.append(question.excel_id)
+                        else:
+                              etappen_end_screens[question.excel_id[0]] = [question.excel_id]
         return etappen_end_screens
     
     def get_etappen_start_screens(self):
