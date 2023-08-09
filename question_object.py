@@ -96,9 +96,23 @@ class Question:
                     self.texts_en[i] = text.replace('"', '\\"').replace('\n', '').replace("_x000B_", "").replace('\u2028','').replace('\\\\"', '\\"')
 
     def prepare_multiple_references(self):
+        new_structure = np.array([])
+        new_texts = np.array([])
         for i, struc in enumerate(self.structure):
+            
             # find references with "und"
             if struc == 'REFERENCE' and 'und' in self.texts[i]:
+                splits = self.texts[i].split('und')
+                for split in splits:
+                    new_structure = np.append(new_structure, 'REFERENCE')
+                    new_texts = np.append(new_texts,split.strip())
+            else:
+                new_structure = np.append(new_structure, struc)
+                new_texts = np.append(new_texts, self.texts[i])
+
+        self.texts = new_texts
+        self.structure = new_structure
+        '''
                 splits = self.texts[i].split('und')
                 self.texts[i] = splits[0].strip()
                 if self.english_translation:
@@ -110,6 +124,7 @@ class Question:
                     self.texts = np.insert(self.texts,i+num,splits[num].strip())
                     if self.english_translation:
                         self.texts_en = np.insert(self.texts_en,i+num,splits[num].strip())
+            '''
 
     def create_etappe_screen_from_id(self):
         etappe = self.excel_id.split('.')[0]

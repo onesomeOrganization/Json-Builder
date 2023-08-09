@@ -24,8 +24,8 @@ class NextLogic():
 
         # Preparations
         self.ref_value_pattern = r'(\d+\.\d+)\s*\(\s*wenn\s+(\w+)\s*([><=]=?)\s*(\d+\.\d+)\)'
-        self.ref_count_pattern = r'(\d+\.\d+)\s*\(wenn\s*(\d+\.\d+)\s*([=><]=?|!=)\s*(\d+)\s*(Antwort(en)?|antwort(en)?)\)'
-        self.ref_option_pattern = r'(\d+\.\d+)\s*\(wenn\s+(\d+\.\d+)\s*=\s*([^\d+\.\d+]*)\)'
+        self.ref_count_pattern = r'(\d+\.\d+)\s*\(\s*wenn\s*(\d+\.\d+)\s*([=><]=?|!=)\s*(\d+)\s*(Antwort(en)?|antwort(en)?)\)'
+        self.ref_option_pattern = r'(\d+\.\d+)\s*\(\s*wenn\s+(\d+\.\d+)\s*=\s*([^\d+\.\d+]*)\)'
         self.value_pattern = r'(\d+\.\d+)\s*\((.*?)\)'
         self.check_for_arrows_everywhere()
         self.NextLogicOptions = []

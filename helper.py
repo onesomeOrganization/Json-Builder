@@ -65,7 +65,7 @@ def delete_last_number_from_id(id):
   return new_id
 
 def create_ref_option_condition_dict(text):
-      pattern = r'(\d+\.\d+)\s*\(wenn\s+(\d+\.\d+)\s*=\s*([^\d+\.\d+]*)\)'
+      pattern = r'(\d+\.\d+)\s*\(\s*wenn\s+(\d+\.\d+)\s*=\s*([^\d+\.\d+]*)\)'
       matches = re.findall(pattern, text)
       result_dict = {}
       for item in matches:
