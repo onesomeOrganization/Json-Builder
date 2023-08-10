@@ -46,14 +46,11 @@ class Question:
         # PREPARATIONS    
         self.question_answer_option_ref()
         self.answer_required = self.prepare_optional()
-        self.type, self.maxNumber = self.map_structure_to_type() 
+        self.scala_min, self.scala_max, self.scala_min_text, self.scala_max_text, self.scala_max_text_en, self.scala_min_text_en = self.prepare_scala()
+        self.type, self.maxNumber, self.minNumber = self.map_structure_to_type() 
         self.adjust_type_to_questionloop()
         self.reviewable, self.worldObjectEntryKeyType, self.optional = self.prepare_keyInsight()
         self.prepare_multiple_references()
-        # Variables for Building Blocks
-        self.scala_min, self.scala_max, self.scala_min_text, self.scala_max_text, self.scala_max_text_en, self.scala_min_text_en = self.prepare_scala()
-        self.adjust_min_max_number()
-    
         
         # BUILDING BLOCKS
         self.RefLogic = RefLogic(self)
@@ -127,12 +124,8 @@ class Question:
                     self.maxNumber = '1'
                     self.structure = np.core.defchararray.replace(self.structure, 'ITEM(Single)', 'ITEM(Multiple)')
                     question_type = 'ITEM_LIST_LIMIT'
-                    if self.answer_required:
-                        self.minNumber = '1'
         elif 'ITEM(Multiple)' in self.structure and not ('SEVERAL ANSWER OPTIONS' in self.structure or 'ANSWER OPTON' in self.structure):
             question_type = 'ITEM_LIST_LIMIT'
-            if self.answer_required:
-                self.minNumber = '1'
         # ITEM_LIST_EXPANDABLE: A) entweder mehrere text felder ohne items oder B) item multiple mit text feldern oder C) item single mit text feldern und maxnumber
             # A
         elif not ('ITEM(Multiple)' in self.structure or "ITEM(Single)" in self.structure) and 'SEVERAL ANSWER OPTIONS' in self.structure:
@@ -151,6 +144,8 @@ class Question:
          # SCALA_SLIDER,
         elif 'SCALA' in self.structure:
             question_type = 'SCALA_SLIDER'
+            self.minNumber = self.scala_min
+            self.maxNumber = self.scala_max
         # OPEN_QUESTION: S P Textfield
         elif 'ANSWER OPTION' in self.structure and not ("ITEM(Single)" or "ITEM(Multiple)") in self.structure:
             question_type = 'OPEN_QUESTION'
@@ -159,15 +154,19 @@ class Question:
         else:
             question_type = 'CONTENT'
 
+        # minNumber
+        if (question_type == 'ITEM_LIST_EXPANDABLE' or question_type == 'ITEM_LIST_LIMIT') and self.answer_required == 'true':
+            self.minNumber = '1'
+
         # Warning
-        if (question_type == 'ITEM_LIST_EXPANDABLE' or question_type == 'ITEM_LIST_SINGLE_CHOICE') and self.answer_required == 'false':
+        if (question_type == 'ITEM_LIST_SINGLE_CHOICE') and self.answer_required == 'false':
             print('''
-                    -----------------------------------------------------------------------------------------
-                    |  !!!! WARNING !!!! --- Item_list does not work with optional answer yet at question %s |
-                    -----------------------------------------------------------------------------------------
+                    --------------------------------------------------------------------------------------------
+                    |  !!!! WARNING !!!! --- Item_Single_Choice does not work with optional answer yet at question %s |
+                    --------------------------------------------------------------------------------------------
                     '''%(self.excel_id))
 
-        return question_type, self.maxNumber
+        return question_type, self.maxNumber, self.minNumber
 
     def adjust_type_to_questionloop(self):
         if self.qloop_start:
@@ -189,14 +188,7 @@ class Question:
         if self.english_translation:
             self.texts_en = self.texts_en[:len(self.structure)]
     
-    def adjust_min_max_number(self):
-        if self.type == 'SCALA_SLIDER':
-            self.minNumber = self.scala_min
-            self.maxNumber = self.scala_max
 
-        if self.type == 'ITEM_LIST_EXPANDABLE':
-            self.minNumber = 1
-        
     def prepare_optional(self):
         # OPTIONAL
         if 'OPTIONAL' in self.structure:

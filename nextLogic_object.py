@@ -228,7 +228,7 @@ class NextLogic():
                     |  !!!! WARNING !!!! --- Schlüsselerkenntnisreferenz und weiter mit screen mit ref_count in einer question   |
                     -------------------------------------------------------------------------------------------------------------
                     ''')
-                if not any('SEVERAL ANSWER OPTIONS' in s for s in self.structure) or self.type != 'NEXT':
+                if self.type != 'NEXT':
                     raise Exception ('Check ref count for question: ', self.question.excel_id)
                 self.type = 'REF_COUNT'
                 self.id_next_question = 'null'
@@ -249,12 +249,6 @@ class NextLogic():
                     elif sign == '=' or sign == '>' or sign == '<=':
                         raise Exception ('Count condition has a sign ("%s") which is not allowed. Question: %s (Only < and >= are possible here)' %(sign, self.question.excel_id)) 
                     
-                    if sign == '<' and number == 1:
-                        print('''
-                    ----------------------------------------------------------------------
-                    |  !!!! WARNING !!!! --- Not sure if < 1 is possible with ref_count   |
-                    ----------------------------------------------------------------------
-                    ''')
                     self.NextLogicOptions.append(NextLogicOption(self.id, count, questionId, type = type, number= number))
                     count += 1
 
