@@ -161,6 +161,12 @@ class Trip:
                               array.append(question.excel_id)
                             else:
                               etappen_end_screens[question.excel_id[0]] = [question.excel_id]
+                    # letzter Screen vergessen
+                    elif num+1 == len(self.all_questions_array):
+                      if len(etappen_end_screens)==0:
+                        raise Exception ('"letzter Screen" is missing somewhere in the Excel')
+                      else:
+                          return etappen_end_screens
                     # Ende von Etappe
                     elif 'Neue Etappe' in self.all_questions_array[num+1].structure and not 'weiter mit Screen' in question.structure:
                         if question.excel_id[0] in etappen_end_screens:

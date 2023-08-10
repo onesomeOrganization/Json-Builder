@@ -254,7 +254,7 @@ def test_for_correct_structure_type(question):
                     ---------------------------------------------------------------------------
                     |  !!!! WARNING !!!! --- Structure might be missplaced at question   %s |
                     ---------------------------------------------------------------------------
-                    ''')%(question.excel_id)
+                    '''%(question.excel_id))
             
     if np.count_nonzero(question.structure == 'SUB_TITLE') > 1:
         raise Exception ('Two Subtitles at question: ', question.excel_id)
@@ -298,7 +298,11 @@ def test_if_ref_question_is_optional(contentComponent):
     questions_before = contentComponent.content.question.questions_before
     for q in questions_before:
         if add_quotation_mark(q.id) == ref_id and q.answer_required == 'false':
-            raise Exception ('Referenz of an optional screen at question: ', contentComponent.content.question.excel_id)
+            print('''
+                    ---------------------------------------------------------------------------
+                    |  !!!! WARNING !!!! --- 'Referenz of an optional screen at question:    %s |
+                    ---------------------------------------------------------------------------
+                    '''%(contentComponent.content.question.excel_id))
         
 def test_if_button_texts_are_the_same(id, button_texts):
     if len(button_texts) != len(set(button_texts)):

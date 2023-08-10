@@ -212,7 +212,74 @@ def get_loop_exit_nodes(loop_chain_array, trip, loop_dict):
 
 
 def create_progress_for_question_loop_screen(trip, loop_chain_array):
+    loop_chain_array = sorted(loop_chain_array, key=len, reverse=True)
     for chain in loop_chain_array:
+        end_progress = None
+        end = None
+        start_progress = None
+        start = None
+        progress_step = None
+        # end progress = ich geh von hinten durch bis ein frage keinen progress hat
+        for i, node in reversed(list(enumerate(chain))):
+            if progress_step is not None or end_progress is not None:
+                break
+            for q in trip.all_questions_array:
+                    if q.excel_id == node and q.progress is None:
+                        possible_end_progress = []
+                        # wenn als einziger nachfolgescreen, der loop anfang ist, dann progress step +5 regelung
+                        afters = trip.graph[node]
+                        for a in afters:
+                            for q in trip.all_questions_array:
+                                if q.excel_id == a and q.progress is not None and q.excel_id not in trip.qloop_start_screens_ids:
+                                    possible_end_progress.append(q.progress)
+                        if len(possible_end_progress) != 0:
+                            end_progress = min(possible_end_progress)
+                            end = i
+                        else:
+                            progress_step = 5
+                        break
+        
+        # start progress = ich geh von vorne durch bis eine frage keine progress hat
+        for start, node in enumerate(chain):
+            for q in trip.all_questions_array:
+                if q.excel_id == node and q.progress is None:
+                    befores = find_nodes_before(trip.graph, node)
+                    if len(befores) == 0 or node == trip.all_questions_array[0].excel_id or node in trip.etappen_start_screens:
+                        start_progress = 0
+                    else:
+                        possible_start_progess = []
+                        for q in trip.all_questions_array:
+                            if q.excel_id in befores:
+                                if q.progress != None:
+                                    possible_start_progess.append(q.progress)
+                        if len(possible_start_progess) != 0:
+                            start_progress = max(possible_start_progess)
+                    break
+            if start_progress is not None:
+                break
+
+        # step between start & end + progress_step
+        if start == len(chain)-1 and end is None and progress_step is None:
+            continue
+        if progress_step is None:
+            difference = end_progress - start_progress
+            difference_in_nodes = (end - start) +2
+            progress_step = math.floor(difference/difference_in_nodes)
+
+        # assign progress between start & end
+        for i in range(start, end+1):
+            for q in trip.all_questions_array:
+                if q.excel_id == chain[i]: 
+                    if q.progress is None:
+                        q.progress = start_progress + progress_step
+                        start_progress = q.progress
+        
+        for node in chain:
+            for i, q in enumerate(trip.all_questions_array):
+                if q.excel_id == node and q.progress is None:
+                    raise Exception ('something wrong in loop chain progress')
+        '''
+        # if some without progress then +5
         for node in chain:
             for i, q in enumerate(trip.all_questions_array):
                 if q.excel_id == node and q.progress is None:
@@ -227,7 +294,7 @@ def create_progress_for_question_loop_screen(trip, loop_chain_array):
                                     possible_start_progess.append(q.progress)
                         start_progress = max(possible_start_progess)
                     trip.all_questions_array[i].progress = start_progress+5
-        
+        '''
 
 # ------------- HELPER FUNCTIONS --------------------
 
