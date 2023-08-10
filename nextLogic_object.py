@@ -126,7 +126,7 @@ class NextLogic():
 
     def prepare_value(self):
         for num, struc in enumerate(self.structure):
-            if struc == 'weiter mit Screen' and re.match(self.value_pattern, self.texts[num]) and not re.match(self.ref_value_pattern, self.texts[num]) and not re.match(self.ref_option_pattern, self.texts[num]):
+            if struc == 'weiter mit Screen' and re.match(self.value_pattern, self.texts[num]) and not re.match(self.ref_value_pattern, self.texts[num]) and not re.match(self.ref_option_pattern, self.texts[num]) and not re.match(self.ref_count_pattern, self.texts[num]):
                 if self.type == 'REF_KEY_INSIGHT':
                     print('''
                     -----------------------------------------------------------------------------------

@@ -39,11 +39,11 @@ class Question:
         self.questionLoopId = 'null'
 
         # TEST
+        self.clear_of_nan()
+        self.format_text()
         do_tests_on_questions(self)
 
         # PREPARATIONS    
-        self.clear_of_nan()
-        self.format_text()
         self.question_answer_option_ref()
         self.answer_required = self.prepare_optional()
         self.type, self.maxNumber = self.map_structure_to_type() 
@@ -85,7 +85,6 @@ class Question:
               if not pd.isnull(text):
               # find " and replace with \"
               # find breaks and delete them
-                #self.texts[i] = re.sub(r'(?<!\\)"', r'\\"', text)
                 self.texts[i] = text.replace('\n', '').replace("_x000B_", "").replace('\u2028','').replace('"', '\\"').replace('\\\\"', '\\"')
 
         if self.english_translation:

@@ -1,5 +1,6 @@
 import numpy as np
 from helper import get_content_length, increase_order_id, add_quotation_mark
+from tests import test_if_button_texts_are_the_same
 
 class AnswerOption():
     def __init__(self, question):
@@ -43,6 +44,9 @@ class AnswerOption():
                self.button_texts_en = []
                for i in range(len(self.button_texts)):
                   self.button_texts_en.append('Englisch')
+            
+            # TEST
+            test_if_button_texts_are_the_same(self.question.excel_id, self.button_texts)
         else:
            self.button_texts = None
            self.button_texts_en = None

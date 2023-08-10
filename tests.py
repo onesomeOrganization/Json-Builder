@@ -109,7 +109,7 @@ def do_tests_on_questions(question):
     test_for_text_without_structure(question)
     test_for_correct_structure_type(question)
     test_for_key_insight_and_optional(question)
-    #test_arrow_missing(question)
+    test_for_arrow_missing_at_button_text(question)
 
 
 def test_subtitle(question):
@@ -121,16 +121,20 @@ def test_kein_item_multiple_and_single(question):
         raise Exception ('ITEM(Single) und ITEM(Multiple) gemischt in Frage: ', question.excel_id)
 
 def test_more_information_title(question):
-    if 'MORE_INFORMATION' in question.structure and not question.texts[np.where(question.structure == 'MORE_INFORMATION')][0].count('_') == 2:
-        raise Exception ('More information field is missing a title or an underline in Question:', question.excel_id)
-    if question.english_translation:
-        if 'MORE_INFORMATION' in question.structure and not question.texts_en[np.where(question.structure == 'MORE_INFORMATION')][0].count('_') == 2:
-            raise Exception ('English more information field is missing a title or an underline in Question:', question.excel_id)
-    if 'MORE_INFORMATION_EXPANDED' in question.structure and not question.texts[np.where(question.structure == 'MORE_INFORMATION_EXPANDED')][0].count('_') >= 2:
-        raise Exception ('More information field is missing a title or an underline in Question:', question.excel_id)
-    if question.english_translation:
-        if 'MORE_INFORMATION_EXPANDED' in question.structure and not question.texts_en[np.where(question.structure == 'MORE_INFORMATION_EXPANDED')][0].count('_') == 2:
-            raise Exception ('English more information field is missing a title or an underline in Question:', question.excel_id)
+    if 'MORE_INFORMATION' in question.structure:
+        indices = np.where(question.structure == 'MORE_INFORMATION')[0]
+        if not all(question.texts[i].count('_') == 2 for i in indices):
+            raise Exception ('More information field is missing a title or an underline in Question:', question.excel_id)
+        if question.english_translation:
+            if not all(question.texts_en[i].count('_') == 2 for i in indices):
+                raise Exception ('English More information field is missing a title or an underline in Question:', question.excel_id)
+    if 'MORE_INFORMATION_EXPANDED' in question.structure:
+        indices = np.where(question.structure == 'MORE_INFORMATION_EXPANDED')[0]
+        if not all(question.texts[i].count('_') == 2 for i in indices):
+            raise Exception ('More information field is missing a title or an underline in Question:', question.excel_id)
+        if question.english_translation:
+            if not all(question.texts_en[i].count('_') == 2 for i in indices):
+                raise Exception ('English More information field is missing a title or an underline in Question:', question.excel_id)
 
 def test_empty_text(question):
     needs_text_array = ['SUB_TITLE','PARAGRAPH','AUDIO', 'IMAGE', 'SMALL_IMAGE', 'MORE_INFORMATION', 'MORE_INFORMATION_EXPANDED', 'ITEM(Single)', 'ITEM(Multiple)','SCALA', 'REFERENCE', 'KEY INSIGHT (optional)','KEY INSIGHT (verpflichtend)', 'Etappen-Titel', 'Zeit min', 'Zeit max','BUTTON', 'weiter mit Screen']
@@ -172,7 +176,8 @@ def test_sonst_und_in_ref(question):
         
 def test_scala(question):
     # Define the regular expression pattern
-    pattern = r"(\d+)\s*\((\s*\w+(\s+\w+)*)\)\s*-\s*(\d+)\s*\((\s*\w+(\s+\w+)*)\)"
+    pattern = r"(\d+)\s*\(([^)]+)\)\s*-\s*(\d+)\s*\(([^)]+)\)"
+    # r"(\d+)\s*\((\s*\w+(\s+\w+)*)\)\s*-\s*(\d+)\s*\((\s*\w+(\s+\w+)*)\)" 
 
     if 'SCALA' in question.structure and not re.match(pattern, question.texts[np.where(question.structure == 'SCALA')][0]):
         raise Exception ('Scala Text is not correct at question ', question.excel_id)
@@ -258,6 +263,12 @@ def test_for_key_insight_and_optional(question):
     if 'OPTIONAL' in question.structure and 'KEY INSIGHT (verpflichtend)' in question.structure:
         raise Exception ('A KEY INSIGHT (verpflichtend) should not be optional at question: ', question.excel_id)
     
+def test_for_arrow_missing_at_button_text(question):
+
+    if 'BUTTON' in question.structure:
+        button_texts = question.texts[np.where(question.structure == 'BUTTON')]
+        if not all('->' in text for text in button_texts):
+            raise Exception (' Arrow in Button missing at question: ', question.excel_id)
             
 # ------------ SONSTIGE TESTS ----------------
 
@@ -288,4 +299,8 @@ def test_if_ref_question_is_optional(contentComponent):
     for q in questions_before:
         if add_quotation_mark(q.id) == ref_id and q.answer_required == 'false':
             raise Exception ('Referenz of an optional screen at question: ', contentComponent.content.question.excel_id)
+        
+def test_if_button_texts_are_the_same(id, button_texts):
+    if len(button_texts) != len(set(button_texts)):
+        raise Exception ('Same Button texts at question: ', id)
 
