@@ -1,5 +1,5 @@
 
-from helper import create_id, get_content_length, add_quotation_mark, create_ref_option_condition_dict, create_value_condition_dict, get_one_id_higher, create_excel_id, create_ref_count_condition_dict, create_ref_value_condition_dict
+from helper import create_id, get_content_length, add_quotation_mark, get_one_id_higher, create_excel_id, create_condition_dict, nextLogic_patterns
 import numpy as np
 from tests import test_if_any_scala_condition_is_missing, test_for_escape_option_at_question_loop
 import re
@@ -23,10 +23,6 @@ class NextLogic():
         self.id_next_question = self.calc_id_next_question()
 
         # Preparations
-        self.ref_value_pattern = r'(\d+\.\d+)\s*\(\s*wenn\s+(\w+)\s*([><=]=?)\s*(\d+\.\d+)\)'
-        self.ref_count_pattern = r'(\d+\.\d+)\s*\(\s*wenn\s*(\d+\.\d+)\s*([=><]=?|!=)\s*(\d+)\s*(Antwort(en)?|antwort(en)?)\)'
-        self.ref_option_pattern = r'(\d+\.\d+)\s*\(\s*wenn\s+(\d+\.\d+)\s*=\s*([^\d+\.\d+]*)\)'
-        self.value_pattern = r'(\d+\.\d+)\s*\((.*?)\)'
         self.check_for_arrows_everywhere()
         self.NextLogicOptions = []
         # different Nextlogic types:
@@ -34,9 +30,10 @@ class NextLogic():
         self.prepare_next_option_button()
         self.prepare_next_option_item()
         self.prepare_value()
+        self.prepare_ref_value()
         self.prepare_ref_option()
         self.prepare_ref_count()
-        self.prepare_ref_value()
+
 
         # Json
         self.json = self.create_json()
@@ -73,16 +70,21 @@ class NextLogic():
                 self.texts[tuple[1]] = self.texts[tuple[1]] + '->' + create_excel_id(self.id_next_question)
         test_for_escape_option_at_question_loop(exist_arrows, self)
 
+    # NEXT LOGIC TYPES
+
     def prepare_ref_key_insight(self):
     # add next question references
+        # --- CONDITION ---
         for x, struct in enumerate(self.question.next_question_structure):
             # check if structure has reference
             if struct == 'REFERENCE':
                 # check if key insight reference
                 if self.question.next_question_texts[x].isupper():
+                    # --- TYPE ---
+                    self.type = 'REF_KEY_INSIGHT'
+                    # --- OPTION ---
                     # add to question before
                     self.reference_of_next_question = self.question.next_question_texts[x]
-                    self.type = 'REF_KEY_INSIGHT'
                     plus_one = int(self.id_next_question[-2])+1
                     id_base_skip_question = self.id_next_question[:-2] + str(plus_one) + '"'
                     self.NextLogicOptions.append(NextLogicRefkeyOption(self.id, self.reference_of_next_question, self.id_next_question, id_base_skip_question))
@@ -91,14 +93,17 @@ class NextLogic():
         # buttons
         count = 1
         for num, struc in enumerate(self.structure):
+            # --- CONDITION ---
             if struc == 'BUTTON':
-                if self.type == 'REF_KEY_INSIGHT':
+                if self.type != 'NEXT':
                     print('''
                     ----------------------------------------------------------------------------------------
-                    |  !!!! WARNING !!!! -------- Schlüsselerkenntnisreferenz und Option Question gemeinsam |
+                    |  !!!! WARNING !!!! -------- %s und Option Question gemeinsam |
                     ----------------------------------------------------------------------------------------
-                    ''')
+                    '''%(self.type))
+                # --- TYPE ---
                 self.type = 'NEXT_OPTION'
+                # --- OPTION ---
                 self.id_next_question = 'null'
                 questionId = create_id(self, self.texts[num].split('->')[1])
                 questionAnswerOptionId = self.id+'-'+str(self.content_length)+'-'+str(count)
@@ -110,42 +115,44 @@ class NextLogic():
         # next option items with ->
         count = 1
         for num, struc in enumerate(self.structure):
+            # --- CONDITION ---
             if (struc == 'ITEM(Single)' and '->' in self.texts[num]) or (struc == 'ITEM(Multiple)' and '->' in self.texts[num] and self.question.maxNumber == '1'):
-                if self.type == 'REF_KEY_INSIGHT':
+                if self.type != 'NEXT':
                     print('''
-                    ---------------------------------------------------------------------------------------------
-                    |  !!!! WARNING !!!! -------- Schlüsselerkenntnisreferenz und Arrow Logic mit Item gemeinsam |
-                    ---------------------------------------------------------------------------------------------
-                    ''')
+                    ----------------------------------------------------------------------------------------
+                    |  !!!! WARNING !!!! -------- %s und Next Option Item gemeinsam |
+                    ----------------------------------------------------------------------------------------
+                    '''%(self.type))
+                # --- TYPE ---
                 self.type = 'NEXT_OPTION'
+                # --- OPTION ---
                 self.id_next_question = 'null'
                 questionId = create_id(self, self.texts[num].split('->')[1])
                 questionAnswerOptionId = self.id+'-'+str(self.content_length)+'-'+str(count)
                 count +=1
                 self.NextLogicOptions.append(NextLogicOption(self.id, num, questionId, add_quotation_mark(questionAnswerOptionId))) 
 
+
     def prepare_value(self):
+        # scala and next screen depending on scala value
         for num, struc in enumerate(self.structure):
-            if struc == 'weiter mit Screen' and re.match(self.value_pattern, self.texts[num]) and not re.match(self.ref_value_pattern, self.texts[num]) and not re.match(self.ref_option_pattern, self.texts[num]) and not re.match(self.ref_count_pattern, self.texts[num]):
-                if self.type == 'REF_KEY_INSIGHT':
+            # --- CONDITION ---
+            if struc == 'weiter mit Screen' and re.match(nextLogic_patterns['VALUE'], self.texts[num]) and not re.match(nextLogic_patterns['REF_VALUE'], self.texts[num]) and not re.match(nextLogic_patterns['REF_OPTION'], self.texts[num]) and not re.match(nextLogic_patterns['REF_COUNT'], self.texts[num]):
+                if self.type != 'NEXT':
                     print('''
-                    -----------------------------------------------------------------------------------
-                    |  !!!! WARNING !!!! --- Schlüsselerkenntnisreferenz und Scala Value gemeinsam    |
-                    -----------------------------------------------------------------------------------
-                    ''')
-                elif self.type == 'NEXT_OPTION':
-                    print('''
-                    -------------------------------------------------------------------------
-                    |  !!!! WARNING !!!! -------- Scala Value und Option Question gemeinsam |
-                    -------------------------------------------------------------------------
-                    ''')
+                    ----------------------------------------------------------------------------------------
+                    |  !!!! WARNING !!!! -------- %s und Scala Value gemeinsam |
+                    ----------------------------------------------------------------------------------------
+                    '''%(self.type))
+                # --- TYPE ---
                 self.type = 'VALUE'
+                # --- OPTION ---
                 self.id_next_question = 'null'
                 text = self.texts[np.where(self.structure == 'weiter mit Screen')][0]
-                scala_condition_dict = create_value_condition_dict(text)
-                # TEST
-                test_if_any_scala_condition_is_missing(self, scala_condition_dict)
+                scala_condition_dict = create_condition_dict(text, self.type)
+                # condition: 3.10 (wenn scala = 0) 3.11 (wenn scala = 1,2,3) 3.12 (wenn Scala >= 4)
                 # output: '3.10': ['=', [0]], '3.11': ['=', [1,2,3]], '3.12': ['>=', [4]] -> text hast to be stripped
+                test_if_any_scala_condition_is_missing(self, scala_condition_dict)
                 for num, key in enumerate(scala_condition_dict):
                     questionId = create_id(self,key)
                     if scala_condition_dict[key][0] == '=' and str(scala_condition_dict[key][1][0]) == self.question.scala_min:
@@ -170,28 +177,68 @@ class NextLogic():
                     elif scala_condition_dict[key][0] == '>=':
                         number = scala_condition_dict[key][1][0] 
                         self.NextLogicOptions.append(NextLogicOption(self.id, num, questionId, type = 'VALUE_GTE', number= number))
-                    
+
+    def prepare_ref_value(self):
+        # next question depending on value comparison of two scalas or the value of another previous scala
+        for num, struc in enumerate(self.structure):
+            # --- CONDITION ---
+            if struc == 'weiter mit Screen' and re.match(nextLogic_patterns['REF_VALUE'], self.texts[num]):
+                if self.type != 'NEXT':
+                    print('''
+                    ----------------------------------------------------------------------------------------
+                    |  !!!! WARNING !!!! -------- %s und Ref Value gemeinsam |
+                    ----------------------------------------------------------------------------------------
+                    '''%(self.type))
+                # --- TYPE ---
+                self.type = 'REF_VALUE'
+                # --- OPTION ---
+                self.id_next_question = 'null'
+                condition = self.texts[num]
+                # Condition: "1.4 (wenn Scala > 1.1) 1.5 (wenn scala <= 1.1)"
+                # Output: '1.4': ['>', 1.1], '1.5': ['<=', 1.1]
+                count_condition_dict = create_condition_dict(condition, self.type)
+                count = 1
+                for key in count_condition_dict:
+                    self.refQuestionId = add_quotation_mark(self.id)
+                    option_refQuestionId = add_quotation_mark(create_id(self, count_condition_dict[key][1]))
+                    questionId = create_id(self, key)
+                    sign = count_condition_dict[key][0]
+                    if sign == '<':
+                        type = 'REF_VALUE_GT'
+                    elif sign == '>':
+                        type = 'REF_VALUE_LT'
+                    elif sign == '=':
+                        type = 'REF_VALUE_E'
+                    elif sign == '=' or sign == '>=' or sign == '<=':
+                        raise Exception ('Count condition has a sign ("%s") which is not allowed. Question: %s (Only < and > and = are possible here)' %(sign, self.question.excel_id)) 
+           
+                    self.NextLogicOptions.append(NextLogicOption(self.id, count, questionId, type = type, refQuestionId= option_refQuestionId))
+                    count += 1         
     
     def prepare_ref_option(self):
         # WARNING: hier ist bereits alles implementiert dass die ref_option auch mit button und items geht (auch bei der adjazenzliste von progress)
-        # button oder item + -> und (wenn
+        # next screen depending on answer to another question
         for num, struc in enumerate(self.structure):
-            if (struc == 'ITEM(Single)' or (struc == 'ITEM(Multiple)' and self.question.maxNumber == '1') or struc == 'BUTTON' or struc == 'weiter mit Screen') and re.match(self.ref_option_pattern, self.texts[num]):
-                if self.type == 'REF_KEY_INSIGHT':
+            # --- CONDITION ---
+            if (struc == 'ITEM(Single)' or (struc == 'ITEM(Multiple)' and self.question.maxNumber == '1') or struc == 'BUTTON' or struc == 'weiter mit Screen') and re.match(nextLogic_patterns['REF_OPTION'], self.texts[num]):
+                if self.type != 'NEXT':
                     print('''
-                    ---------------------------------------------------------------------------------------------------
-                    |  !!!! WARNING !!!! --- Schlüsselerkenntnisreferenz und Arrow Logic mit wenn in Item gemeinsam    |
-                    ---------------------------------------------------------------------------------------------------
-                    ''')
+                    ----------------------------------------------------------------------------------------
+                    |  !!!! WARNING !!!! -------- %s und Ref option gemeinsam |
+                    ----------------------------------------------------------------------------------------
+                    '''%(self.type))
+                # --- TYPE ---
                 self.type = 'REF_OPTION'
+                # --- OPTION ---
                 self.id_next_question = 'null'
                 if struc == 'weiter mit Screen':
                     condition = self.texts[num]
                 else:
                     raise Exception ('REF_OPTION und NEXT_OPTION gleichzeitig nötig, da wenn condition und button/item in frage ', self.question.excel_id)
                     condition = self.texts[num].split('->')[1]
-                condition_dict = create_ref_option_condition_dict(condition)
-                
+                condition_dict = create_condition_dict(condition, self.type)
+                # condition: 1.5 (wenn 1.2 = A) 1.6 (wenn 1.2 = B oder C)
+                # output: '1.5': ['1.2, ['A']], '1.6': ['1.2, ['B','C']]                
                 conditions_length = 0
                 for cond in condition_dict.values():
                     conditions_length += len(cond[1])
@@ -219,23 +266,24 @@ class NextLogic():
                                     raise Exception ('missspelling in condition of question: ', self.question.excel_id, ' for condition text: ', possible_answer)
 
     def prepare_ref_count(self):
-        
+        # next question depending on the count of answers of another question
         for num, struc in enumerate(self.structure):
-            if struc == 'weiter mit Screen' and re.match(self.ref_count_pattern, self.texts[num]):
-                if self.type == 'REF_KEY_INSIGHT':
-                    print('''
-                    -------------------------------------------------------------------------------------------------------------
-                    |  !!!! WARNING !!!! --- Schlüsselerkenntnisreferenz und weiter mit screen mit ref_count in einer question   |
-                    -------------------------------------------------------------------------------------------------------------
-                    ''')
+            # --- CONDITION ---
+            if struc == 'weiter mit Screen' and re.match(nextLogic_patterns['REF_COUNT'], self.texts[num]):
                 if self.type != 'NEXT':
-                    raise Exception ('Check ref count for question: ', self.question.excel_id)
+                    print('''
+                    ----------------------------------------------------------------------------------------
+                    |  !!!! WARNING !!!! -------- %s und Ref Count gemeinsam |
+                    ----------------------------------------------------------------------------------------
+                    '''%(self.type))
+                # --- TYPE ---
                 self.type = 'REF_COUNT'
+                # --- OPTION ---
                 self.id_next_question = 'null'
                 condition = self.texts[num]
                 # Condition: "1.2 (wenn 1.1 < 1 Antworten) 1.3 (wenn 1.1 >= 1 Antworten)"
                 # Output: '1.2': ['1.1, '<', 1], '1.3': ['1.1, '>=', 1]
-                count_condition_dict = create_ref_count_condition_dict(condition)
+                count_condition_dict = create_condition_dict(condition, self.type)
                 count = 1
                 for key in count_condition_dict:
                     self.refQuestionId = add_quotation_mark(create_id(self, count_condition_dict[key][0]))
@@ -252,38 +300,7 @@ class NextLogic():
                     self.NextLogicOptions.append(NextLogicOption(self.id, count, questionId, type = type, number= number))
                     count += 1
 
-    def prepare_ref_value(self):
-        for num, struc in enumerate(self.structure):
-            if struc == 'weiter mit Screen' and re.match(self.ref_value_pattern, self.texts[num]):
-                if self.type == 'REF_KEY_INSIGHT':
-                    print('''
-                    -------------------------------------------------------------------------------------------------------------
-                    |  !!!! WARNING !!!! --- Schlüsselerkenntnisreferenz und weiter mit screen mit ref_value in einer question   |
-                    -------------------------------------------------------------------------------------------------------------
-                    ''')
-                self.type = 'REF_VALUE'
-                self.id_next_question = 'null'
-                condition = self.texts[num]
-                # Condition: "1.4 (wenn Scala > 1.1) 1.5 (wenn scala <= 1.1)"
-                # Output: '1.4': ['>', 1.1], '1.5': ['<=', 1.1]
-                count_condition_dict = create_ref_value_condition_dict(condition)
-                count = 1
-                for key in count_condition_dict:
-                    self.refQuestionId = add_quotation_mark(self.id)
-                    option_refQuestionId = add_quotation_mark(create_id(self, count_condition_dict[key][1]))
-                    questionId = create_id(self, key)
-                    sign = count_condition_dict[key][0]
-                    if sign == '<':
-                        type = 'REF_VALUE_GT'
-                    elif sign == '>':
-                        type = 'REF_VALUE_LT'
-                    elif sign == '=':
-                        type = 'REF_VALUE_E'
-                    elif sign == '=' or sign == '>=' or sign == '<=':
-                        raise Exception ('Count condition has a sign ("%s") which is not allowed. Question: %s (Only < and > and = are possible here)' %(sign, self.question.excel_id)) 
-           
-                    self.NextLogicOptions.append(NextLogicOption(self.id, count, questionId, type = type, refQuestionId= option_refQuestionId))
-                    count += 1
+   
                 
 
     # ----------- CREATE JSON ----------------

@@ -1,6 +1,6 @@
 import re
 import numpy as np
-from helper import add_quotation_mark, normal_screen_reference
+from helper import add_quotation_mark, normal_screen_reference, nextLogic_patterns
 
 # ------- TRIP TESTS ----------------
 
@@ -102,7 +102,7 @@ def do_tests_on_questions(question):
     test_neue_etappe(question)
     test_sonst_und_in_ref(question)
     test_scala(question)
-    test_wenn_condition(question)
+    test_nextLogics_texts(question)
     test_english_translation(question)
     test_for_added_information_english(question)
     test_if_ref_id_exists(question)
@@ -178,22 +178,20 @@ def test_sonst_und_in_ref(question):
 def test_scala(question):
     # Define the regular expression pattern
     pattern = r"(\d+)\s*\(([^)]+)\)\s*-\s*(\d+)\s*\(([^)]+)\)"
-    # r"(\d+)\s*\((\s*\w+(\s+\w+)*)\)\s*-\s*(\d+)\s*\((\s*\w+(\s+\w+)*)\)" 
-
     if 'SCALA' in question.structure and not re.match(pattern, question.texts[np.where(question.structure == 'SCALA')][0]):
         raise Exception ('Scala Text is not correct at question ', question.excel_id)
     if question.english_translation:
         if 'SCALA' in question.structure and not re.match(pattern, question.texts_en[np.where(question.structure == 'SCALA')][0]):
             raise Exception ('English Scala Text is not correct at question: ', question.excel_id)
-        
-def test_wenn_condition(question):
-    wenn_condition_pattern = r'(\d+\.\d+)\s*\(\s*wenn\s+(\d+\.\d+)\s*=\s*(.*?)\)'
-    scala_condition_pattern = r'(\d+\.\d+)\s*\((.*?)\)'
-    for text in question.texts:
-        if '(wenn' in text or '( wenn' in text:
-            if not re.match(wenn_condition_pattern, text) and not re.match(scala_condition_pattern, text):
-                raise Exception ('Wenn condition is incorrect at question: ', question.excel_id)
-        
+            
+def test_nextLogics_texts(question):                 
+    # REF_OPTION # REF_VALUE # REF_COUNT # VALUE
+    if 'weiter mit Screen' in question.structure:
+        text = question.texts[np.where(question.structure == 'weiter mit Screen')][0]
+        if 'wenn' in text or 'Wenn' in text:
+            if not re.match(nextLogic_patterns['REF_OPTION'], text) and not re.match(nextLogic_patterns['VALUE'], text) and not re.match(nextLogic_patterns['REF_COUNT'], text) and not re.match(nextLogic_patterns['REF_VALUE'], text) :
+                raise Exception ('Weiter mit Screen text wrong at question: ', question.excel_id)
+    
 def test_english_translation(question):
     if question.english_translation:
         english_translation_needed = ['SUB_TITLE','PARAGRAPH','AUDIO', 'IMAGE', 'SMALL_IMAGE', 'MORE_INFORMATION', 'MORE_INFORMATION_EXPANDED', 'ITEM(Single)', 'ITEM(Multiple)','SCALA', 'Etappen-Titel']

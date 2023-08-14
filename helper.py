@@ -3,6 +3,14 @@ import re
 content_length_dict = {'REFERENCE': 1, 'PARAGRAPH': 1, 'AUDIO': 2, 'IMAGE': 2, 'SMALL_IMAGE': 2, 'MORE_INFORMATION_EXPANDED': 1, 'MORE_INFORMATION': 1, 'SUB_TITLE': 1, 'REFERENCE': 1, 'PDF_DOWNLOAD': 2}
 need_answer_option = ('BUTTON', 'ITEM(Single)', 'ITEM(Multiple)', 'ANSWER OPTION', 'SEVERAL ANSWER OPTIONS', 'SCALA')
 
+nextLogic_patterns = {
+   'VALUE': r'(\d+\.\d+)\s*\(\s*wenn\s*(\w+)\s*([><=]=?)\s*(\d+)\)', #r'(\d+\.\d+)\s*\((.*?)\)'
+   'REF_VALUE': r'(\d+\.\d+)\s*\(\s*wenn\s*(\w+)\s*([><=]=?)\s*(\d+\.\d+)\)',
+   'REF_COUNT': r'(\d+\.\d+)\s*\(\s*wenn\s*(\d+\.\d+)\s*([=><]=?|!=)\s*(\d+)\s*(Antwort(en)?|antwort(en)?)\)',
+   'REF_OPTION': r'(\d+\.\d+)\s*\(\s*wenn\s*(\d+\.\d+)\s*=\s*([^\d+\.\d+]*)\)'
+}
+# 'VALUE': r'(\d+\.\d+)\s*\(\s*wenn\s*(\w+)\s*([><=]=?)\s*(\d+)\)'
+
 
 def create_id (object, reference_id_excel):
     reference_id_excel = reference_id_excel.strip()
@@ -64,9 +72,9 @@ def delete_last_number_from_id(id):
   new_id = ('-').join(splits[:-1])
   return new_id
 
-def create_ref_option_condition_dict(text):
-      pattern = r'(\d+\.\d+)\s*\(\s*wenn\s+(\d+\.\d+)\s*=\s*([^\d+\.\d+]*)\)'
-      matches = re.findall(pattern, text)
+def create_condition_dict(text, type):
+  if type == 'REF_OPTION':
+      matches = re.findall(nextLogic_patterns['REF_OPTION'], text)
       result_dict = {}
       for item in matches:
           main_key, sub_key, values = item
@@ -74,53 +82,35 @@ def create_ref_option_condition_dict(text):
           if main_key not in result_dict:
               result_dict[main_key] = [sub_key, values_list]
       return result_dict
-
-
-def create_value_condition_dict(text):
-    pattern = r'(\d+\.\d+)\s*\((.*?)\)'
-    matches = re.findall(pattern, text)
+  if type == 'VALUE':
+      matches = re.findall(nextLogic_patterns['VALUE'], text)
+      condition_dict = {}
+      for item in matches:
+        id, _ , operator, value = item
+        values = value.split(',')
+        for i, value in enumerate(values):
+            values[i] = int(value.strip())
+        condition_dict[id] = [operator, values]
+      return condition_dict
+  if type == 'REF_COUNT':
+    matches = re.findall(nextLogic_patterns['REF_COUNT'], text, re.IGNORECASE)
     condition_dict = {}
     for match in matches:
-        key = match[0]
-        condition = match[1]
-        if '>=' in condition:
-            operator = '>='
-        elif '<=' in condition:
-            operator = '<='
-        elif '>' in condition:
-            operator = '>'
-        elif '<' in condition:
-            operator = '<'
-        elif '=' in condition:
-            operator = '='
-        values = condition.split(operator)[1].split(',')
-        for i, value in enumerate(values):
-          values[i] = int(value.strip())
-        condition_dict[key] = [operator, values]
+        main_key, sub_key, operator, value, _, _, _ = match
+        condition_dict[main_key] = [sub_key, operator, int(value)]
     return condition_dict
+  if type == 'REF_VALUE':
+    matches = re.findall(nextLogic_patterns['REF_VALUE'], text)
+    result_dict = {}
+    for item in matches:
+        key, variable, operator, value = item
+        result_dict[key] = [operator, value]
+    return result_dict
+         
 
 def create_excel_id(id_string):
    splits = id_string.split('-')
    excel_id = splits[-2]+'.'+splits[-1][:-1]
    return excel_id
 
-def create_ref_count_condition_dict(text):
-  # Condition: "1.2 (wenn 1.1 < 1 Antworten) 1.3 (wenn 1.1 >= 1 Antworten)"
-  # Output: '1.2': ['1.1, '<', 1], '1.3': ['1.1, '>=', 1]
-  pattern = r'(\d+\.\d+)\s*\(wenn\s*(\d+\.\d+)\s*([=><]=?|!=)\s*(\d+)\s*(Antwort(en)?|antwort(en)?)\)'
-  matches = re.findall(pattern, text, re.IGNORECASE)
-  condition_dict = {}
-  for match in matches:
-      main_key, sub_key, operator, value, _, _, _ = match
-      condition_dict[main_key] = [sub_key, operator, int(value)]
-  return condition_dict
-
-def create_ref_value_condition_dict(text):
-    pattern = r'(\d+\.\d+)\s*\(\s*wenn\s+(\w+)\s*([><=]=?)\s*(\d+\.\d+)\)'
-    matches = re.findall(pattern, text)
-    result_dict = {}
-    for item in matches:
-        key, variable, operator, value = item
-        result_dict[key] = [operator, value]
-    return result_dict
    

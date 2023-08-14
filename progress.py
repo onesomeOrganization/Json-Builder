@@ -1,5 +1,5 @@
 import numpy as np
-from helper import find_nodes_before, get_one_excel_id_higher, create_ref_value_condition_dict, create_ref_count_condition_dict, create_ref_option_condition_dict, create_value_condition_dict
+from helper import find_nodes_before, get_one_excel_id_higher, nextLogic_patterns, create_condition_dict
 import math
 import re
 
@@ -10,23 +10,10 @@ def create_adjazenzliste(questions_array):
         if not 'Neue Etappe' in q.structure: # check for neue etappe and skip entry
             adjazenzliste[q.excel_id] = []
         arrow_or_condition_flag = False
-        ref_value_pattern = r'(\d+\.\d+)\s*\(\s*wenn\s+(\w+)\s*([><=]=?)\s*(\d+\.\d+)\)'
-        ref_count_pattern = r'(\d+\.\d+)\s*\(wenn\s*(\d+\.\d+)\s*([=><]=?|!=)\s*(\d+)\s*(Antwort(en)?|antwort(en)?)\)'
-        ref_option_pattern = r'(\d+\.\d+)\s*\(wenn\s+(\d+\.\d+)\s*=\s*([^\d+\.\d+]*)\)'
-        value_pattern = r'(\d+\.\d+)\s*\((.*?)\)'
         for i, text in enumerate(q.texts):
-            if ('(wenn' in text or '( wenn' in text) and q.structure[i] == 'weiter mit Screen' :
+            if ('wenn' in text or 'Wenn' in text) and q.structure[i] == 'weiter mit Screen' :
                 arrow_or_condition_flag = True
-                if re.match(ref_value_pattern, text):
-                    condition_dict = create_ref_value_condition_dict(text)
-                elif re.match(ref_count_pattern, text):
-                    condition_dict = create_ref_count_condition_dict(text)
-                elif re.match(ref_option_pattern, text):
-                    condition_dict = create_ref_option_condition_dict(text)
-                elif re.match(value_pattern, text):
-                    condition_dict = create_value_condition_dict(text)
-                else:
-                    raise Exception ('check adjazenzliste')
+                condition_dict = create_condition_dict(text, q.NextLogic.type)
                 # Retrieve the current value
                 current_value = adjazenzliste[q.excel_id]
                 for key in condition_dict:
