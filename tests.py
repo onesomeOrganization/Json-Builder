@@ -1,6 +1,6 @@
 import re
 import numpy as np
-from helper import add_quotation_mark
+from helper import add_quotation_mark, normal_screen_reference
 
 # ------- TRIP TESTS ----------------
 
@@ -110,6 +110,7 @@ def do_tests_on_questions(question):
     test_for_correct_structure_type(question)
     test_for_key_insight_and_optional(question)
     test_for_arrow_missing_at_button_text(question)
+    test_for_only_one_button(question)
 
 
 def test_subtitle(question):
@@ -218,7 +219,7 @@ def test_if_ref_id_exists(question):
                 raise Exception ('Reference id does not exist in this excel from question: ', question.excel_id)
         if struc == 'REFERENCE' and not ('sonst' in question.texts[num] or 'und' in question.texts[num]):
             ref_id = question.texts[num]
-            if not ref_id in question.trip.all_ids:
+            if normal_screen_reference(ref_id) and not ref_id in question.trip.all_ids:
                 raise Exception ('Reference id does not exist in this excel from question: ', question.excel_id)
         if struc == 'weiter mit Screen' and not 'wenn' in question.texts[num]:
             ref_id = question.texts[num]
@@ -264,11 +265,15 @@ def test_for_key_insight_and_optional(question):
         raise Exception ('A KEY INSIGHT (verpflichtend) should not be optional at question: ', question.excel_id)
     
 def test_for_arrow_missing_at_button_text(question):
-
     if 'BUTTON' in question.structure:
         button_texts = question.texts[np.where(question.structure == 'BUTTON')]
         if not all('->' in text for text in button_texts):
             raise Exception (' Arrow in Button missing at question: ', question.excel_id)
+    
+def test_for_only_one_button(question):
+    if np.sum(question.structure == "BUTTON") == 1:
+        raise Exception ('Question has only one Button: ', question.excel_id)
+    
             
 # ------------ SONSTIGE TESTS ----------------
 
