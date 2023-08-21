@@ -94,11 +94,13 @@ class Trip:
 
     def create_questions_array(self):
         questions_array = []
-        for i in range(3, len(self.df.columns), 3): # start at 2 because of the information
+        for i in range(3, len(self.df.columns), 3): # start at 3 because of the information
             # Create a boolean mask to check if values are None
             mask = self.df.iloc[:, i] == 'None'
             # Check if all values in the column are None
             if mask.all():
+                if self.df.columns[i] != None:
+                    raise Exception ('Structures missing at question: ', self.df.columns[i])
                 break
             if (i+4) > (len(self.df.columns)-1):
                 next_question_structure = []

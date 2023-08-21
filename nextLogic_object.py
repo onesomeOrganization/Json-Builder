@@ -1,5 +1,5 @@
 
-from helper import create_id, get_content_length, add_quotation_mark, get_one_id_higher, create_excel_id, create_condition_dict, nextLogic_patterns
+from helper import create_id, get_content_length, add_quotation_mark, get_one_id_higher, create_excel_id, create_condition_dict, nextLogic_patterns, get_number_and_type_for_value_option
 import numpy as np
 from tests import test_if_any_scala_condition_is_missing, test_for_escape_option_at_question_loop
 import re
@@ -29,7 +29,7 @@ class NextLogic():
         self.prepare_ref_key_insight()
         self.prepare_next_option_button()
         self.prepare_next_option_item()
-        self.prepare_value()
+        # self.prepare_value() Note: Value wird nicht mehr gebraucht, das Ref_Value seine funktionalität ersetzt
         self.prepare_ref_value()
         self.prepare_ref_option()
         self.prepare_ref_count()
@@ -155,90 +155,94 @@ class NextLogic():
                 test_if_any_scala_condition_is_missing(self, scala_condition_dict)
                 for num, key in enumerate(scala_condition_dict):
                     questionId = create_id(self,key)
-                    if scala_condition_dict[key][0] == '=' and str(scala_condition_dict[key][1][0]) == self.question.scala_min:
-                        number = max(scala_condition_dict[key][1])+1
-                        self.NextLogicOptions.append(NextLogicOption(self.id, num, questionId, type = 'VALUE_LT', number= number))
-                    elif scala_condition_dict[key][0] == '=' and str(scala_condition_dict[key][1][-1]) == self.question.scala_max:
-                        number = min(scala_condition_dict[key][1])
-                        self.NextLogicOptions.append(NextLogicOption(self.id, num, questionId, type = 'VALUE_GTE', number= number))
-                    elif scala_condition_dict[key][0] == '=':
-                        number = min(scala_condition_dict[key][1])-1 
-                        secondNumber = max(scala_condition_dict[key][1])+1
-                        self.NextLogicOptions.append(NextLogicOption(self.id, num, questionId, type = 'VALUE_BETWEEN', number= number, secondNumber=secondNumber))
-                    elif scala_condition_dict[key][0] == '>':
-                        number = scala_condition_dict[key][1][0]-1 
-                        self.NextLogicOptions.append(NextLogicOption(self.id, num, questionId, type = 'VALUE_GTE', number= number))
-                    elif scala_condition_dict[key][0] == '<':
-                        number = scala_condition_dict[key][1][0]
-                        self.NextLogicOptions.append(NextLogicOption(self.id, num, questionId, type = 'VALUE_LT', number= number))
-                    elif scala_condition_dict[key][0] == '<=':
-                        number = scala_condition_dict[key][1][0]+1
-                        self.NextLogicOptions.append(NextLogicOption(self.id, num, questionId, type = 'VALUE_LT', number= number))
-                    elif scala_condition_dict[key][0] == '>=':
-                        number = scala_condition_dict[key][1][0] 
-                        self.NextLogicOptions.append(NextLogicOption(self.id, num, questionId, type = 'VALUE_GTE', number= number))
+                    sign = scala_condition_dict[key][0]
+                    values = scala_condition_dict[key][1]
+                    scala_min = int(self.question.scala_min)
+                    scala_max = int(self.question.scala_max)
+                    type, number, secondNumber = get_number_and_type_for_value_option(scala_min, scala_max, sign, values)
+                    self.NextLogicOptions.append(NextLogicOption(self.id, num, questionId, type = type, number= number, secondNumber= secondNumber))
 
     def prepare_ref_value(self):
+        # two cases:
+        # 1.4 (wenn 1.3 > 1.1)
+        # 1.4 (wenn 1.1 > 2)
         # next question depending on value comparison of two scalas or the value of another previous scala
         for num, struc in enumerate(self.structure):
             # --- CONDITION ---
             if struc == 'weiter mit Screen' and re.match(nextLogic_patterns['REF_VALUE'], self.texts[num]):
-                if self.type != 'NEXT':
+                if self.type != 'NEXT' and self.type != 'REF_OPTION':
                     print('''
                     ----------------------------------------------------------------------------------------
                     |  !!!! WARNING !!!! -------- %s und Ref Value gemeinsam |
                     ----------------------------------------------------------------------------------------
                     '''%(self.type))
+
+                condition = self.texts[num]
+                count_condition_dict = create_condition_dict(condition, 'REF_VALUE')
+                # test difference to ref_option:
+                for q in self.question.questions_before:
+                    if list(count_condition_dict.values())[0][0] == q.excel_id:
+                        if q.type != 'SCALA_SLIDER':
+                            return
+                        else:
+                            scala_min = q.scala_min
+                            scala_max = q.scala_max
                 # --- TYPE ---
                 self.type = 'REF_VALUE'
                 # --- OPTION ---
                 self.id_next_question = 'null'
-                condition = self.texts[num]
-                # Condition: "1.4 (wenn Scala > 1.1) 1.5 (wenn scala <= 1.1)"
-                # Output: '1.4': ['>', 1.1], '1.5': ['<=', 1.1]
-                count_condition_dict = create_condition_dict(condition, self.type)
+                # Condition: "1.4 (wenn 1.3 > 1.1) 1.5 (wenn 1.3 < 1.1)" oder " 1.4 (wenn 1.3 > 3)" oder "1.4 (wenn 1.3 = 1,2,3)"
+                # Output: '1.4': ['1.3', '>', '1.1', true], '1.5': ['1.3', '<', '1.1', true]
                 count = 1
                 for key in count_condition_dict:
-                    self.refQuestionId = add_quotation_mark(self.id)
-                    option_refQuestionId = add_quotation_mark(create_id(self, count_condition_dict[key][1]))
                     questionId = create_id(self, key)
-                    sign = count_condition_dict[key][0]
-                    if sign == '<':
-                        type = 'REF_VALUE_GT'
-                    elif sign == '>':
-                        type = 'REF_VALUE_LT'
-                    elif sign == '=':
-                        type = 'REF_VALUE_E'
-                    elif sign == '=' or sign == '>=' or sign == '<=':
-                        raise Exception ('Count condition has a sign ("%s") which is not allowed. Question: %s (Only < and > and = are possible here)' %(sign, self.question.excel_id)) 
-           
-                    self.NextLogicOptions.append(NextLogicOption(self.id, count, questionId, type = type, refQuestionId= option_refQuestionId))
+                    sign = count_condition_dict[key][1]
+                    if count_condition_dict[key][3]:
+                        self.refQuestionId = add_quotation_mark(self.id)
+                        if len(count_condition_dict) < 3:
+                            raise Exception ('Too few conditions at question: ', self.question.excel_id)
+                        if sign == '<':
+                            type = 'REF_VALUE_GT'
+                        elif sign == '>':
+                            type = 'REF_VALUE_LT'
+                        elif sign == '=':
+                            type = 'REF_VALUE_E'
+                        elif sign == '=' or sign == '>=' or sign == '<=':
+                            raise Exception ('Count condition has a sign ("%s") which is not allowed. Question: %s (Only < and > and = are possible here)' %(sign, self.question.excel_id)) 
+                        option_refQuestionId = add_quotation_mark(create_id(self, count_condition_dict[key][2][0]))
+                        self.NextLogicOptions.append(NextLogicOption(self.id, count, questionId, type = type, refQuestionId= option_refQuestionId))
+                    else:
+                        self.refQuestionId = add_quotation_mark(create_id(self, count_condition_dict[key][0]))
+                        values = count_condition_dict[key][2]
+                        type, number, secondNumber = get_number_and_type_for_value_option(scala_min, scala_max, sign, values)
+                        self.NextLogicOptions.append(NextLogicOption(self.id, count, questionId, type = type, number = number, secondNumber = secondNumber))            
                     count += 1         
     
     def prepare_ref_option(self):
-        # WARNING: hier ist bereits alles implementiert dass die ref_option auch mit button und items geht (auch bei der adjazenzliste von progress)
+        # 
         # next screen depending on answer to another question
         for num, struc in enumerate(self.structure):
             # --- CONDITION ---
-            if (struc == 'ITEM(Single)' or (struc == 'ITEM(Multiple)' and self.question.maxNumber == '1') or struc == 'BUTTON' or struc == 'weiter mit Screen') and re.match(nextLogic_patterns['REF_OPTION'], self.texts[num]):
-                if self.type != 'NEXT':
+            if struc == 'weiter mit Screen' and re.match(nextLogic_patterns['REF_OPTION'], self.texts[num]):
+                if self.type != 'NEXT' and self.type != 'REF_VALUE':
                     print('''
                     ----------------------------------------------------------------------------------------
                     |  !!!! WARNING !!!! -------- %s und Ref option gemeinsam |
                     ----------------------------------------------------------------------------------------
                     '''%(self.type))
+                condition = self.texts[num]
+                # condition: 1.5 (wenn 1.2 = A) 1.6 (wenn 1.2 = B oder C)
+                # output: '1.5': ['1.2, ['A']], '1.6': ['1.2, ['B','C']]   
+                condition_dict = create_condition_dict(condition, 'REF_OPTION')
+                # test difference to ref_value:
+                for q in self.question.questions_before: 
+                    if list(condition_dict.values())[0][0] == q.excel_id:
+                        if q.type == 'SCALA_SLIDER':
+                            return
                 # --- TYPE ---
                 self.type = 'REF_OPTION'
                 # --- OPTION ---
                 self.id_next_question = 'null'
-                if struc == 'weiter mit Screen':
-                    condition = self.texts[num]
-                else:
-                    raise Exception ('REF_OPTION und NEXT_OPTION gleichzeitig nötig, da wenn condition und button/item in frage ', self.question.excel_id)
-                    condition = self.texts[num].split('->')[1]
-                condition_dict = create_condition_dict(condition, self.type)
-                # condition: 1.5 (wenn 1.2 = A) 1.6 (wenn 1.2 = B oder C)
-                # output: '1.5': ['1.2, ['A']], '1.6': ['1.2, ['B','C']]                
                 conditions_length = 0
                 for cond in condition_dict.values():
                     conditions_length += len(cond[1])

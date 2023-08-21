@@ -4,12 +4,11 @@ content_length_dict = {'REFERENCE': 1, 'PARAGRAPH': 1, 'AUDIO': 2, 'IMAGE': 2, '
 need_answer_option = ('BUTTON', 'ITEM(Single)', 'ITEM(Multiple)', 'ANSWER OPTION', 'SEVERAL ANSWER OPTIONS', 'SCALA')
 
 nextLogic_patterns = {
-   'VALUE': r'(\d+\.\d+)\s*\(\s*wenn\s*(\w+)\s*([><=]=?)\s*(\d+)\)', #r'(\d+\.\d+)\s*\((.*?)\)'
-   'REF_VALUE': r'(\d+\.\d+)\s*\(\s*wenn\s*(\w+)\s*([><=]=?)\s*(\d+\.\d+)\)',
+   'VALUE': r'(\d+\.\d+)\s*\(\s*wenn\s*(\w+)\s*([><=]=?)\s*(\d+)\)',
+   'REF_VALUE': r'(\d+\.\d+(?:x)?)\s*\(\s*wenn\s*(\d+\.\d+(?:x)?)\s*([><=]=?)\s*(\d+(\.\d+)?(?:x)?|(\d+,)+\d+)\)', #(\d+(\.\d+)?)
    'REF_COUNT': r'(\d+\.\d+)\s*\(\s*wenn\s*(\d+\.\d+)\s*([=><]=?|!=)\s*(\d+)\s*(Antwort(en)?|antwort(en)?)\)',
-   'REF_OPTION': r'(\d+\.\d+)\s*\(\s*wenn\s*(\d+\.\d+)\s*=\s*([^\d+\.\d+]*)\)'
+   'REF_OPTION': r'(\d+\.\d+)\s*\(\s*wenn\s*(\d+\.\d+)\s*=\s*(.*?)\)' # ([^\d+\.\d+]*)
 }
-# 'VALUE': r'(\d+\.\d+)\s*\(\s*wenn\s*(\w+)\s*([><=]=?)\s*(\d+)\)'
 
 
 def create_id (object, reference_id_excel):
@@ -36,7 +35,7 @@ def get_one_excel_id_higher(excel_id):
 
 # check if a reference is like 1.3
 def normal_screen_reference(text):
-  pattern = '^[+-]?\d+([.,]\d+)?$'
+  pattern = r"^\d+\.\d+(?:x)?$"
   it_is_screen_ref = bool(re.match(pattern, text))
   return it_is_screen_ref
 
@@ -103,8 +102,16 @@ def create_condition_dict(text, type):
     matches = re.findall(nextLogic_patterns['REF_VALUE'], text)
     result_dict = {}
     for item in matches:
-        key, variable, operator, value = item
-        result_dict[key] = [operator, value]
+        key, variable, operator, value, indicator, _ = item
+        if indicator == '':
+          comparison = False
+        else:
+          comparison = True
+        values = value.split(',')
+        if not normal_screen_reference(values[0]):
+          for i, value in enumerate(values):
+              values[i] = int(value.strip())
+        result_dict[key] = [variable, operator, values, comparison]
     return result_dict
          
 
@@ -113,4 +120,31 @@ def create_excel_id(id_string):
    excel_id = splits[-2]+'.'+splits[-1][:-1]
    return excel_id
 
+def get_number_and_type_for_value_option(scala_min, scala_max, sign, values):
+  type = ''
+  number = 0
+  secondNumber = 'null'
+  if sign == '=' and values[0] == scala_min:
+    number = max(values)+1
+    type = 'VALUE_LT'
+  elif sign == '=' and values[-1] == scala_max:
+    number = min(values)
+    type = 'VALUE_GTE'
+  elif sign == '=':
+    number = min(values)-1 
+    secondNumber = max(values)+1
+    type = 'VALUE_BETWEEN'
+  elif sign == '>':
+    number = values[0]+1 
+    type = 'VALUE_GTE'
+  elif sign == '<':
+    number = values[0]
+    type = 'VALUE_LT'
+  elif sign == '<=':
+    number = values[0]+1
+    type = 'VALUE_LT'
+  elif sign == '>=':
+    number = values[0] 
+    type = 'VALUE_GTE'
+  return type, number, secondNumber
    
