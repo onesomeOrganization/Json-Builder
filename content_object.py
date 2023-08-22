@@ -1,4 +1,4 @@
-from helper import normal_screen_reference, increase_order_id, create_id, content_length_dict
+from helper import normal_screen_reference, increase_order_id, create_id, content_length_dict, add_quotation_mark
 from tests import test_if_ref_question_is_optional
 
 class Content:
@@ -80,6 +80,7 @@ class ContentComponent():
       self.title = 'null'
       self.title_en = 'null'
       self.language = 'null'
+      self.style = 'null'
       
       needs_translations = ['MORE_INFORMATION', 'MORE_INFORMATION_EXPANDED', 'PARAGRAPH', 'SUB_TITLE']
       self.needs_english_copy = ['AUDIO', 'IMAGE', 'SMALL_IMAGE', 'PDF_DOWNLOAD']
@@ -89,6 +90,10 @@ class ContentComponent():
         if normal_screen_reference(self.text):
           self.refQuestionId = '"'+create_id(Content.question, self.text)+'"'
           test_if_ref_question_is_optional(self)
+          for q in self.content.question.questions_before:
+            if q.excel_id == self.text:
+              if q.type == 'SCALA_SLIDER':
+                self.style = add_quotation_mark('SCALA')
         else:
           self.worldObjectEntryKey = self.text if self.text == 'null' else '"'+self.text +'"'  
       
@@ -155,7 +160,7 @@ class ContentComponent():
               "order": %s,
               "imageName": %s,
               "audioName": %s,
-              "style": null,
+              "style": %s,
               "refAdaptionType": null,
               "refAdaptionNumber": null,
               "refOrderType": null,
@@ -172,7 +177,7 @@ class ContentComponent():
               "refQuestionAnswerOptionId": null,
               "translations": [%s],
               "answerOptions": []
-            },'''%(self.id, self.type, self.order, self.imageName, self.audioName, self.downloadName, self.language, self.worldObjectEntryKey, self.refQuestionId, self.translations)
+            },'''%(self.id, self.type, self.order, self.imageName, self.audioName, self.style, self.downloadName, self.language, self.worldObjectEntryKey, self.refQuestionId, self.translations)
       
       if self.type in self.needs_english_copy:
           self.order, self.id = increase_order_id(self.order,self.id)
