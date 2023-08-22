@@ -5,9 +5,9 @@ need_answer_option = ('BUTTON', 'ITEM(Single)', 'ITEM(Multiple)', 'ANSWER OPTION
 
 nextLogic_patterns = {
    'VALUE': r'(\d+\.\d+)\s*\(\s*wenn\s*(\w+)\s*([><=]=?)\s*(\d+)\)',
-   'REF_VALUE': r'(\d+\.\d+(?:x)?)\s*\(\s*wenn\s*(\d+\.\d+(?:x)?)\s*([><=]=?)\s*(\d+(\.\d+)?(?:x)?|(\d+,)+\d+)\)', #(\d+(\.\d+)?)
+   'REF_VALUE': r'(\d+\.\d+(?:x)?)\s*\(\s*wenn\s*(\d+\.\d+(?:x)?|scala|Scala)\s*([><=]=?)\s*(\d+(\.\d+)?(?:x)?|(\d+,)+\d+)\)',
    'REF_COUNT': r'(\d+\.\d+)\s*\(\s*wenn\s*(\d+\.\d+)\s*([=><]=?|!=)\s*(\d+)\s*(Antwort(en)?|antwort(en)?)\)',
-   'REF_OPTION': r'(\d+\.\d+)\s*\(\s*wenn\s*(\d+\.\d+)\s*=\s*(.*?)\)' # ([^\d+\.\d+]*)
+   'REF_OPTION': r'(\d+\.\d+)\s*\(\s*wenn\s*(\d+\.\d+)\s*=\s*(.*?)\)'
 }
 
 

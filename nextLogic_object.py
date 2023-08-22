@@ -12,9 +12,7 @@ class NextLogic():
         self.version = question.version
         self.id_base = question.id_base
         self.type = 'NEXT'
-        #self.options_string = ''
         self.refQuestionId = 'null'
-        #self.option_screen_refs = []
         self.RefLogic = question.RefLogic
         self.structure = question.structure
         self.texts = question.texts
@@ -29,7 +27,7 @@ class NextLogic():
         self.prepare_ref_key_insight()
         self.prepare_next_option_button()
         self.prepare_next_option_item()
-        # self.prepare_value() Note: Value wird nicht mehr gebraucht, das Ref_Value seine funktionalität ersetzt
+        # self.prepare_value() Note: Value wird nicht mehr gebraucht, das Ref_Value seine funktionalität ersetzt (funktion ist aber noch drin der vollständigkeitshalber)
         self.prepare_ref_value()
         self.prepare_ref_option()
         self.prepare_ref_count()
@@ -180,13 +178,22 @@ class NextLogic():
                 condition = self.texts[num]
                 count_condition_dict = create_condition_dict(condition, 'REF_VALUE')
                 # test difference to ref_option:
+                # Referenced question has to be a scala slider
+                # option A
                 for q in self.question.questions_before:
                     if list(count_condition_dict.values())[0][0] == q.excel_id:
                         if q.type != 'SCALA_SLIDER':
                             return
                         else:
-                            scala_min = q.scala_min
-                            scala_max = q.scala_max
+                            scala_min = int(q.scala_min)
+                            scala_max = int(q.scala_max)
+                # Option B
+                if list(count_condition_dict.values())[0][0] == self.question.excel_id or list(count_condition_dict.values())[0][0] == 'scala' or list(count_condition_dict.values())[0][0] == 'Scala':
+                    if self.question.type != 'SCALA_SLIDER':
+                        return
+                    else:
+                        scala_min = int(self.question.scala_min)
+                        scala_max = int(self.question.scala_max)
                 # --- TYPE ---
                 self.type = 'REF_VALUE'
                 # --- OPTION ---
@@ -212,7 +219,11 @@ class NextLogic():
                         option_refQuestionId = add_quotation_mark(create_id(self, count_condition_dict[key][2][0]))
                         self.NextLogicOptions.append(NextLogicOption(self.id, count, questionId, type = type, refQuestionId= option_refQuestionId))
                     else:
-                        self.refQuestionId = add_quotation_mark(create_id(self, count_condition_dict[key][0]))
+                        # Relict from before Json Builder 6.0, where there still was 'VALUE':
+                        if count_condition_dict[key][0] == 'scala' or count_condition_dict[key][0] == 'Scala':
+                            self.refQuestionId = add_quotation_mark(self.id)
+                        else:
+                            self.refQuestionId = add_quotation_mark(create_id(self, count_condition_dict[key][0]))
                         values = count_condition_dict[key][2]
                         type, number, secondNumber = get_number_and_type_for_value_option(scala_min, scala_max, sign, values)
                         self.NextLogicOptions.append(NextLogicOption(self.id, count, questionId, type = type, number = number, secondNumber = secondNumber))            
