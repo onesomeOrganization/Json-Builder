@@ -132,6 +132,7 @@ class NextLogic():
 
 
     def prepare_value(self):
+        # WURDE ERSETZT DURCH REF_VALUE. MITTLERWEILE OBSOLET
         # scala and next screen depending on scala value
         for num, struc in enumerate(self.structure):
             # --- CONDITION ---
@@ -207,6 +208,7 @@ class NextLogic():
                     questionId = create_id(self, key)
                     sign = count_condition_dict[key][1]
                     if count_condition_dict[key][3]:
+                        test_if_key_ref_exists(count_condition_dict[key][0], self.question)
                         self.refQuestionId = add_quotation_mark(self.id)
                         if len(count_condition_dict) < 3:
                             raise Exception ('Too few conditions at question: ', self.question.excel_id)
@@ -221,7 +223,7 @@ class NextLogic():
                         option_refQuestionId = add_quotation_mark(create_id(self, count_condition_dict[key][2][0]))
                         self.NextLogicOptions.append(NextLogicOption(self.id, count, questionId, type = type, refQuestionId= option_refQuestionId))
                     else:
-                        # Relict from before Json Builder 6.0, where there still was 'VALUE':
+                        # Relict from before Json Builder 6.0, where there still was 'VALUE' with "scala":
                         if count_condition_dict[key][0] == 'scala' or count_condition_dict[key][0] == 'Scala':
                             self.refQuestionId = add_quotation_mark(self.id)
                         else:
@@ -262,6 +264,7 @@ class NextLogic():
                 count = 1
                 for key in condition_dict:
                     test_if_key_ref_exists(key, self.question)
+                    test_if_key_ref_exists(condition_dict[key][0], self.question)
                     questionId = create_id(self, key)
                     refQuestionId =  add_quotation_mark((create_id(self, condition_dict[key][0])))
                     if self.refQuestionId == 'null' or self.refQuestionId == refQuestionId:
@@ -305,6 +308,7 @@ class NextLogic():
                 count = 1
                 for key in count_condition_dict:
                     test_if_key_ref_exists(key, self.question)
+                    test_if_key_ref_exists(count_condition_dict[key][0], self.question)
                     self.refQuestionId = add_quotation_mark(create_id(self, count_condition_dict[key][0]))
                     questionId = create_id(self, key)
                     sign = count_condition_dict[key][1]
