@@ -33,9 +33,16 @@ def create_adjazenzliste(questions_array):
                 adjazenzliste[q.excel_id] = current_value    
         # normal Case
         if not 'weiter mit Screen' in q.structure and not 'letzter Screen' in q.structure and not num == len(questions_array)-1 and not 'Neue Etappe' in questions_array[num+1].structure and not 'Neue Etappe' in q.structure and not arrow_or_condition_flag:
-            # add id+1 as value, e.g. id = flora-v13-1-3 -> flora-v13-1-4
-            #adjazenzliste[q.excel_id] = [q.excel_id.split('.')[0]+'.'+str(int(q.excel_id.split('.')[1])+1)]
-            adjazenzliste[q.excel_id] = [get_one_excel_id_higher(q.excel_id)]
+            # check if id is id+1 as value, e.g. id = flora-v13-1-3 -> flora-v13-1-4
+            next_id_should_be = get_one_excel_id_higher(q.excel_id)
+            next_id_is = questions_array[num+1].excel_id
+            if next_id_should_be != next_id_should_be:
+                # x fix case should be an exclusion
+                if next_id_is == next_id_should_be+'x' or next_id_is == q.excel_id+'x':
+                    pass
+                else:
+                    raise Exception('Check create_adjazenzliste. Something is wrong in the "normal Case".')
+            adjazenzliste[q.excel_id] = [next_id_is]
         # weiter mit Screen case ohne ->
         elif 'weiter mit Screen' in q.structure and not arrow_or_condition_flag:
             # add weiter mit screen id

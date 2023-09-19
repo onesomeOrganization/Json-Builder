@@ -4,10 +4,10 @@ content_length_dict = {'REFERENCE': 1, 'PARAGRAPH': 1, 'AUDIO': 2, 'IMAGE': 2, '
 need_answer_option = ('BUTTON', 'ITEM(Single)', 'ITEM(Multiple)', 'ANSWER OPTION', 'SEVERAL ANSWER OPTIONS', 'SCALA')
 
 nextLogic_patterns = {
-   'VALUE': r'(\d+\.\d+)\s*\(\s*wenn\s*(\w+)\s*([><=]=?)\s*(\d+)\)',
+   'VALUE': r'(\d+\.\d+(?:x)?)\s*\(\s*wenn\s*(\w+)\s*([><=]=?)\s*(\d+)\)',
    'REF_VALUE': r'(\d+\.\d+(?:x)?)\s*\(\s*wenn\s*(\d+\.\d+(?:x)?|scala|Scala)\s*([><=]=?)\s*(\d+(\.\d+)?(?:x)?|(\d+,)+\d+)\)',
-   'REF_COUNT': r'(\d+\.\d+)\s*\(\s*wenn\s*(\d+\.\d+)\s*([=><]=?|!=)\s*(\d+)\s*(Antwort(en)?|antwort(en)?)\)',
-   'REF_OPTION': r'(\d+\.\d+)\s*\(\s*wenn\s*(\d+\.\d+)\s*=\s*(.*?)\)'
+   'REF_COUNT': r'(\d+\.\d+(?:x)?)\s*\(\s*wenn\s*(\d+\.\d+(?:x)?)\s*([=><]=?|!=)\s*(\d+)\s*(Antwort(en)?|antwort(en)?)\)',
+   'REF_OPTION': r'(\d+\.\d+(?:x)?)\s*\(\s*wenn\s*(\d+\.\d+(?:x)?)\s*=\s*(.*?)\)'
 }
 
 
