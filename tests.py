@@ -310,4 +310,8 @@ def test_if_ref_question_is_optional(contentComponent):
 def test_if_button_texts_are_the_same(id, button_texts):
     if len(button_texts) != len(set(button_texts)):
         raise Exception ('Same Button texts at question: ', id)
+    
+def test_if_key_ref_exists(key, question):
+    if not key in question.trip.all_ids:
+        raise Exception ('Reference id ("%s") does not exist in this excel used in the "weiter mit Screen" from question: '%(key), question.excel_id)
 

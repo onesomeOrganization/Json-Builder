@@ -1,7 +1,7 @@
 
 from helper import create_id, get_content_length, add_quotation_mark, get_one_id_higher, create_excel_id, create_condition_dict, nextLogic_patterns, get_number_and_type_for_value_option
 import numpy as np
-from tests import test_if_any_scala_condition_is_missing, test_for_escape_option_at_question_loop
+from tests import test_if_any_scala_condition_is_missing, test_for_escape_option_at_question_loop, test_if_key_ref_exists
 import re
 
 class NextLogic():
@@ -152,6 +152,7 @@ class NextLogic():
                 # output: '3.10': ['=', [0]], '3.11': ['=', [1,2,3]], '3.12': ['>=', [4]] -> text hast to be stripped
                 test_if_any_scala_condition_is_missing(self, scala_condition_dict)
                 for num, key in enumerate(scala_condition_dict):
+                    test_if_key_ref_exists(key, self.question)
                     questionId = create_id(self,key)
                     sign = scala_condition_dict[key][0]
                     values = scala_condition_dict[key][1]
@@ -202,6 +203,7 @@ class NextLogic():
                 # Output: '1.4': ['1.3', '>', '1.1', true], '1.5': ['1.3', '<', '1.1', true]
                 count = 1
                 for key in count_condition_dict:
+                    test_if_key_ref_exists(key, self.question)
                     questionId = create_id(self, key)
                     sign = count_condition_dict[key][1]
                     if count_condition_dict[key][3]:
@@ -259,6 +261,7 @@ class NextLogic():
                     conditions_length += len(cond[1])
                 count = 1
                 for key in condition_dict:
+                    test_if_key_ref_exists(key, self.question)
                     questionId = create_id(self, key)
                     refQuestionId =  add_quotation_mark((create_id(self, condition_dict[key][0])))
                     if self.refQuestionId == 'null' or self.refQuestionId == refQuestionId:
@@ -301,6 +304,7 @@ class NextLogic():
                 count_condition_dict = create_condition_dict(condition, self.type)
                 count = 1
                 for key in count_condition_dict:
+                    test_if_key_ref_exists(key, self.question)
                     self.refQuestionId = add_quotation_mark(create_id(self, count_condition_dict[key][0]))
                     questionId = create_id(self, key)
                     sign = count_condition_dict[key][1]
