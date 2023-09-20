@@ -90,19 +90,22 @@ class NextLogic():
     def prepare_next_option_button(self):
         # buttons
         count = 1
+        type_set = False
         for num, struc in enumerate(self.structure):
             # --- CONDITION ---
             if struc == 'BUTTON':
-                if self.type != 'NEXT':
-                    print('''
-                    ----------------------------------------------------------------------------------------
-                    |  !!!! WARNING !!!! -------- %s und Option Question gemeinsam |
-                    ----------------------------------------------------------------------------------------
-                    '''%(self.type))
-                # --- TYPE ---
-                self.type = 'NEXT_OPTION'
+                if not type_set:
+                    if self.type != 'NEXT':
+                        print('''
+                        ----------------------------------------------------------------------------------------
+                        |  !!!! WARNING !!!! -------- %s und Option Question gemeinsam in question: %s |
+                        ----------------------------------------------------------------------------------------
+                        '''%(self.type, self.question.excel_id))
+                    # --- TYPE ---
+                    self.type = 'NEXT_OPTION'
+                    self.id_next_question = 'null'
+                    type_set = True
                 # --- OPTION ---
-                self.id_next_question = 'null'
                 questionId = create_id(self, self.texts[num].split('->')[1])
                 questionAnswerOptionId = self.id+'-'+str(self.content_length)+'-'+str(count)
                 count += 1
@@ -112,19 +115,22 @@ class NextLogic():
     def prepare_next_option_item(self):
         # next option items with ->
         count = 1
+        type_set = False
         for num, struc in enumerate(self.structure):
             # --- CONDITION ---
             if (struc == 'ITEM(Single)' and '->' in self.texts[num]) or (struc == 'ITEM(Multiple)' and '->' in self.texts[num] and self.question.maxNumber == '1'):
-                if self.type != 'NEXT':
-                    print('''
-                    ----------------------------------------------------------------------------------------
-                    |  !!!! WARNING !!!! -------- %s und Next Option Item gemeinsam |
-                    ----------------------------------------------------------------------------------------
-                    '''%(self.type))
-                # --- TYPE ---
-                self.type = 'NEXT_OPTION'
+                if not type_set:
+                    if self.type != 'NEXT':
+                        print('''
+                        ----------------------------------------------------------------------------------------
+                        |  !!!! WARNING !!!! -------- %s und Next Option Item gemeinsam in question: %s|
+                        ----------------------------------------------------------------------------------------
+                        '''%(self.type, self.question.excel_id))
+                    # --- TYPE ---
+                    self.type = 'NEXT_OPTION'
+                    self.id_next_question = 'null'
+                    type_set = True
                 # --- OPTION ---
-                self.id_next_question = 'null'
                 questionId = create_id(self, self.texts[num].split('->')[1])
                 questionAnswerOptionId = self.id+'-'+str(self.content_length)+'-'+str(count)
                 count +=1
@@ -140,9 +146,9 @@ class NextLogic():
                 if self.type != 'NEXT':
                     print('''
                     ----------------------------------------------------------------------------------------
-                    |  !!!! WARNING !!!! -------- %s und Scala Value gemeinsam |
+                    |  !!!! WARNING !!!! -------- %s und Scala Value gemeinsam in question: %s|
                     ----------------------------------------------------------------------------------------
-                    '''%(self.type))
+                    '''%(self.type, self.question.excel_id))
                 # --- TYPE ---
                 self.type = 'VALUE'
                 # --- OPTION ---
@@ -173,9 +179,9 @@ class NextLogic():
                 if self.type != 'NEXT' and self.type != 'REF_OPTION':
                     print('''
                     ----------------------------------------------------------------------------------------
-                    |  !!!! WARNING !!!! -------- %s und Ref Value gemeinsam |
+                    |  !!!! WARNING !!!! -------- %s und Ref Value gemeinsam in question: %s|
                     ----------------------------------------------------------------------------------------
-                    '''%(self.type))
+                    '''%(self.type, self.question.excel_id))
 
                 condition = self.texts[num]
                 count_condition_dict = create_condition_dict(condition, 'REF_VALUE')
