@@ -5,9 +5,13 @@ from helper import add_quotation_mark, normal_screen_reference, nextLogic_patter
 # ------- TRIP TESTS ----------------
 
 def are_all_information_there(information, information_en, english_translation):
+    lengths_of_infos_every_trip_needs = 14
+    lengths_of_infos_only_worlds_need = 20
     # Check if all information fields are there
     for i,info in enumerate(information):
-        if i > 14:
+        if information[0] == 'Kurztrip' or information[0] == 'kurztrip' and i > lengths_of_infos_every_trip_needs:
+            break
+        if i > lengths_of_infos_only_worlds_need:
             break
         if info == 'None':
             raise Exception('There is some starting information missing')

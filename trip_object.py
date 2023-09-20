@@ -4,6 +4,7 @@ from progress import create_progress, create_adjazenzliste
 import pandas as pd
 import re
 from questionLoops_object import create_questionloops
+from helper import add_quotation_mark
 
 class Trip:
     def __init__(self, df, id_base, version, write_beginning, write_ending, journey_key, english_translation, etappe, starts_in_the_middle_of_etappe, nummeration_is_not_correct):
@@ -24,6 +25,11 @@ class Trip:
         self.backgroundImageName = self.information[13]
         self.sessionImageName = self.information[14]
         self.cardDisplayImageName = self.information[15]
+        self.onesomeValueOne = add_quotation_mark(self.information[16])
+        self.onesomeValueTwo = add_quotation_mark(self.information[17])
+        self.onesomeValueThree = add_quotation_mark(self.information[18])
+        self.journeyKeyInsight = add_quotation_mark(self.information[19])
+        self.journeyExercise = add_quotation_mark(self.information[20])
         self.version = version[1:]
         self.type = self.information[0]
         self.topicId = self.information[1]
@@ -87,6 +93,12 @@ class Trip:
           information[0] = 'SHORT_TRIP'
           information[1] = 'null'
           information[15] = 'null'
+          information[16] = 'null'
+          information[17] = 'null'
+          information[18] = 'null'
+          information[19] = 'null'
+          information[20] = 'null'
+
 
       test_aufruf(information, information_en, self.english_translation)
       return information, information_en
@@ -212,6 +224,11 @@ class Trip:
       "compulsoryOrder": false,
       "topicId": %s,
       "backgroundImageLockedName": "dark_main.png",
+      "onesomeValueOne": %s,
+      "onesomeValueTwo": %s,
+      "onesomeValueThree": %s,
+      "journeyKeyInsight": %s,
+      "journeyExercise": %s,
       "translations": [
         {
           "id": "%s-DE",
@@ -289,7 +306,7 @@ class Trip:
             }
           ],
           "questions": [
-            ''' % (self.id, self.key, self.mainImageName, self.mainImageLongName, self.topicIconImageName, self.mainImageLockedLongName, self.backgroundImageName, self.sessionImageName, self.cardDisplayImageName, self.version, self.type, self.topicId, self.id, self.title, self.id, self.title_en, self.id, self.id, self.beschreibung, self.id, self.beschreibung_en, self.id, self.id, self.aufruf, self.id, self.aufruf_en, self.id, self.etappe, self.etappe, self.durationMin, self.durationMax, self.id, self.etappe, self.etappen_titel, self.id, self.etappe, self.etappen_titel_en)
+            ''' % (self.id, self.key, self.mainImageName, self.mainImageLongName, self.topicIconImageName, self.mainImageLockedLongName, self.backgroundImageName, self.sessionImageName, self.cardDisplayImageName, self.version, self.type, self.topicId, self.onesomeValueOne, self.onesomeValueTwo, self.onesomeValueThree, self.journeyKeyInsight, self.journeyExercise, self.id, self.title, self.id, self.title_en, self.id, self.id, self.beschreibung, self.id, self.beschreibung_en, self.id, self.id, self.aufruf, self.id, self.aufruf_en, self.id, self.etappe, self.etappe, self.durationMin, self.durationMax, self.id, self.etappe, self.etappen_titel, self.id, self.etappe, self.etappen_titel_en)
         return beginning
     
     def create_json(self):
