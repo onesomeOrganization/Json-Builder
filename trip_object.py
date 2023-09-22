@@ -25,11 +25,11 @@ class Trip:
         self.backgroundImageName = self.information[13]
         self.sessionImageName = self.information[14]
         self.cardDisplayImageName = self.information[15]
-        self.onesomeValueOne = add_quotation_mark(self.information[16])
-        self.onesomeValueTwo = add_quotation_mark(self.information[17])
-        self.onesomeValueThree = add_quotation_mark(self.information[18])
-        self.journeyKeyInsight = add_quotation_mark(self.information[19])
-        self.journeyExercise = add_quotation_mark(self.information[20])
+        self.journeyMailValueOne = self.information[16]
+        self.journeyMailValueTwo = self.information[17]
+        self.journeyMailValueThree = self.information[18]
+        self.journeyMailKeyInsight = self.information[19]
+        self.journeyMailExercise = self.information[20]
         self.version = version[1:]
         self.type = self.information[0]
         self.topicId = self.information[1]
@@ -47,11 +47,21 @@ class Trip:
             self.beschreibung_en = self.information_en[3].replace('"', '\\"').replace('\n', '').replace("_x000B_", "")+'<br><br>'
             self.aufruf_en = self.information_en[4]
             self.etappen_titel_en = self.information_en[5]
+            self.journeyMailValueOne_en = add_quotation_mark(self.information_en[16])
+            self.journeyMailValueTwo_en = add_quotation_mark(self.information_en[17])
+            self.journeyMailValueThree_en = add_quotation_mark(self.information_en[18])
+            self.journeyMailKeyInsight_en = add_quotation_mark(self.information_en[19])
+            self.journeyMailExercise_en = add_quotation_mark(self.information_en[20])
         else:
             self.title_en = 'Englisch'
             self.beschreibung_en = 'Englisch'
             self.aufruf_en = 'Englisch'
             self.etappen_titel_en = 'Englisch'
+            self.journeyMailValueOne_en = '"Englisch"'
+            self.journeyMailValueTwo_en = '"Englisch"'
+            self.journeyMailValueThree_en = '"Englisch"'
+            self.journeyMailKeyInsight_en = '"Englisch"'
+            self.journeyMailExercise_en = '"Englisch"'
 
         # Preparations
         self.all_ids = self.get_all_ids()
@@ -87,18 +97,16 @@ class Trip:
       if information[0] == 'Reise' or information[0] == 'reise':
           information[0] = 'WORLD'
           information[1] = '"'+information[1]+'"'
-          information[15] = '"'+information[15]+'"'
+          for i in range(15,21):
+            information[i] = add_quotation_mark(information[i])
+         
           
       if information[0] == 'Kurztrip' or information[0] == 'kurztrip':
           information[0] = 'SHORT_TRIP'
           information[1] = 'null'
-          information[15] = 'null'
-          information[16] = 'null'
-          information[17] = 'null'
-          information[18] = 'null'
-          information[19] = 'null'
-          information[20] = 'null'
-
+          for i in range(15,21):
+              information[i] = 'null'
+         
 
       test_aufruf(information, information_en, self.english_translation)
       return information, information_en
@@ -224,25 +232,30 @@ class Trip:
       "compulsoryOrder": false,
       "topicId": %s,
       "backgroundImageLockedName": "dark_main.png",
-      "onesomeValueOne": %s,
-      "onesomeValueTwo": %s,
-      "onesomeValueThree": %s,
-      "journeyKeyInsight": %s,
-      "journeyExercise": %s,
       "translations": [
         {
           "id": "%s-DE",
           "language": "DE",
           "title": "%s",
           "subTitle": "",
-          "description": null
+          "description": null,
+          "journeyMailValueOne": %s,
+          "journeyMailValueTwo": %s,
+          "journeyMailValueThree": %s,
+          "journeyMailKeyInsight": %s,
+          "journeyMailExercise": %s
         },
         {
           "id": "%s-EN",
           "language": "EN",
           "title": "%s",
           "subTitle": "",
-          "description": null
+          "description": null,
+          "journeyMailValueOne": %s,
+          "journeyMailValueTwo": %s,
+          "journeyMailValueThree": %s,
+          "journeyMailKeyInsight": %s,
+          "journeyMailExercise": %s
         }
       ],
       "content": [
@@ -306,7 +319,7 @@ class Trip:
             }
           ],
           "questions": [
-            ''' % (self.id, self.key, self.mainImageName, self.mainImageLongName, self.topicIconImageName, self.mainImageLockedLongName, self.backgroundImageName, self.sessionImageName, self.cardDisplayImageName, self.version, self.type, self.topicId, self.onesomeValueOne, self.onesomeValueTwo, self.onesomeValueThree, self.journeyKeyInsight, self.journeyExercise, self.id, self.title, self.id, self.title_en, self.id, self.id, self.beschreibung, self.id, self.beschreibung_en, self.id, self.id, self.aufruf, self.id, self.aufruf_en, self.id, self.etappe, self.etappe, self.durationMin, self.durationMax, self.id, self.etappe, self.etappen_titel, self.id, self.etappe, self.etappen_titel_en)
+            ''' % (self.id, self.key, self.mainImageName, self.mainImageLongName, self.topicIconImageName, self.mainImageLockedLongName, self.backgroundImageName, self.sessionImageName, self.cardDisplayImageName, self.version, self.type, self.topicId, self.id, self.title, self.journeyMailValueOne, self.journeyMailValueTwo, self.journeyMailValueThree, self.journeyMailKeyInsight, self.journeyMailExercise, self.id, self.title_en, self.journeyMailValueOne_en, self.journeyMailValueTwo_en, self.journeyMailValueThree_en, self.journeyMailKeyInsight_en, self.journeyMailExercise_en, self.id, self.id, self.beschreibung, self.id, self.beschreibung_en, self.id, self.id, self.aufruf, self.id, self.aufruf_en, self.id, self.etappe, self.etappe, self.durationMin, self.durationMax, self.id, self.etappe, self.etappen_titel, self.id, self.etappe, self.etappen_titel_en)
         return beginning
     
     def create_json(self):

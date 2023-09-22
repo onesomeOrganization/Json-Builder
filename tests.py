@@ -14,7 +14,7 @@ def are_all_information_there(information, information_en, english_translation):
         if i > lengths_of_infos_only_worlds_need:
             break
         if info == 'None':
-            raise Exception('There is some starting information missing')
+            raise Exception('There is some starting information missing in the first column')
         
     # Test Oase zuordnung
     if information[1] == 'None':
@@ -23,7 +23,10 @@ def are_all_information_there(information, information_en, english_translation):
     if english_translation:
         for i in range(2,5):
             if information_en[i] == 'None':
-                raise Exception('Some englisch Information missing')
+                raise Exception('Some englisch Information is missing in the first column')
+        for i in range(16,20):
+            if information_en[i] == 'None':
+                raise Exception('Some englisch Information is missing in the first column')
     
 def test_aufruf(information, information_en, english_translation):
     # Test Aufruf
