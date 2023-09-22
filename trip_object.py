@@ -232,6 +232,7 @@ class Trip:
       "compulsoryOrder": false,
       "topicId": %s,
       "backgroundImageLockedName": "dark_main.png",
+      "doNotPromote": false,
       "translations": [
         {
           "id": "%s-DE",
