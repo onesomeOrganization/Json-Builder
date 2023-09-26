@@ -31,6 +31,8 @@ class NextLogic():
         self.prepare_ref_value()
         self.prepare_ref_option()
         self.prepare_ref_count()
+        # other preparations that need nextLogics
+        self.prepare_answer_option_with_ref()
 
 
         # Json
@@ -329,7 +331,12 @@ class NextLogic():
                     self.NextLogicOptions.append(NextLogicOption(self.id, count, questionId, type = type, number= number))
                     count += 1
 
-   
+    def prepare_answer_option_with_ref(self):
+        if self.question.type == 'ITEM_LIST_REF_CUSTOM_ANSWER_OPTIONS_NO_LIMIT':
+            if self.refQuestionId is not 'null':
+                raise Exception ('refQuestionId der nextlogic is needed for %s but also for answer option with reference' % (self.type))
+            else:
+                self.refQuestionId = add_quotation_mark(create_id(self, self.texts[np.where(self.structure == 'ANSWER OPTIONS FROM REFERENCE')][0]))
                 
 
     # ----------- CREATE JSON ----------------

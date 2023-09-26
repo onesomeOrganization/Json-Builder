@@ -1,7 +1,7 @@
 import re
 
 content_length_dict = {'REFERENCE': 1, 'PARAGRAPH': 1, 'AUDIO': 2, 'IMAGE': 2, 'SMALL_IMAGE': 2, 'MORE_INFORMATION_EXPANDED': 1, 'MORE_INFORMATION': 1, 'SUB_TITLE': 1, 'REFERENCE': 1, 'PDF_DOWNLOAD': 2}
-need_answer_option = ('BUTTON', 'ITEM(Single)', 'ITEM(Multiple)', 'ANSWER OPTION', 'SEVERAL ANSWER OPTIONS', 'SCALA')
+need_answer_option = ('BUTTON', 'ITEM(Single)', 'ITEM(Multiple)', 'ANSWER OPTION', 'SEVERAL ANSWER OPTIONS', 'SCALA', 'ANSWER OPTIONS FROM REFERENCE')
 
 nextLogic_patterns = {
    'VALUE': r'(\d+\.\d+(?:x)?)\s*\(\s*wenn\s*(\w+)\s*([><=]=?)\s*(\d+)\)',

@@ -85,6 +85,9 @@ class AnswerOption():
       elif self.question.type == 'SCALA_SLIDER':
           self.options.append(AnswerOptionOption(self, 'SLIDER'))
           self.options_order, self.options_id = increase_order_id(self.options_order, self.options_id)
+      elif self.question.type == 'ITEM_LIST_REF_CUSTOM_ANSWER_OPTIONS_NO_LIMIT':
+          self.options.append(AnswerOptionOption(self, 'ITEM_LIST_REF_CUSTOM_OPTIONS_NO_LIMIT'))
+          self.options_order, self.options_id = increase_order_id(self.options_order, self.options_id)
       return self.options
       
   # -------- JSON -------------    
