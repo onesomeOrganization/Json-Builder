@@ -258,7 +258,7 @@ def test_for_correct_structure_type(question):
         if (struc == 'IMAGE' or struc == 'SMALL_IMAGE' or struc == 'AUDIO' or struc == 'PDF_DOWNLOAD') and len(question.texts[num].split(' '))>1:
             print('''
                     ---------------------------------------------------------------------------
-                    |  !!!! WARNING !!!! --- Structure might be missplaced at question   %s |
+                    |  !!!! WARNING !!!! --- Structure might be missplaced at question  %s |
                     ---------------------------------------------------------------------------
                     '''%(question.excel_id))
             
