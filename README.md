@@ -9,6 +9,7 @@
 5. Add all other demanded information in the json_builder.py top
 6. Excel should look like the Json_Excel_template3.3 (Stand 3.7.23: Better ask for the current template version as it is changing all the time)
 7. run file and find json in the save_directory with the name of the name_of_json_file variable
+   -> If you want to have the latest changes use the dev branch. If you want to have a version which might be older but working for sure, use the main branch.
 
 # Explanations / Debugging tipps
 
