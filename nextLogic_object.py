@@ -336,8 +336,13 @@ class NextLogic():
             if self.refQuestionId is not 'null':
                 raise Exception ('refQuestionId der nextlogic is needed for %s but also for answer option with reference in question %s' % (self.type, self.question.excel_id))
             else:
-                self.refQuestionId = add_quotation_mark(create_id(self, self.texts[np.where(self.structure == 'ANSWER OPTIONS FROM REFERENCE')][0]))
-                
+                self.refQuestionId = add_quotation_mark(create_id(self, self.texts[np.where(self.structure == 'ANSWER OPTIONS FROM REFERENCE (Multiple Choice)')][0]))
+        if self.question.type == 'ITEM_LIST_REF_CUSTOM_SINGLE_CHOICE':
+            if self.refQuestionId is not 'null':
+                raise Exception ('refQuestionId der nextlogic is needed for %s but also for answer option with reference in question %s' % (self.type, self.question.excel_id))
+            else:
+                self.refQuestionId = add_quotation_mark(create_id(self, self.texts[np.where(self.structure == 'ANSWER OPTIONS FROM REFERENCE (Single Choice)')][0]))
+                   
 
     # ----------- CREATE JSON ----------------
 

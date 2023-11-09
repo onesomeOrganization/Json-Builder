@@ -151,8 +151,10 @@ class Question:
             question_type = 'OPEN_QUESTION'
         elif 'Neue Etappe' in self.structure:
             question_type = 'Neue Etappe'
-        elif 'ANSWER OPTIONS FROM REFERENCE' in self.structure:
+        elif 'ANSWER OPTIONS FROM REFERENCE (Multiple Choice)' in self.structure:
             question_type = 'ITEM_LIST_REF_CUSTOM_ANSWER_OPTIONS_NO_LIMIT'
+        elif 'ANSWER OPTIONS FROM REFERENCE (Single Choice)' in self.structure:
+            question_type = 'ITEM_LIST_REF_CUSTOM_SINGLE_CHOICE'
         else:
             question_type = 'CONTENT'
 
