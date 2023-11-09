@@ -118,6 +118,7 @@ def do_tests_on_questions(question):
     test_for_key_insight_and_optional(question)
     test_for_arrow_missing_at_button_text(question)
     test_for_only_one_button(question)
+    test_for_old_version_mistakes(question)
 
 
 def test_subtitle(question):
@@ -278,6 +279,11 @@ def test_for_arrow_missing_at_button_text(question):
 def test_for_only_one_button(question):
     if np.sum(question.structure == "BUTTON") == 1:
         raise Exception ('Question has only one Button: ', question.excel_id)
+    
+def test_for_old_version_mistakes(question):
+    for struc in question.structure:
+        if struc == 'ANSWER OPTIONS FROM REFERENCE':
+            raise Exception ('You are using an outdated json builder template. ANSWER OPTIONS FROM REFERENCE is outdated it must be ANSWER OPTIONS FROM REFERENCE (Single Choice) or ANSWER OPTIONS FROM REFERENCE (Multiple Choice) at question: ', question.excel_id)
     
             
 # ------------ SONSTIGE TESTS ----------------
