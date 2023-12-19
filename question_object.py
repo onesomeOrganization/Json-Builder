@@ -5,7 +5,7 @@ from content_object import Content
 from answerOption_object import AnswerOption
 from nextLogic_object import NextLogic
 from helper import create_id
-from tests import do_tests_on_questions, test_if_id_exists
+from tests import do_tests_on_questions, test_if_id_exists, test_for_correct_key_insight
 import pandas as pd
 
 
@@ -128,7 +128,7 @@ class Question:
             question_type = 'ITEM_LIST_LIMIT'
         # ITEM_LIST_EXPANDABLE: A) entweder mehrere text felder ohne items oder B) item multiple mit text feldern oder C) item single mit text feldern und maxnumber
             # A
-        elif not ('ITEM(Multiple)' in self.structure or "ITEM(Single)" in self.structure) and 'SEVERAL ANSWER OPTIONS' in self.structure:
+        elif not ('ITEM(Multiple)' in self.structure or "ITEM(Single)" in self.structure) and 'SEVERAL ANSWER OPTIONS' in self.structure and not 'ANSWER OPTIONS FROM REFERENCE (Multiple Choice)' in self.structure:
             question_type = 'ITEM_LIST_EXPANDABLE'
             # B
         elif 'ITEM(Multiple)' in self.structure and ('SEVERAL ANSWER OPTIONS' in self.structure or 'ANSWER OPTON' in self.structure):
@@ -151,8 +151,10 @@ class Question:
             question_type = 'OPEN_QUESTION'
         elif 'Neue Etappe' in self.structure:
             question_type = 'Neue Etappe'
-        elif 'ANSWER OPTIONS FROM REFERENCE (Multiple Choice)' in self.structure:
+        elif 'ANSWER OPTIONS FROM REFERENCE (Multiple Choice)' in self.structure and not('SEVERAL ANSWER OPTIONS' in self.structure or 'ANSWER OPTION' in self.structure):
             question_type = 'ITEM_LIST_REF_CUSTOM_ANSWER_OPTIONS_NO_LIMIT'
+        elif 'ANSWER OPTIONS FROM REFERENCE (Multiple Choice)' in self.structure and ('SEVERAL ANSWER OPTIONS' in self.structure or 'ANSWER OPTION' in self.structure):
+            question_type = 'ITEM_LIST_MULTI_REF_CUSTOM_AND_NORMAL_EXPANDABLE_NO_LIMIT'
         elif 'ANSWER OPTIONS FROM REFERENCE (Single Choice)' in self.structure:
             question_type = 'ITEM_LIST_REF_CUSTOM_SINGLE_CHOICE'
         else:
@@ -238,9 +240,11 @@ class Question:
         if 'KEY INSIGHT (optional)' in self.structure or 'KEY INSIGHT (verpflichtend)' in self.structure:
             self.reviewable = 'true'
             if 'KEY INSIGHT (optional)' in self.structure:
+                test_for_correct_key_insight(self, self.texts[np.where(self.structure == 'KEY INSIGHT (optional)')][0])
                 self.worldObjectEntryKeyType = '"'+ self.texts[np.where(self.structure == 'KEY INSIGHT (optional)')][0]+'"'
                 self.optional = 'true'
             elif 'KEY INSIGHT (verpflichtend)' in self.structure:
+                test_for_correct_key_insight(self, self.texts[np.where(self.structure == 'KEY INSIGHT (verpflichtend)')][0])
                 self.worldObjectEntryKeyType = '"'+self.texts[np.where(self.structure == 'KEY INSIGHT (verpflichtend)')][0]+'"'
                 self.optional = 'false'
         else:

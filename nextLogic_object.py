@@ -349,7 +349,7 @@ class NextLogic():
     def create_json(self):
         if self.RefLogic.type is None:
             questionRefLogicId = 'null'
-        elif self.RefLogic.type == 'REF_OPTIONAL' or self.RefLogic.type == 'REF_OPTIONAL_WITH_CONTENT':
+        elif self.RefLogic.type == 'REF_OPTIONAL' or self.RefLogic.type == 'REF_OPTIONAL_WITH_CONTENT' or self.RefLogic.type == 'ANSWER_AGGREGATION':
             questionRefLogicId = '"'+self.id+'"'
 
         options_json = ''

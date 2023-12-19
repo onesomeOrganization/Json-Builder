@@ -1,7 +1,7 @@
 import re
 
 content_length_dict = {'REFERENCE': 1, 'PARAGRAPH': 1, 'AUDIO': 2, 'IMAGE': 2, 'SMALL_IMAGE': 2, 'MORE_INFORMATION_EXPANDED': 1, 'MORE_INFORMATION': 1, 'SUB_TITLE': 1, 'REFERENCE': 1, 'PDF_DOWNLOAD': 2}
-need_answer_option = ('BUTTON', 'ITEM(Single)', 'ITEM(Multiple)', 'ANSWER OPTION', 'SEVERAL ANSWER OPTIONS', 'SCALA', 'ANSWER OPTIONS FROM REFERENCE')
+need_answer_option = ('BUTTON', 'ITEM(Single)', 'ITEM(Multiple)', 'ANSWER OPTION', 'SEVERAL ANSWER OPTIONS', 'SCALA', 'ANSWER OPTIONS FROM REFERENCE (Multiple Choice)', 'ANSWER OPTIONS FROM REFERENCE (Single Choice)')
 
 nextLogic_patterns = {
    'VALUE': r'(\d+\.\d+(?:x)?)\s*\(\s*wenn\s*(\w+)\s*([><=]=?)\s*(\d+)\)',
@@ -10,6 +10,13 @@ nextLogic_patterns = {
    'REF_OPTION': r'(\d+\.\d+(?:x)?)\s*\(\s*wenn\s*(\d+\.\d+(?:x)?)\s*=\s*(.*?)\)'
 }
 
+screen_reference_pattern = r"^\d+\.\d+(?:x)?$"
+key_insight_pattern = r"^[A-Z_]+$"
+
+# check if a reference is like 1.3
+def normal_screen_reference(text):
+  it_is_screen_ref = bool(re.match(screen_reference_pattern, text))
+  return it_is_screen_ref
 
 def create_id (object, reference_id_excel):
     reference_id_excel = reference_id_excel.strip()
@@ -33,11 +40,7 @@ def get_one_excel_id_higher(excel_id):
     one_higher = splits[0] + '.' + str(int(splits[-1]) + 1)
   return one_higher
 
-# check if a reference is like 1.3
-def normal_screen_reference(text):
-  pattern = r"^\d+\.\d+(?:x)?$"
-  it_is_screen_ref = bool(re.match(pattern, text))
-  return it_is_screen_ref
+
 
 def get_content_length(structure):
     length = 0

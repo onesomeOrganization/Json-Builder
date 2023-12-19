@@ -1,6 +1,6 @@
 import re
 import numpy as np
-from helper import add_quotation_mark, normal_screen_reference, nextLogic_patterns
+from helper import add_quotation_mark, normal_screen_reference, nextLogic_patterns, key_insight_pattern
 
 # ------- TRIP TESTS ----------------
 
@@ -315,10 +315,10 @@ def test_if_ref_question_is_optional(contentComponent):
     for q in questions_before:
         if add_quotation_mark(q.id) == ref_id and q.answer_required == 'false':
             print('''
-                    ---------------------------------------------------------------------------
-                    |  !!!! WARNING !!!! --- 'Referenz of an optional screen at question:    %s |
-                    ---------------------------------------------------------------------------
-                    '''%(contentComponent.content.question.excel_id))
+                    --------------------------------------------------------------------------------
+                    |  !!!! WARNING !!!! --- 'Referenz of an optional screen (%s) at question:    %s |
+                    --------------------------------------------------------------------------------
+                    '''%(q.excel_id, contentComponent.content.question.excel_id))
         
 def test_if_button_texts_are_the_same(id, button_texts):
     if len(button_texts) != len(set(button_texts)):
@@ -327,4 +327,8 @@ def test_if_button_texts_are_the_same(id, button_texts):
 def test_if_key_ref_exists(key, question):
     if not key in question.trip.all_ids:
         raise Exception ('Reference id ("%s") does not exist in this excel used in the "weiter mit Screen" from question: '%(key), question.excel_id)
+    
+def test_for_correct_key_insight(question, text):
+   if not bool(re.match(key_insight_pattern, text.strip())):
+    raise Exception ('Key insight is wrong at question %s. Maybe a typo?'%(question.excel_id))
 
