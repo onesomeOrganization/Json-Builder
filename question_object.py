@@ -5,7 +5,7 @@ from content_object import Content
 from answerOption_object import AnswerOption
 from nextLogic_object import NextLogic
 from helper import create_id
-from tests import do_tests_on_questions, test_if_id_exists, test_for_correct_key_insight
+from tests import do_tests_on_questions, test_if_id_exists, test_for_correct_key_insight, test_for_text_without_structure
 import pandas as pd
 
 
@@ -181,7 +181,9 @@ class Question:
             else:
                 raise Exception ('There is no question loop start screen type which is possible for the following type needed: ', self.type, ' at question: ', self.excel_id)
     
+
     def clear_of_nan(self):
+        test_for_text_without_structure(self)
         # CLEAN OF NAN
         clean_structure = np.empty((0,))
         for entry in self.structure:

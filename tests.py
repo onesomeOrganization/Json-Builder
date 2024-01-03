@@ -98,6 +98,12 @@ def test_if_id_exists(question):
             raise Exception ('Id missing after question with id: ', question.questions_before[-1].excel_id)  
         else:
             raise Exception ('Id missing at the first question') 
+        
+def test_for_text_without_structure(question):
+    for i, text in enumerate(question.texts):
+        if text != 'None':
+            if question.structure[i] == 'None':
+                raise Exception ('There is a structure field missing at question: ', question.excel_id)
 
     
 def do_tests_on_questions(question):
@@ -113,7 +119,6 @@ def do_tests_on_questions(question):
     test_english_translation(question)
     test_for_added_information_english(question)
     test_if_ref_id_exists(question)
-    test_for_text_without_structure(question)
     test_for_correct_structure_type(question)
     test_for_key_insight_and_optional(question)
     test_for_arrow_missing_at_button_text(question)
@@ -242,11 +247,6 @@ def test_arrow_missing(question):
         if (struc == 'ITEM(Single)' or struc == 'ITEM(Multiple)') and not '->' in question.texts[num] and should_have_arrows:
             raise Exception('Arrow missing at question: ', question.excel_id)
         
-def test_for_text_without_structure(question):
-    for i, text in enumerate(question.texts):
-        if text != 'None':
-            if question.structure[i] == 'None':
-                raise Exception ('There is a structure field missing at question: ', question.excel_id)
             
 def test_for_correct_structure_type(question):
     for num, struc in enumerate(question.structure):

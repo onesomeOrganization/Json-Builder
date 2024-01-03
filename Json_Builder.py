@@ -2,22 +2,23 @@ import os
 import pandas as pd
 import openpyxl
 from trip_object import Trip
+from datetime import datetime
 # 
 #  ------ VARIABLES ------------------------------------
 # Fill in:
-name_of_json_file = "23_12_19_Eigenverantwortung" # name with which you want to save the Json
+name_of_json_file = str(datetime.now().strftime("%y_%m_%d_")) + "Zukunftsplanung" # name with which you want to save the Json
 journey_key = "Test_Short_Trip_Flora" # test key or Key of Journey
 id_base = "flora-" # id base -> for testing e.g. your name, for the app the journey_key in small letters
-version = "v"+str(87) # version of the json
+version = "v"+str(89) # version of the json
 write_beginning = True # False if you want to add to an existing json
 write_ending = True # False if you want to add to an existing json
 etappe = 1 # usually 1 except you want to add to an existing json in a different etappe
 startnumber = 1 # usually 1 except you want to add to an existing json at a different screen number
-excel_path_or_name = "/Users/flora.latz/Library/Mobile Documents/com~apple~CloudDocs/Dokumente/Arbeit/Onesome/Coding/Jsons/Excels/Resilienz_Eigenverantwortung.xlsx" # path to the exel template
+excel_path_or_name = "/Users/flora.latz/Library/Mobile Documents/com~apple~CloudDocs/Dokumente/Arbeit/Onesome/Coding/Jsons/Excels/Resilienz_Zukunftsplanung.xlsx" # path to the exel template
 save_directory = '/Users/flora.latz/Library/Mobile Documents/com~apple~CloudDocs/Dokumente/Arbeit/Onesome/Coding/Jsons/Created' # path where you want to save the jsons
 english_translation = False # is the english translation column filled?
 starts_in_the_middle_of_etappe = False # does the excel start with e.g. 3.8 instead of 3.1?
-nummeration_is_not_correct = False # if nummeration is not correct because 3.8 is followed by 3.10 instead of 3.9 (be aware that 3.8 needs a 'weiter mit screen' then)
+nummeration_is_not_correct = True # if nummeration is not correct because 3.8 is followed by 3.10 instead of 3.9 (be aware that 3.8 needs a 'weiter mit screen' then)
 
 # --------- EXCEL ---------
 
