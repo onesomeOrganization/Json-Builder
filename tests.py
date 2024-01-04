@@ -1,6 +1,6 @@
 import re
 import numpy as np
-from helper import add_quotation_mark, normal_screen_reference, nextLogic_patterns, key_insight_pattern
+from helper import add_quotation_mark, normal_screen_reference, nextLogic_patterns, key_insight_pattern, referencable_structure_content
 
 # ------- TRIP TESTS ----------------
 
@@ -319,6 +319,17 @@ def test_if_ref_question_is_optional(contentComponent):
                     |  !!!! WARNING !!!! --- 'Referenz of an optional screen (%s) at question:    %s |
                     --------------------------------------------------------------------------------
                     '''%(q.excel_id, contentComponent.content.question.excel_id))
+            
+def test_if_question_has_something_to_reference(contentComponent):
+    ref_id = contentComponent.refQuestionId
+    questions_before = contentComponent.content.question.questions_before
+    for q in questions_before:
+        if add_quotation_mark(q.id) == ref_id:
+            for struc in q.structure:
+                if struc in referencable_structure_content:
+                    return
+            raise Exception ('Referenz of a screen which has nothing to reference (%s) at question: %s'%(q.excel_id, contentComponent.content.question.excel_id))
+            
         
 def test_if_button_texts_are_the_same(id, button_texts):
     if len(button_texts) != len(set(button_texts)):
