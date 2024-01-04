@@ -1,5 +1,5 @@
 from helper import normal_screen_reference, increase_order_id, create_id, content_length_dict, add_quotation_mark
-from tests import test_if_ref_question_is_optional
+from tests import test_if_ref_question_is_optional, test_if_question_has_something_to_reference
 
 class Content:
   def __init__(self, question):
@@ -90,6 +90,7 @@ class ContentComponent():
         if normal_screen_reference(self.text):
           self.refQuestionId = '"'+create_id(Content.question, self.text)+'"'
           test_if_ref_question_is_optional(self)
+          test_if_question_has_something_to_reference(self)
           for q in self.content.question.questions_before:
             if q.excel_id == self.text:
               if q.type == 'SCALA_SLIDER':
