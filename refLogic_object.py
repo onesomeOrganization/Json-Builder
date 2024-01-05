@@ -1,4 +1,4 @@
-from helper import create_id, content_length_dict, add_quotation_mark, screen_reference_pattern, key_insight_pattern
+from helper import create_id, content_length_dict, add_quotation_mark, screen_reference_pattern, key_insight_pattern, check_for_scala_reference_and_set_style
 import numpy as np
 import re
 
@@ -39,6 +39,7 @@ class RefLogic:
                     if count_sonst > 1 and count_sonst_refs == 1:
                         self.type = 'REF_OPTIONAL'
                         for split in splits:
+                            check_for_scala_reference_and_set_style(self, split)
                             self.options.append(RefLogicOption(type = 'OPTION', questionId=create_id(self, split), questionContentId=ref_number))
                         # set text to 'null' else it will appear in worldobjectentry
                         self.texts[num] = 'null'
@@ -53,6 +54,7 @@ class RefLogic:
                             questionId = 'null'
                         else: 
                             raise Exception('First reference in (%s) from question %s is neither a proper screen-reference nor a key insight reference.'%(ref_text,  self.question.excel_id))
+                        check_for_scala_reference_and_set_style(self, questionId)
                         self.options.append(RefLogicOption(type = 'OPTION_WITH_CONTENT_ID', questionContentId=ref_number, questionId=questionId, worldObjectEntryKey=worldObjectEntryKey))
                         # check for key insight:
                         if bool(re.match(screen_reference_pattern, splits[1].strip())):
@@ -63,6 +65,7 @@ class RefLogic:
                             questionId = 'null'
                         else: 
                             raise Exception('Second reference in (%s) from question %s is neither a proper screen-reference nor a key insight reference.'%(ref_text, self.question.excel_id))
+                        check_for_scala_reference_and_set_style(self, questionId)
                         self.options.append(RefLogicOption(type = 'OPTION_WITH_CONTENT_ID_SKIP', questionContentId=ref_number, questionId=questionId, worldObjectEntryKey=worldObjectEntryKey))
                         self.texts[num] = 'null'
                     elif count_sonst > 1 and count_sonst_refs > 1:
