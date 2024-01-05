@@ -212,14 +212,15 @@ class Question:
     def prepare_scala(self):
         # SCALA
         if 'SCALA' in self.structure:
-            # declare numbers and texts     
-            # get digits
-            digits = re.findall(r'\d', self.texts[np.where(self.structure == 'SCALA')][0])
-            self.scala_min = digits[0]
-            self.scala_max = digits[1]
-            texts = re.findall(r'\((.*?)\)', self.texts[np.where(self.structure == 'SCALA')][0])
-            self.scala_min_text = texts[0]
-            self.scala_max_text = texts[1]
+            # declare numbers and texts 
+            scala_text = self.texts[np.where(self.structure == 'SCALA')][0]
+            scala_pattern = "(\d+)\(([^)]+)\)-(\d+)\(([^)]+)\)"
+            matches = re.match(scala_pattern, scala_text)
+            # get variables
+            self.scala_min = int(matches.group(1))
+            self.scala_max = int(matches.group(3))
+            self.scala_min_text = matches.group(2)
+            self.scala_max_text = matches.group(4)
 
             if self.english_translation:
                 texts_en = re.findall(r'\((.*?)\)', self.texts_en[np.where(self.structure == 'SCALA')][0])
