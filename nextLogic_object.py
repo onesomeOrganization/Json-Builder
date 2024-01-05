@@ -110,9 +110,8 @@ class NextLogic():
                 # --- OPTION ---
                 questionId = create_id(self, self.texts[num].split('->')[1])
                 questionAnswerOptionId = self.id+'-'+str(self.content_length)+'-'+str(count)
+                self.NextLogicOptions.append(NextLogicOption(self.id, count, questionId, add_quotation_mark(questionAnswerOptionId))) 
                 count += 1
-                self.NextLogicOptions.append(NextLogicOption(self.id, num, questionId, add_quotation_mark(questionAnswerOptionId))) 
-                
     
     def prepare_next_option_item(self):
         # next option items with ->
@@ -135,8 +134,8 @@ class NextLogic():
                 # --- OPTION ---
                 questionId = create_id(self, self.texts[num].split('->')[1])
                 questionAnswerOptionId = self.id+'-'+str(self.content_length)+'-'+str(count)
+                self.NextLogicOptions.append(NextLogicOption(self.id, count, questionId, add_quotation_mark(questionAnswerOptionId))) 
                 count +=1
-                self.NextLogicOptions.append(NextLogicOption(self.id, num, questionId, add_quotation_mark(questionAnswerOptionId))) 
 
 
     def prepare_value(self):
