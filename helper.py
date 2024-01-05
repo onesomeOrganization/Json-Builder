@@ -151,4 +151,11 @@ def get_number_and_type_for_value_option(scala_min, scala_max, sign, values):
     number = values[0] 
     type = 'VALUE_GTE'
   return type, number, secondNumber
+
+
+def check_for_scala_reference_and_set_style(RefLogic, reference_id):
+   for q in RefLogic.question.questions_before:
+      if q.id == reference_id and q.type == 'SCALA_SLIDER':
+         RefLogic.question.reference_style = '"SCALA"'
+  
    

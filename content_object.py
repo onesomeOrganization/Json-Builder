@@ -80,7 +80,10 @@ class ContentComponent():
       self.title = 'null'
       self.title_en = 'null'
       self.language = 'null'
-      self.style = 'null'
+      if self.type == 'ANSWER_OPTION_REF':
+        self.style = Content.question.reference_style
+      else:
+        self.style = 'null'
       
       needs_translations = ['MORE_INFORMATION', 'MORE_INFORMATION_EXPANDED', 'PARAGRAPH', 'SUB_TITLE']
       self.needs_english_copy = ['AUDIO', 'IMAGE', 'SMALL_IMAGE', 'PDF_DOWNLOAD']

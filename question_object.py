@@ -37,6 +37,7 @@ class Question:
         self.qloop_start = self.check_if_qloop_start()
         self.progress = None
         self.questionLoopId = 'null'
+        self.reference_style = 'null'
 
         # TEST
         self.clear_of_nan()
