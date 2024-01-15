@@ -6,7 +6,7 @@ from datetime import datetime
 # 
 #  ------ VARIABLES ------------------------------------
 # Fill in:
-name_of_json_file = str(datetime.now().strftime("%y_%m_%d_")) + "Loesungsorientierung_Flora" # name with which you want to save the Json
+name_of_json_file = str(datetime.now().strftime("%y_%m_%d_")) + "oesungsorientierung_Flora" # name with which you want to save the Json
 journey_key = "TEST_SHORT_TRIP_FLORA_TWO" # test key or Key of Journey
 id_base = "florita-" # id base -> for testing e.g. your name, for the app the journey_key in small letters
 version = "v"+str(15) # version of the json 90
