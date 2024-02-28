@@ -127,18 +127,18 @@ class Question:
                     question_type = 'ITEM_LIST_LIMIT'
         elif 'ITEM(Multiple)' in self.structure and not ('SEVERAL ANSWER OPTIONS' in self.structure or 'ANSWER OPTON' in self.structure):
             question_type = 'ITEM_LIST_LIMIT'
-        # ITEM_LIST_EXPANDABLE: A) entweder mehrere text felder ohne items oder B) item multiple mit text feldern oder C) item single mit text feldern und maxnumber
+        # ITEM_LIST_EXPANDABLE: A) entweder mehrere text felder ohne items oder B) item multiple mit text feldern
             # A
         elif not ('ITEM(Multiple)' in self.structure or "ITEM(Single)" in self.structure) and 'SEVERAL ANSWER OPTIONS' in self.structure and not 'ANSWER OPTIONS FROM REFERENCE (Multiple Choice)' in self.structure:
             question_type = 'ITEM_LIST_EXPANDABLE'
             # B
         elif 'ITEM(Multiple)' in self.structure and ('SEVERAL ANSWER OPTIONS' in self.structure or 'ANSWER OPTON' in self.structure):
             question_type = 'ITEM_LIST_EXPANDABLE'
-            # C
+        # ITEM_LIST_EXPANDABLE_SINGLE_CHOICE: item single mit text feldern und maxnumber
         elif "ITEM(Single)" in self.structure and ('SEVERAL ANSWER OPTIONS' in self.structure or 'ANSWER OPTON' in self.structure):
             self.maxNumber = '1'
-            self.structure = np.core.defchararray.replace(self.structure, 'ITEM(Single)', 'ITEM(Multiple)')
-            question_type = 'ITEM_LIST_EXPANDABLE'
+            self.minNumber = '1'
+            question_type = 'ITEM_LIST_EXPANDABLE_SINGLE_CHOICE'
         # OPTION_QUESTION: S P Button
         elif 'BUTTON' in self.structure:
             question_type = 'OPTION_QUESTION'

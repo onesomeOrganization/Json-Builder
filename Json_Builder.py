@@ -6,15 +6,15 @@ from datetime import datetime
 # 
 #  ------ VARIABLES ------------------------------------
 # Fill in:
-name_of_json_file = str(datetime.now().strftime("%y_%m_%d_")) + "oesungsorientierung_Flora" # name with which you want to save the Json
-journey_key = "TEST_SHORT_TRIP_FLORA_TWO" # test key or Key of Journey
-id_base = "florita-" # id base -> for testing e.g. your name, for the app the journey_key in small letters
-version = "v"+str(15) # version of the json 90
+name_of_json_file = str(datetime.now().strftime("%y_%m_%d_")) + "Test2" # name with which you want to save the Json
+journey_key = "TEST_SHORT_TRIP_FLORA" # test key or Key of Journey
+id_base = "flora-" # id base -> for testing e.g. your name, for the app the journey_key in small letters
+version = "v"+str(91) # version of the json 90
 write_beginning = True # False if you want to add to an existing json
 write_ending = True # False if you want to add to an existing json
 etappe = 1 # usually 1 except you want to add to an existing json in a different etappe
 startnumber = 1 # usually 1 except you want to add to an existing json at a different screen number
-excel_path_or_name = "/Users/flora.latz/Library/Mobile Documents/com~apple~CloudDocs/Dokumente/Arbeit/Onesome/Coding/Jsons/Excels/Resilienz_Loesungsorientierung.xlsx" # path to the exel template
+excel_path_or_name = "/Users/flora.latz/Library/Mobile Documents/com~apple~CloudDocs/Dokumente/Arbeit/Onesome/Coding/Jsons/Excels/Test.xlsx" # path to the exel template
 save_directory = '/Users/flora.latz/Library/Mobile Documents/com~apple~CloudDocs/Dokumente/Arbeit/Onesome/Coding/Jsons/Created' # path where you want to save the jsons
 english_translation = False # is the english translation column filled?
 starts_in_the_middle_of_etappe = False # does the excel start with e.g. 3.8 instead of 3.1?
