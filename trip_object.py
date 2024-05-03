@@ -30,6 +30,7 @@ class Trip:
         self.journeyMailValueThree = self.information[18]
         self.journeyMailKeyInsight = self.information[19]
         self.journeyMailExercise = self.information[20]
+        self.pushNotification_array = [self.information[21], self.information[22], self.information[23], self.information[24], self.information[25]]
         self.version = version[1:]
         self.type = self.information[0]
         self.topicId = self.information[1]
@@ -52,6 +53,7 @@ class Trip:
             self.journeyMailValueThree_en = add_quotation_mark(self.information_en[18])
             self.journeyMailKeyInsight_en = add_quotation_mark(self.information_en[19])
             self.journeyMailExercise_en = add_quotation_mark(self.information_en[20])
+            self.pushNotification_array_en = [self.information_en[21], self.information_en[22], self.information_en[23], self.information_en[24], self.information_en[25]]
         else:
             self.title_en = 'Englisch'
             self.beschreibung_en = 'Englisch'
@@ -62,6 +64,7 @@ class Trip:
             self.journeyMailValueThree_en = '"Englisch"'
             self.journeyMailKeyInsight_en = '"Englisch"'
             self.journeyMailExercise_en = '"Englisch"'
+            self.pushNotification_array_en = ["Englisch","Englisch","Englisch","Englisch","Englisch"]
 
         # Preparations
         self.all_ids = self.get_all_ids()
@@ -74,6 +77,7 @@ class Trip:
         self.qloop_start_screens_ids = self.get_qloop_start_screens()
         loop_dict = create_progress(self, self.all_questions_array)
         self.questionLoops = create_questionloops(self, loop_dict)
+        self.pushNotification = self.create_pushNotification()
         # Json
         self.json = self.create_json()
 
@@ -211,6 +215,31 @@ class Trip:
 
   # -------- JSON ---------------
 
+    def create_pushNotification(self):
+      self.pushNotificationMessages = ''
+      # empty if Shorttrip 
+      if self.type == 'WORLD':
+          order = 1
+          for i, push_text_german in enumerate(self.pushNotification_array):
+              self.pushNotificationMessages += '''
+        {
+          "id": "%s-push%i-DE",
+          "language": "DE",
+          "title": "%s",
+          "order": %i
+        },
+        {
+          "id": "%s-push%i-EN",
+          "language": "EN",
+          "title": "%s",
+          "order": %i
+        },'''%(self.id, i+1, push_text_german, order, self.id, i+1, self.pushNotification_array_en[i], order+1)
+              order +=2
+          self.pushNotificationMessages = self.pushNotificationMessages[:-1]
+      return self.pushNotificationMessages
+      
+      
+
     def create_beginning(self):
         beginning = '''
     {
@@ -259,6 +288,7 @@ class Trip:
           "journeyMailExercise": %s
         }
       ],
+      "pushNotificationMessages": [%s],
       "content": [
         {
           "id": "%s-cont",
@@ -320,7 +350,7 @@ class Trip:
             }
           ],
           "questions": [
-            ''' % (self.id, self.key, self.mainImageName, self.mainImageLongName, self.topicIconImageName, self.mainImageLockedLongName, self.backgroundImageName, self.sessionImageName, self.cardDisplayImageName, self.version, self.type, self.topicId, self.id, self.title, self.journeyMailValueOne, self.journeyMailValueTwo, self.journeyMailValueThree, self.journeyMailKeyInsight, self.journeyMailExercise, self.id, self.title_en, self.journeyMailValueOne_en, self.journeyMailValueTwo_en, self.journeyMailValueThree_en, self.journeyMailKeyInsight_en, self.journeyMailExercise_en, self.id, self.id, self.beschreibung, self.id, self.beschreibung_en, self.id, self.id, self.aufruf, self.id, self.aufruf_en, self.id, self.etappe, self.etappe, self.durationMin, self.durationMax, self.id, self.etappe, self.etappen_titel, self.id, self.etappe, self.etappen_titel_en)
+            ''' % (self.id, self.key, self.mainImageName, self.mainImageLongName, self.topicIconImageName, self.mainImageLockedLongName, self.backgroundImageName, self.sessionImageName, self.cardDisplayImageName, self.version, self.type, self.topicId, self.id, self.title, self.journeyMailValueOne, self.journeyMailValueTwo, self.journeyMailValueThree, self.journeyMailKeyInsight, self.journeyMailExercise, self.id, self.title_en, self.journeyMailValueOne_en, self.journeyMailValueTwo_en, self.journeyMailValueThree_en, self.journeyMailKeyInsight_en, self.journeyMailExercise_en, self.pushNotificationMessages, self.id, self.id, self.beschreibung, self.id, self.beschreibung_en, self.id, self.id, self.aufruf, self.id, self.aufruf_en, self.id, self.etappe, self.etappe, self.durationMin, self.durationMax, self.id, self.etappe, self.etappen_titel, self.id, self.etappe, self.etappen_titel_en)
         return beginning
     
     def create_json(self):

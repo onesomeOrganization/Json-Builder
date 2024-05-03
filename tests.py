@@ -6,7 +6,7 @@ from helper import add_quotation_mark, normal_screen_reference, nextLogic_patter
 
 def are_all_information_there(information, information_en, english_translation):
     lengths_of_infos_every_trip_needs = 14
-    lengths_of_infos_only_worlds_need = 20
+    lengths_of_infos_only_worlds_need = 25
     # Check if all information fields are there
     for i,info in enumerate(information):
         if information[0] == 'Kurztrip' or information[0] == 'kurztrip' and i > lengths_of_infos_every_trip_needs:
@@ -24,9 +24,10 @@ def are_all_information_there(information, information_en, english_translation):
         for i in range(2,5):
             if information_en[i] == 'None':
                 raise Exception('Some englisch Information is missing in the first column')
-        for i in range(16,20):
-            if information_en[i] == 'None':
-                raise Exception('Some englisch Information is missing in the first column')
+        if information[0] == 'Reise' or information[0] == 'reise':
+            for i in range(16,25):
+                if information_en[i] == 'None':
+                    raise Exception('Some englisch Information is missing in the first column')
     
 def test_aufruf(information, information_en, english_translation):
     # Test Aufruf

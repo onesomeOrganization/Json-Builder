@@ -27,6 +27,9 @@ class Content:
         elif entry == 'PARAGRAPH':
           self.contents.append(ContentComponent(self, 'PARAGRAPH', text_count))
           self.order, self.id = increase_order_id(self.order, self.id, content_length_dict[entry])
+        elif entry == 'EMAIL':
+          self.contents.append(ContentComponent(self, 'EMAIL', text_count))
+          self.order, self.id = increase_order_id(self.order, self.id, content_length_dict[entry])
         elif entry == 'AUDIO':
           self.contents.append(ContentComponent(self, 'AUDIO', text_count))
           self.order, self.id = increase_order_id(self.order, self.id, content_length_dict[entry])
@@ -85,7 +88,7 @@ class ContentComponent():
       else:
         self.style = 'null'
       
-      needs_translations = ['MORE_INFORMATION', 'MORE_INFORMATION_EXPANDED', 'PARAGRAPH', 'SUB_TITLE']
+      needs_translations = ['MORE_INFORMATION', 'MORE_INFORMATION_EXPANDED', 'PARAGRAPH', 'SUB_TITLE', 'EMAIL']
       self.needs_english_copy = ['AUDIO', 'IMAGE', 'SMALL_IMAGE', 'PDF_DOWNLOAD']
 
       # Preparations
@@ -135,6 +138,9 @@ class ContentComponent():
           self.downloadName_en = '"'+self.text_en+'"'
         else:
           self.downloadName_en = self.downloadName
+
+      if self.type == 'EMAIL':
+        self.text = self.text.replace('<br>', '%0A')
 
       if self.type in needs_translations:
         self.translations = '''

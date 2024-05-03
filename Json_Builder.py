@@ -6,10 +6,10 @@ from datetime import datetime
 # 
 #  ------ VARIABLES ------------------------------------
 # Fill in:
-name_of_json_file = str(datetime.now().strftime("%y_%m_%d_")) + "Test2" # name with which you want to save the Json
+name_of_json_file = str(datetime.now().strftime("%y_%m_%d_")) + "Push" # name with which you want to save the Json
 journey_key = "TEST_SHORT_TRIP_FLORA" # test key or Key of Journey
 id_base = "flora-" # id base -> for testing e.g. your name, for the app the journey_key in small letters
-version = "v"+str(91) # version of the json 90
+version = "v"+str(92) # version of the json 90
 write_beginning = True # False if you want to add to an existing json
 write_ending = True # False if you want to add to an existing json
 etappe = 1 # usually 1 except you want to add to an existing json in a different etappe
