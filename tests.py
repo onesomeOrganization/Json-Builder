@@ -1,6 +1,6 @@
 import re
 import numpy as np
-from helper import add_quotation_mark, normal_screen_reference, nextLogic_patterns, key_insight_pattern, referencable_structure_content
+from helper import add_quotation_mark, normal_screen_reference, nextLogic_patterns, key_insight_pattern, referencable_structure_content, is_keyInsight_reference, get_one_excel_id_higher
 
 # ------- TRIP TESTS ----------------
 
@@ -123,6 +123,7 @@ def do_tests_on_questions(question):
     test_for_correct_structure_type(question)
     test_for_key_insight_and_optional(question)
     test_for_arrow_missing_at_button_text(question)
+    test_for_arrow_missing_at_keysinight(question)
     test_for_only_one_button(question)
     test_for_old_version_mistakes(question)
 
@@ -276,6 +277,11 @@ def test_for_arrow_missing_at_button_text(question):
         button_texts = question.texts[np.where(question.structure == 'BUTTON')]
         if not all('->' in text for text in button_texts):
             raise Exception (' Arrow in Button missing at question: ', question.excel_id)
+        
+def test_for_arrow_missing_at_keysinight(question):
+    for num, struc in enumerate(question.next_question_structure):
+        if (struc == 'REFERENCE' and is_keyInsight_reference(question.next_question_texts[num]) and not '->' in question.next_question_texts[num]):
+            raise Exception('Arrow missing at reference of keyinsight - alternative way missing: ', get_one_excel_id_higher(question.excel_id))
     
 def test_for_only_one_button(question):
     if np.sum(question.structure == "BUTTON") == 1:

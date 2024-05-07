@@ -41,7 +41,12 @@ def get_one_excel_id_higher(excel_id):
     one_higher = splits[0] + '.' + str(int(splits[-1]) + 1)
   return one_higher
 
-
+def is_keyInsight_reference(reference_text):
+   splits = reference_text.split('->')
+   if (splits[0].isupper() and len(splits) <= 2):
+      return True
+   else:
+      return False
 
 def get_content_length(structure):
     length = 0

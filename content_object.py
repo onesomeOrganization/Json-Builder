@@ -102,7 +102,7 @@ class ContentComponent():
               if q.type == 'SCALA_SLIDER':
                 self.style = add_quotation_mark('SCALA')
         else:
-          self.worldObjectEntryKey = self.text if self.text == 'null' else '"'+self.text +'"'  
+          self.worldObjectEntryKey = self.text if self.text == 'null' else '"'+self.text.split('->')[0].strip()+'"'  
       
       if self.type == 'MORE_INFORMATION' or self.type == 'MORE_INFORMATION_EXPANDED':
         splitted_text = self.text.split('_')

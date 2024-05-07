@@ -1,5 +1,5 @@
 
-from helper import create_id, get_content_length, add_quotation_mark, get_one_id_higher, create_excel_id, create_condition_dict, nextLogic_patterns, get_number_and_type_for_value_option
+from helper import create_id, get_content_length, add_quotation_mark, get_one_id_higher, create_excel_id, create_condition_dict, nextLogic_patterns, get_number_and_type_for_value_option, is_keyInsight_reference
 import numpy as np
 from tests import test_if_any_scala_condition_is_missing, test_for_escape_option_at_question_loop, test_if_key_ref_exists
 import re
@@ -79,14 +79,13 @@ class NextLogic():
             # check if structure has reference
             if struct == 'REFERENCE':
                 # check if key insight reference
-                if self.question.next_question_texts[x].isupper():
+                if is_keyInsight_reference(self.question.next_question_texts[x]):
                     # --- TYPE ---
                     self.type = 'REF_KEY_INSIGHT'
                     # --- OPTION ---
                     # add to question before
-                    self.reference_of_next_question = self.question.next_question_texts[x]
-                    plus_one = int(self.id_next_question[-2])+1
-                    id_base_skip_question = self.id_next_question[:-2] + str(plus_one) + '"'
+                    self.reference_of_next_question = self.question.next_question_texts[x].split('->')[0].strip()
+                    id_base_skip_question = add_quotation_mark(create_id(self, self.question.next_question_texts[x].split('->')[1].strip()))
                     self.NextLogicOptions.append(NextLogicRefkeyOption(self.id, self.reference_of_next_question, self.id_next_question, id_base_skip_question))
 
     def prepare_next_option_button(self):
