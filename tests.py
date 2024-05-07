@@ -281,7 +281,7 @@ def test_for_arrow_missing_at_button_text(question):
 def test_for_arrow_missing_at_keysinight(question):
     for num, struc in enumerate(question.next_question_structure):
         if (struc == 'REFERENCE' and is_keyInsight_reference(question.next_question_texts[num]) and not '->' in question.next_question_texts[num]):
-            raise Exception('Arrow missing at reference of keyinsight - alternative way missing: ', get_one_excel_id_higher(question.excel_id))
+            raise Exception('Arrow missing at reference of keyinsight - alternative way missing: ', question.next_question_excel_id)
     
 def test_for_only_one_button(question):
     if np.sum(question.structure == "BUTTON") == 1:

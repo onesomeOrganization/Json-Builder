@@ -5,6 +5,7 @@ import pandas as pd
 import re
 from questionLoops_object import create_questionloops
 from helper import add_quotation_mark
+import numpy as np
 
 class Trip:
     def __init__(self, df, id_base, version, write_beginning, write_ending, journey_key, english_translation, etappe, starts_in_the_middle_of_etappe, nummeration_is_not_correct):
@@ -129,10 +130,26 @@ class Trip:
             if (i+4) > (len(self.df.columns)-1):
                 next_question_structure = []
                 next_question_texts = []
+                next_question_excel_id = None
+            # letzter Screen
+            elif any('letzter Screen' in element for element in self.df.iloc[:, i]):
+                next_question_structure = []
+                next_question_texts = []
+                next_question_excel_id = None
+            # weiter mit Screen
+            elif any('weiter mit Screen' in element for element in self.df.iloc[:, i]):
+                # get excel id of next question
+                index = np.where(self.df.iloc[:, i] == 'weiter mit Screen')[0]
+                next_question_excel_id = self.df.iloc[index, i+1].values[0]
+                 # get correct columns for the next question -> get column where first entry is excel id
+                index_next_question = np.where(self.df.columns == next_question_excel_id)[0][0]
+                next_question_structure = self.df.iloc[:, index_next_question]
+                next_question_texts = self.df.iloc[:, index_next_question+1]
             else:
                 next_question_structure = self.df.iloc[:, i+3]
                 next_question_texts = self.df.iloc[:, i+4]
-            questions_array.append(Question(self, self.id_base, self.version, self.df.iloc[:, i], self.df.iloc[:, i+1], self.df.iloc[:, i+2], next_question_structure, next_question_texts, self.df.columns[i], self.write_beginning, self.write_ending, self.english_translation, questions_array))
+                next_question_excel_id = self.df.columns[i+3]
+            questions_array.append(Question(self, self.id_base, self.version, self.df.iloc[:, i], self.df.iloc[:, i+1], self.df.iloc[:, i+2], next_question_structure, next_question_texts,next_question_excel_id, self.df.columns[i], self.write_beginning, self.write_ending, self.english_translation, questions_array))
         return questions_array         
 
     def format_text(self):
@@ -362,6 +379,7 @@ class Trip:
           # Questions
           for question in self.all_questions_array: 
               json += question.create_json()
+          json = json[:-1] #last comma not needed
 
           # Ending
           if self.write_ending:   

@@ -21,7 +21,8 @@ def create_adjazenzliste(questions_array):
                     current_value.append(key)
                 # Assign the updated value back to the key
                 adjazenzliste[q.excel_id] = current_value
-            elif "->" in text and not ('(wenn' in text or '( wenn' in text) and (q.structure[i] == 'ITEM(Multiple)' or q.structure[i] == 'ITEM(Single)' or q.structure[i] == 'weiter mit Screen' or q.structure[i] == 'BUTTON'):
+                
+            elif "->" in text and not ('(wenn' in text or '( wenn' in text) and (q.structure[i] == 'ITEM(Multiple)' or q.structure[i] == 'ITEM(Single)' or q.structure[i] == 'weiter mit Screen' or q.structure[i] == 'BUTTON' and q.structure[i] != 'REFERENCE'):
                 arrow_or_condition_flag = True
                 # add ids after the -> as values
                 json_id = text.split('->')[1].strip()
@@ -30,7 +31,9 @@ def create_adjazenzliste(questions_array):
                 # Update the value by appending the new value
                 current_value.append(json_id)
                 # Assign the updated value back to the key
-                adjazenzliste[q.excel_id] = current_value    
+                adjazenzliste[q.excel_id] = current_value
+                
+            #TODO: -> bei key insights nicht korrekt bisher!!
         # normal Case
         if not 'weiter mit Screen' in q.structure and not 'letzter Screen' in q.structure and not num == len(questions_array)-1 and not 'Neue Etappe' in questions_array[num+1].structure and not 'Neue Etappe' in q.structure and not arrow_or_condition_flag:
             # check if id is id+1 as value, e.g. id = flora-v13-1-3 -> flora-v13-1-4

@@ -10,12 +10,13 @@ import pandas as pd
 
 
 class Question:
-    def __init__(self, trip, id_base, version, structure, texts, texts_en, next_question_structure, next_question_texts, excel_id, write_beginning, write_ending, english_translation, questions_before):
+    def __init__(self, trip, id_base, version, structure, texts, texts_en, next_question_structure, next_question_texts, next_question_excel_id, excel_id, write_beginning, write_ending, english_translation, questions_before):
         # VARIABLES
         self.reference_of_next_question = None
         self.next_logic_type = 'NEXT'
         self.next_question_structure = next_question_structure
         self.next_question_texts = next_question_texts
+        self.next_question_excel_id = next_question_excel_id
         self.write_beginning = write_beginning
         self.write_ending = write_ending
         self.questions_before = questions_before
@@ -61,7 +62,7 @@ class Question:
         self.AnswerOption = AnswerOption(self)
 
         # JSON PREP
-        self.comma_is_needed = self.check_if_comma_needed()
+        self.last_screen_of_session = self.last_screen_of_session()
 
     # --------- PREPARATIONS -----------
 
@@ -261,14 +262,11 @@ class Question:
     
     # ------------ JSON ---------------
     
-    def check_if_comma_needed(self):
+    def last_screen_of_session(self):
         if any(element == 'Neue Etappe' for element in self.next_question_structure):
-            comma_is_needed = False
-        elif all(element == 'None' for element in self.next_question_structure):
-            comma_is_needed = False
+            return True
         else:
-            comma_is_needed = True
-        return comma_is_needed
+            return False
 
     def create_json(self):
         # last prep (geht erst hier weil es etappenstartscreens davor nicht gibt)
@@ -305,10 +303,10 @@ class Question:
             %s
             },''' %(self.id, self.type, self.minNumber, self.maxNumber, self.reviewable, self.progress, self.worldObjectEntryKeyType, self.optional, self.firstJourneyQuestion, self.firstSessionQuestion, self.questionLoopId, self.Content.json, self.AnswerOption.json, self.NextLogic.json)
         
-        if self.comma_is_needed:
-            return json
+        if self.last_screen_of_session:
+            return json[:-1] # no comma needed
         else:
-            return json[:-1]
+            return json
 
     
     def create_neue_etappe(self):
